@@ -2,6 +2,7 @@ import type { StudySection as StudySectionType } from "@/data/chemistry";
 import { ElectrolysisWorkbench } from "@/components/ElectrolysisWorkbench";
 import { ColoredChemText } from "@/components/ColoredChemText";
 import { BatteryReactionWorksheet } from "@/components/BatteryReactionWorksheet";
+import { ReactionMapStudio } from "@/components/ReactionMapStudio";
 
 export function StudySection({ section }: { section: StudySectionType }) {
   return (
@@ -62,6 +63,7 @@ export function StudySection({ section }: { section: StudySectionType }) {
 
       {section.kind === "electrolysis" && <ElectrolysisWorkbench cases={section.cases} />}
       {section.kind === "batteryWorksheet" && <BatteryReactionWorksheet />}
+      {section.kind === "reactionMaps" && <ReactionMapStudio category={section.category} />}
     </section>
   );
 }

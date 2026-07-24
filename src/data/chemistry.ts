@@ -67,6 +67,13 @@ export type StudySection =
       title: string;
       description?: string;
       kind: "batteryWorksheet";
+    }
+  | {
+      id: string;
+      title: string;
+      description?: string;
+      kind: "reactionMaps";
+      category: "organic" | "inorganic";
     };
 
 export type ChemistryUnit = {
@@ -114,6 +121,13 @@ export const chemistryUnits: ChemistryUnit[] = [
             note: "アセチレンに水を付加すると、途中の不安定なエノール形を経てアセトアルデヒドになります。",
           },
         ],
+      },
+      {
+        id: "organic-reaction-map-studio",
+        title: "物質別・有機反応系統図スタジオ",
+        description: "黒枠の物質と条件付き矢印で反応を確認し、表示形式を変えて印刷したり、カード配置パズルで演習したりできます。",
+        kind: "reactionMaps",
+        category: "organic",
       },
       {
         id: "functional-groups",
@@ -217,6 +231,13 @@ export const chemistryUnits: ChemistryUnit[] = [
     level: "高校化学",
     keywords: ["無機", "気体", "沈殿", "両性", "酸化還元"],
     sections: [
+      {
+        id: "inorganic-reaction-map-studio",
+        title: "元素別・無機反応系統図スタジオ",
+        description: "硫黄・鉄・リン・カルシウム・窒素の反応を、試薬・触媒・条件とともに整理します。",
+        kind: "reactionMaps",
+        category: "inorganic",
+      },
       {
         id: "gas-generation",
         title: "代表的な気体の発生法",
