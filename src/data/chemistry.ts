@@ -20,6 +20,18 @@ export type FlowEntry = {
   note?: string;
 };
 
+export type ElectrolysisCase = {
+  title: string;
+  medium: string;
+  electrodes: string;
+  cathodeEquation: string;
+  cathodeProduct: string;
+  anodeEquation: string;
+  anodeProduct: string;
+  overallEquation?: string;
+  solutionChange: string;
+};
+
 export type StudySection =
   | {
       id: string;
@@ -42,6 +54,13 @@ export type StudySection =
       description?: string;
       kind: "flow";
       flows: FlowEntry[];
+    }
+  | {
+      id: string;
+      title: string;
+      description?: string;
+      kind: "electrolysis";
+      cases: ElectrolysisCase[];
     };
 
 export type ChemistryUnit = {
@@ -302,20 +321,212 @@ export const chemistryUnits: ChemistryUnit[] = [
     title: "電池と電気分解",
     shortTitle: "電池・電気分解",
     icon: "🔋",
-    summary: "正極・負極、電子の流れ、電極反応、電気分解の生成物を整理します。",
+    summary: "一次電池・二次電池・燃料電池の反応式、電子の流れ、起電力、電気量計算と電気分解を大学受験レベルで整理します。",
     level: "高校化学",
-    keywords: ["電池", "電気分解", "電極", "酸化", "還元"],
+    keywords: ["電池", "電気分解", "電極", "酸化", "還元", "起電力", "ファラデー定数", "一次電池", "二次電池", "燃料電池"],
     sections: [
       {
         id: "battery-table",
-        title: "代表的な電池",
+        title: "電池の基本と歴史的な電池",
         kind: "table",
-        columns: ["電池", "負極側", "正極側", "ポイント"],
+        columns: ["電池", "負極（酸化）", "正極（還元）", "入試ポイント"],
         rows: [
+          ["ボルタ電池", "Zn → Zn²⁺ + 2e⁻", "2H⁺ + 2e⁻ → H₂", "希硫酸中のZn板とCu板。Cu極のH₂による分極で起電力が低下"],
           ["ダニエル電池", "Zn → Zn²⁺ + 2e⁻", "Cu²⁺ + 2e⁻ → Cu", "電子はZn極からCu極へ"],
-          ["鉛蓄電池（放電）", "Pb + SO₄²⁻ → PbSO₄ + 2e⁻", "PbO₂が還元されPbSO₄へ", "放電で両極にPbSO₄が生成"],
-          ["水素燃料電池", "H₂が酸化", "O₂が還元", "全体として水が生成"],
-          ["アルカリマンガン乾電池", "Znが酸化", "MnO₂が還元", "電解質は強塩基性"],
+          ["ダニエル電池の塩橋", "陰イオンが負極槽へ", "陽イオンが正極槽へ", "電気的中性を保ち、溶液を直接混合せず回路を閉じる"],
+        ],
+      },
+      {
+        id: "primary-batteries",
+        title: "一次電池（充電せず使う電池）",
+        kind: "table",
+        columns: ["電池", "負極／正極活物質", "電解質", "特徴"],
+        rows: [
+          ["マンガン乾電池", "Zn ／ MnO₂", "NH₄Cl・ZnCl₂（ペースト）", "炭素棒は集電体。正極合剤のMnO₂が減極剤として働く"],
+          ["アルカリマンガン乾電池", "Zn ／ MnO₂", "KOH", "強塩基性。マンガン乾電池より大電流・長時間使用に向く"],
+          ["酸化銀電池", "Zn ／ Ag₂O", "KOHなど", "Zn + Ag₂O → ZnO + 2Ag。電圧が安定し、ボタン型に利用"],
+          ["空気亜鉛電池", "Zn ／ 空気中のO₂", "KOHなど", "正極活物質を外部から取り込むため高容量。補聴器などに利用"],
+        ],
+      },
+      {
+        id: "secondary-batteries",
+        title: "二次電池（充電できる電池）",
+        kind: "table",
+        columns: ["電池", "放電時の負極／正極", "電解質", "必須ポイント"],
+        rows: [
+          ["鉛蓄電池", "Pb ／ PbO₂", "H₂SO₄水溶液", "放電で両極にPbSO₄が生成し、H₂SO₄濃度と密度が低下。充電は逆反応"],
+          ["ニッケル・カドミウム電池", "Cd ／ NiO(OH)", "KOH", "アルカリ蓄電池。Cdの環境負荷が大きい"],
+          ["ニッケル水素電池", "水素吸蔵合金MH ／ NiO(OH)", "KOH", "全体として水素が負極から正極側へ移動。乾電池型充電池に利用"],
+          ["リチウムイオン電池", "黒鉛（Liを吸蔵）／ Li含有金属酸化物", "有機電解液", "Li⁺が両極間を移動。高電圧・高エネルギー密度。金属Li電極ではない"],
+        ],
+      },
+      {
+        id: "lead-battery-reactions",
+        title: "鉛蓄電池の反応式",
+        kind: "cards",
+        entries: [
+          {
+            title: "負極（放電時）",
+            body: "Pbが酸化されます。負極・正極の両方で硫酸イオンが消費されます。",
+            equation: "Pb + SO₄²⁻ → PbSO₄ + 2e⁻",
+          },
+          {
+            title: "正極（放電時）",
+            body: "PbO₂がH⁺と電子を受け取り、PbSO₄になります。",
+            equation: "PbO₂ + 4H⁺ + SO₄²⁻ + 2e⁻ → PbSO₄ + 2H₂O",
+          },
+          {
+            title: "全体反応",
+            body: "放電では右向き、充電では外部電源によって左向きに進みます。放電時には水が増え、硫酸濃度が下がります。",
+            equation: "Pb + PbO₂ + 2H₂SO₄ ⇄ 2PbSO₄ + 2H₂O",
+          },
+        ],
+      },
+      {
+        id: "fuel-cells",
+        title: "燃料電池",
+        kind: "table",
+        columns: ["型・条件", "負極", "正極", "全体・特徴"],
+        rows: [
+          ["酸性電解質型", "2H₂ → 4H⁺ + 4e⁻", "O₂ + 4H⁺ + 4e⁻ → 2H₂O", "2H₂ + O₂ → 2H₂O。燃料を外部から連続供給"],
+          ["アルカリ電解質型", "2H₂ + 4OH⁻ → 4H₂O + 4e⁻", "O₂ + 2H₂O + 4e⁻ → 4OH⁻", "全体反応は同じ。反応式は電解質に合わせて書く"],
+        ],
+      },
+      {
+        id: "battery-principles",
+        title: "入試で差がつく電池の原理",
+        kind: "cards",
+        entries: [
+          {
+            title: "正極・負極と酸化還元",
+            body: "放電する電池では、負極で酸化、正極で還元。電子は外部回路を負極→正極へ流れ、慣用電流は逆向きです。電気分解の陽極・陰極と符号を混同しないこと。",
+          },
+          {
+            title: "起電力",
+            body: "標準状態では、電池の起電力 E° = 正極の標準電極電位 − 負極の標準電極電位。より還元されやすい半反応を正極にします。起電力を大きくしても、直列でない限り電子の物質量比は反応式で決まります。",
+          },
+          {
+            title: "電気量と物質量",
+            body: "電気量 Q = It。電子の物質量 n(e⁻) = Q/F（F ≈ 9.65×10⁴ C/mol）。半反応式の電子係数から、電極の質量変化や気体量へ換算します。",
+            equation: "Q = It = n(e⁻)F",
+          },
+          {
+            title: "直列・並列",
+            body: "同じ電池を直列につなぐと電圧は加算され、並列につなぐと電圧は基本的に同じで取り出せる電気量が増えます。異なる起電力の電池の並列接続は扱いに注意します。",
+          },
+        ],
+      },
+      {
+        id: "electrolysis-workbench",
+        title: "条件別・電気分解シミュレーター",
+        description: "条件を切り替えて模式図を確認し、陰極式・陽極式・全体式を実際に書いてから答え合わせしましょう。",
+        kind: "electrolysis",
+        cases: [
+          {
+            title: "CuSO₄水溶液｜Pt",
+            medium: "硫酸銅(II)水溶液",
+            electrodes: "白金（不活性）／白金（不活性）",
+            cathodeEquation: "Cu²⁺ + 2e⁻ → Cu",
+            cathodeProduct: "Cuが析出",
+            anodeEquation: "2H₂O → O₂ + 4H⁺ + 4e⁻",
+            anodeProduct: "O₂が発生",
+            overallEquation: "2CuSO₄ + 2H₂O → 2Cu + O₂ + 2H₂SO₄",
+            solutionChange: "Cu²⁺が減少しH⁺が増えるため、青色が薄くなり酸性が強くなる。",
+          },
+          {
+            title: "CuSO₄水溶液｜Cu",
+            medium: "硫酸銅(II)水溶液",
+            electrodes: "銅／銅（活性電極）",
+            cathodeEquation: "Cu²⁺ + 2e⁻ → Cu",
+            cathodeProduct: "Cuが析出・陰極の質量増加",
+            anodeEquation: "Cu → Cu²⁺ + 2e⁻",
+            anodeProduct: "Cu陽極が溶解・質量減少",
+            overallEquation: "Cu（陽極）→ Cu（陰極）",
+            solutionChange: "理想的にはCu²⁺濃度と液色はほぼ一定。電解精錬・めっきの基本。",
+          },
+          {
+            title: "希NaCl水溶液｜Pt",
+            medium: "希薄な塩化ナトリウム水溶液",
+            electrodes: "白金などの不活性電極",
+            cathodeEquation: "2H₂O + 2e⁻ → H₂ + 2OH⁻",
+            cathodeProduct: "H₂が発生",
+            anodeEquation: "2H₂O → O₂ + 4H⁺ + 4e⁻",
+            anodeProduct: "主にO₂が発生",
+            overallEquation: "2H₂O → 2H₂ + O₂",
+            solutionChange: "希薄溶液では水の電気分解が優先。実際の境界は濃度や電極などに左右される。",
+          },
+          {
+            title: "濃NaCl水溶液｜Pt",
+            medium: "濃厚な塩化ナトリウム水溶液（食塩水）",
+            electrodes: "不活性電極",
+            cathodeEquation: "2H₂O + 2e⁻ → H₂ + 2OH⁻",
+            cathodeProduct: "H₂が発生",
+            anodeEquation: "2Cl⁻ → Cl₂ + 2e⁻",
+            anodeProduct: "Cl₂が発生",
+            overallEquation: "2NaCl + 2H₂O → 2NaOH + H₂ + Cl₂",
+            solutionChange: "隔膜を使うと陰極室にNaOHが得られる（イオン交換膜法）。",
+          },
+          {
+            title: "希H₂SO₄｜Pt",
+            medium: "希硫酸（水が溶媒）",
+            electrodes: "白金などの不活性電極",
+            cathodeEquation: "2H⁺ + 2e⁻ → H₂",
+            cathodeProduct: "H₂が発生",
+            anodeEquation: "2H₂O → O₂ + 4H⁺ + 4e⁻",
+            anodeProduct: "O₂が発生",
+            overallEquation: "2H₂O → 2H₂ + O₂",
+            solutionChange: "H₂:O₂ = 2:1（物質量比）。硫酸は実質的に電流を運び、全体では消費されない。",
+          },
+          {
+            title: "AgNO₃水溶液｜Pt",
+            medium: "硝酸銀水溶液",
+            electrodes: "白金などの不活性電極",
+            cathodeEquation: "Ag⁺ + e⁻ → Ag",
+            cathodeProduct: "Agが析出",
+            anodeEquation: "2H₂O → O₂ + 4H⁺ + 4e⁻",
+            anodeProduct: "O₂が発生",
+            overallEquation: "4AgNO₃ + 2H₂O → 4Ag + O₂ + 4HNO₃",
+            solutionChange: "Ag⁺が減少しHNO₃が生じるので酸性が強くなる。",
+          },
+          {
+            title: "溶融NaCl",
+            medium: "融解した塩化ナトリウム（水なし）",
+            electrodes: "不活性電極",
+            cathodeEquation: "Na⁺ + e⁻ → Na",
+            cathodeProduct: "金属Naが析出",
+            anodeEquation: "2Cl⁻ → Cl₂ + 2e⁻",
+            anodeProduct: "Cl₂が発生",
+            overallEquation: "2NaCl → 2Na + Cl₂",
+            solutionChange: "水が存在しないのでNa⁺が還元される。水溶液との違いが最重要。",
+          },
+          {
+            title: "溶融Al₂O₃",
+            medium: "氷晶石に溶かした酸化アルミニウム",
+            electrodes: "炭素陰極／炭素陽極",
+            cathodeEquation: "Al³⁺ + 3e⁻ → Al",
+            cathodeProduct: "溶融Alが得られる",
+            anodeEquation: "2O²⁻ + C → CO₂ + 4e⁻（代表式）",
+            anodeProduct: "主にCO₂が発生し炭素陽極を消費",
+            overallEquation: "2Al₂O₃ + 3C → 4Al + 3CO₂",
+            solutionChange: "ホール・エルー法。氷晶石で融点を下げ、炭素電極を用いる。",
+          },
+        ],
+      },
+      {
+        id: "electrolysis-pattern-table",
+        title: "電極反応を決める早見表",
+        description: "水溶液では溶媒の水も反応候補です。丸暗記せず、存在粒子と電極材料を先に確認します。",
+        kind: "table",
+        columns: ["場所", "存在粒子・条件", "優先する代表反応", "生成物"],
+        rows: [
+          ["陰極（還元）", "Ag⁺・Cu²⁺など還元されやすい金属イオン", "Mⁿ⁺ + ne⁻ → M", "金属が析出"],
+          ["陰極（還元）", "H⁺を含む酸性水溶液", "2H⁺ + 2e⁻ → H₂", "水素"],
+          ["陰極（還元）", "Na⁺・K⁺・Ca²⁺などを含む水溶液", "2H₂O + 2e⁻ → H₂ + 2OH⁻", "水素、陰極付近は塩基性"],
+          ["陰極（還元）", "Na⁺などを含む融解塩（無水）", "Mⁿ⁺ + ne⁻ → M", "金属が析出"],
+          ["陽極（酸化）", "Cu・Agなど反応する電極", "M → Mⁿ⁺ + ne⁻", "陽極が溶解"],
+          ["陽極（酸化）", "濃いCl⁻・Br⁻・I⁻、不活性電極", "2X⁻ → X₂ + 2e⁻", "ハロゲン"],
+          ["陽極（酸化）", "SO₄²⁻・NO₃⁻など、または希薄なCl⁻", "2H₂O → O₂ + 4H⁺ + 4e⁻", "酸素、陽極付近は酸性"],
+          ["陽極（酸化）", "O²⁻を含む融解塩", "2O²⁻ → O₂ + 4e⁻", "酸素（炭素極ならCO₂等になり得る）"],
         ],
       },
       {
@@ -406,6 +617,70 @@ export const chemistryUnits: ChemistryUnit[] = [
         answerIndex: 0,
         explanation: "水素と酸素の反応により、全体として水が生成します。",
         tags: ["燃料電池"],
+      },
+      {
+        id: "bat-7",
+        prompt: "ダニエル電池の放電中、塩橋中の陰イオンは主にどちらへ移動しますか。",
+        choices: ["Zn極側", "Cu極側", "外部回路", "移動しない"],
+        answerIndex: 0,
+        explanation: "Zn極側ではZn²⁺が増えるため、電気的中性を保つよう陰イオンがZn極側へ移動します。",
+        tags: ["ダニエル電池", "塩橋"],
+      },
+      {
+        id: "bat-8",
+        prompt: "鉛蓄電池を放電させたとき、電解液の硫酸濃度と密度はどうなりますか。",
+        choices: ["ともに増加", "濃度だけ増加", "密度だけ増加", "ともに低下"],
+        answerIndex: 3,
+        explanation: "放電ではH₂SO₄が消費され水が生成するので、硫酸濃度も電解液の密度も低下します。",
+        tags: ["鉛蓄電池"],
+      },
+      {
+        id: "bat-9",
+        prompt: "リチウムイオン電池の説明として適切なものはどれですか。",
+        choices: ["必ず金属Liを負極に使う", "Li⁺が両極間を移動する", "電解液は希硫酸である", "一次電池なので充電できない"],
+        answerIndex: 1,
+        explanation: "一般的なリチウムイオン電池では、Li⁺が黒鉛などの負極とLi含有金属酸化物の正極の間を移動します。",
+        tags: ["リチウムイオン電池", "二次電池"],
+      },
+      {
+        id: "bat-10",
+        prompt: "マンガン乾電池で、正極合剤に含まれ還元される主な物質はどれですか。",
+        choices: ["Zn", "MnO₂", "NH₄Cl", "炭素"],
+        answerIndex: 1,
+        explanation: "MnO₂が正極活物質です。炭素棒は主に電流を取り出す集電体として働きます。",
+        tags: ["マンガン乾電池", "一次電池"],
+      },
+      {
+        id: "bat-11",
+        prompt: "標準電極電位が負極で−0.76 V、正極で+0.34 Vの電池の標準起電力はいくらですか。",
+        choices: ["−1.10 V", "−0.42 V", "+0.42 V", "+1.10 V"],
+        answerIndex: 3,
+        explanation: "E° = E°(正極) − E°(負極) = 0.34 − (−0.76) = 1.10 Vです。",
+        tags: ["起電力", "標準電極電位"],
+      },
+      {
+        id: "bat-12",
+        prompt: "2.0 Aの電流を965秒間流したとき、移動した電子は何molですか。F = 9.65×10⁴ C/molとします。",
+        choices: ["0.010 mol", "0.020 mol", "0.050 mol", "0.20 mol"],
+        answerIndex: 1,
+        explanation: "Q = It = 2.0×965 = 1930 C。n(e⁻) = Q/F = 1930/(9.65×10⁴) = 0.020 molです。",
+        tags: ["ファラデー定数", "電気量"],
+      },
+      {
+        id: "bat-13",
+        prompt: "ボルタ電池で電流を流し続けると起電力が低下する主因は何ですか。",
+        choices: ["Zn極にCuが析出する", "Cu極をH₂が覆う", "硫酸が急に濃くなる", "塩橋が詰まる"],
+        answerIndex: 1,
+        explanation: "Cu極表面に生じたH₂が電極を覆う分極が起こります。酸化剤（減極剤）でH₂を除くと抑えられます。",
+        tags: ["ボルタ電池", "分極"],
+      },
+      {
+        id: "bat-14",
+        prompt: "同じ電池2個を直列につないだとき、1個の場合と比べてどうなりますか。",
+        choices: ["電圧は約2倍", "電圧は約半分", "電圧は同じで容量だけ2倍", "正極と負極がなくなる"],
+        answerIndex: 0,
+        explanation: "同方向に直列接続すると各電池の起電力が加算されます。並列接続では電圧は基本的に同じです。",
+        tags: ["直列接続", "起電力"],
       },
     ],
   },

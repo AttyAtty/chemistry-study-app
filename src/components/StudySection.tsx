@@ -1,4 +1,5 @@
 import type { StudySection as StudySectionType } from "@/data/chemistry";
+import { ElectrolysisWorkbench } from "@/components/ElectrolysisWorkbench";
 
 export function StudySection({ section }: { section: StudySectionType }) {
   return (
@@ -56,6 +57,8 @@ export function StudySection({ section }: { section: StudySectionType }) {
           ))}
         </div>
       )}
+
+      {section.kind === "electrolysis" && <ElectrolysisWorkbench cases={section.cases} />}
     </section>
   );
 }

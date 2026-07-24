@@ -161,6 +161,33 @@ tbody tr:last-child td { border-bottom: 0; }
 .flow-fragment { display: flex; align-items: center; gap: 10px; }
 .flow-node { padding: 10px 13px; border-radius: 12px; color: #153781; background: #edf3ff; font-weight: 800; }
 .flow-arrow { color: var(--accent); font-size: 24px; font-weight: 900; }
+.electrolysis-workbench { display: grid; gap: 16px; }
+.case-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 8px; }
+.case-tabs button { flex: 0 0 auto; border: 1px solid var(--line); border-radius: 999px; padding: 9px 13px; background: white; color: var(--muted); cursor: pointer; }
+.case-tabs button.active { border-color: var(--primary); background: var(--primary); color: white; }
+.electrolysis-case { overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: white; }
+.electrolysis-case > header { display: flex; flex-wrap: wrap; gap: 24px 48px; padding: 18px 22px; background: #f7f9fd; border-bottom: 1px solid var(--line); }
+.electrolysis-case > header div { display: grid; gap: 4px; }
+.electrolysis-case > header span { color: var(--muted); font-size: 12px; font-weight: 700; }
+.electrolysis-diagram { display: grid; grid-template-columns: minmax(130px,1fr) minmax(200px,1.5fr) minmax(130px,1fr); grid-template-areas: "power power power" "cathode solution anode"; align-items: end; gap: 14px; padding: 26px; background: linear-gradient(#fff 0 28%, #edf6ff 28%); }
+.power-source { grid-area: power; justify-self: center; display: grid; text-align: center; padding: 10px 22px; border: 2px solid #253b74; border-radius: 10px; background: white; box-shadow: 0 5px 0 #253b74; }
+.power-source span { margin-top: 3px; color: var(--muted); font-size: 11px; }
+.electrode { min-height: 180px; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 10px; border-top: 7px solid #3e4a61; background: rgba(255,255,255,.72); }
+.electrode.cathode { grid-area: cathode; border-color: #2457e6; }
+.electrode.anode { grid-area: anode; border-color: #e24747; }
+.electrode .pole { font-size: 17px; font-weight: 900; }
+.electrode .electron { color: var(--muted); font-size: 12px; text-align: center; }
+.electrode b { margin-top: auto; text-align: center; }
+.solution-vessel { grid-area: solution; min-height: 140px; display: grid; place-items: center; gap: 8px; padding: 20px 10px; border: solid #6aa6dd; border-width: 0 4px 4px; border-radius: 0 0 30px 30px; background: rgba(108,190,255,.22); text-align: center; }
+.solution-vessel span { color: #24508d; font-size: 12px; font-weight: 800; }
+.equation-practice { padding: 22px; border-top: 1px solid var(--line); }
+.equation-practice h3 { margin: 0 0 14px; }
+.equation-practice label { display: grid; grid-template-columns: 72px 1fr; align-items: center; gap: 10px; margin: 9px 0; color: var(--muted); font-size: 13px; font-weight: 800; }
+.equation-practice input { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; outline: none; }
+.equation-practice input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(36,87,230,.1); }
+.answer-toggle { margin-top: 8px; border: 0; border-radius: 10px; padding: 10px 15px; color: white; background: var(--primary); cursor: pointer; font-weight: 800; }
+.practice-answer { margin-top: 14px; padding: 14px 16px; border-radius: 12px; background: #f2f6ff; color: #193eaa; }
+.practice-answer p { margin: 5px 0; line-height: 1.65; }
 .bottom-cta { margin: 70px 0; padding: 34px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-radius: 24px; color: white; background: linear-gradient(135deg, #173984, #2457e6); }
 
 .page-intro { margin: 48px 0 28px; }
@@ -236,6 +263,9 @@ tbody tr:last-child td { border-bottom: 0; }
   .unit-hero { padding: 25px 20px; }
   .unit-hero h1 { align-items: flex-start; font-size: 35px; }
   .question-card, .result-card { padding: 22px 18px; }
+  .electrolysis-diagram { grid-template-columns: 1fr 1fr; grid-template-areas: "power power" "solution solution" "cathode anode"; padding: 18px 12px; }
+  .electrode { min-height: 140px; }
+  .equation-practice label { grid-template-columns: 1fr; gap: 5px; }
   .question-footer, .bottom-cta { align-items: stretch; flex-direction: column; }
   .progress-item { grid-template-columns: auto 1fr; }
   .progress-numbers { text-align: left; }
