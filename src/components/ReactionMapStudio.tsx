@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, type CSSProperties } from "react";
 import { reactionMaps, type ReactionMap, type ReactionNode, type ReactionStep } from "@/data/reactionMaps";
 import { AromaticStructure, isAromaticCompound } from "@/components/AromaticStructure";
 
@@ -20,6 +20,9 @@ type Point = { x: number; y: number };
 
 function Diagram({ map, variant, randomSeed = 0, editable = false }: { map: ReactionMap; variant: Variant; randomSeed?: number; editable?: boolean }) {
   const canvas = map.canvas ?? { width:1000, height:540 };
+  const landscape = canvas.width >= canvas.height;
+  const printScale = Math.min(1,(landscape?1040:700)/canvas.width,(landscape?700:1040)/canvas.height);
+  const canvasStyle = {width:canvas.width,height:canvas.height,"--map-print-scale":printScale} as CSSProperties;
   const graph = useMemo(() => {
     const nodeMap = new Map<string, ReactionNode>();
     const edges: Array<{ id: string; from: string; to: string; step: ReactionStep }> = [];
@@ -59,7 +62,7 @@ function Diagram({ map, variant, randomSeed = 0, editable = false }: { map: Reac
     const rect = boardRef.current.getBoundingClientRect();
     setPositions(current => ({ ...current, [id]: { x: Math.max(105,Math.min(canvas.width-105,clientX-rect.left)), y: Math.max(85,Math.min(canvas.height-85,clientY-rect.top)) } }));
   };
-  return <div className={`reaction-network ${editable ? "editing" : ""}`} style={{width:canvas.width,height:canvas.height}} ref={boardRef}>
+  return <div className={`reaction-network ${editable ? "editing" : ""}`} style={canvasStyle} ref={boardRef}>
     <svg className="reaction-edge-layer" viewBox={`0 0 ${canvas.width} ${canvas.height}`} preserveAspectRatio="none" aria-hidden="true">
       <defs><marker id={`arrow-${map.id}`} markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" /></marker></defs>
       {graph.edges.map(edge => { const a=positions[edge.from], b=positions[edge.to]; if(!a||!b)return null; const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len;const boundary=(node?:ReactionNode)=>{const hw=isAromaticCompound(node?.name??"")?98:88,hh=isAromaticCompound(node?.name??"")?82:45;return Math.min(Math.abs(ux)>0.001?hw/Math.abs(ux):Infinity,Math.abs(uy)>0.001?hh/Math.abs(uy):Infinity)+8;};const start=boundary(nodeById.get(edge.from)),end=boundary(nodeById.get(edge.to)); const sx=a.x+ux*start,sy=a.y+uy*start,ex=b.x-ux*end,ey=b.y-uy*end; return <line key={edge.id} x1={sx} y1={sy} x2={ex} y2={ey} markerEnd={`url(#arrow-${map.id})`} />; })}
@@ -73,6 +76,9 @@ function Diagram({ map, variant, randomSeed = 0, editable = false }: { map: Reac
 
 function Puzzle({ map }: { map: ReactionMap }) {
   const canvas = map.canvas ?? { width:1000, height:540 };
+  const landscape = canvas.width >= canvas.height;
+  const printScale = Math.min(1,(landscape?1040:700)/canvas.width,(landscape?700:1040)/canvas.height);
+  const canvasStyle = {width:canvas.width,height:canvas.height,"--map-print-scale":printScale} as CSSProperties;
   const graph = useMemo(() => {
     const nodes = new Map<string,ReactionNode>(); const edges: Array<{id:string;from:string;to:string;step:ReactionStep}>=[];
     map.paths.forEach((path,pi)=>path.nodes.forEach((node,ni)=>{const id=`${node.name}|${node.formula}`;nodes.set(id,node);if(path.steps[ni]&&path.nodes[ni+1])edges.push({id:`edge-${pi}-${ni}`,from:id,to:`${path.nodes[ni+1].name}|${path.nodes[ni+1].formula}`,step:path.steps[ni]});}));
@@ -124,7 +130,7 @@ function Puzzle({ map }: { map: ReactionMap }) {
 
   return <div className="reaction-puzzle network-puzzle">
     <p className="puzzle-help">下のカードを、薄い黒枠または矢印の上へドラッグしてください。カードを選んでから枠を押す方法でも置けます。</p>
-    <div className="puzzle-network" style={{width:canvas.width,height:canvas.height}}>
+    <div className="puzzle-network" style={canvasStyle}>
       <svg className="reaction-edge-layer" viewBox={`0 0 ${canvas.width} ${canvas.height}`} preserveAspectRatio="none"><defs><marker id={`puzzle-arrow-${map.id}`} markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z"/></marker></defs>{graph.edges.map(edge=>{const a=positions[edge.from],b=positions[edge.to];return <line key={edge.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y} markerEnd={`url(#puzzle-arrow-${map.id})`}/>;})}</svg>
       {graph.nodes.map(item=>{const slot=`node:${item.id}`,point=positions[item.id];return <button style={{left:point.x,top:point.y}} className={`puzzle-slot network-node substance-box ${checked?(placed[slot]===slot?"correct":"wrong"):""}`} onDragOver={e=>e.preventDefault()} onDrop={e=>dragged&&put(slot,dragged,e.timeStamp)} onClick={e=>dragged&&put(slot,dragged,e.timeStamp)} key={slot}>{placed[slot]?byId.get(placed[slot])?.text.split("\n").map(x=><span key={x}>{x}</span>):<span>物質名・化学式</span>}</button>;})}
       {graph.edges.map((edge,index)=>{const slot=`step:${edge.id}`,a=positions[edge.from],b=positions[edge.to];const offset=(index%2?18:-18);return <button style={{left:(a.x+b.x)/2,top:(a.y+b.y)/2+offset}} className={`puzzle-slot network-edge-label ${checked?(placed[slot]===slot?"correct":"wrong"):""}`} onDragOver={e=>e.preventDefault()} onDrop={e=>dragged&&put(slot,dragged,e.timeStamp)} onClick={e=>dragged&&put(slot,dragged,e.timeStamp)} key={slot}>{placed[slot]?byId.get(placed[slot])?.text:"反応・条件"}</button>;})}
@@ -145,6 +151,8 @@ export function ReactionMapStudio({ category }: { category: "organic" | "inorgan
   const [editable, setEditable] = useState(false);
   const [randomSeed, setRandomSeed] = useState(1);
   const map = maps.find(item => item.id === mapId) ?? maps[0];
+  const mapCanvas = map.canvas ?? {width:1000,height:540};
+  const printOrientation = mapCanvas.width >= mapCanvas.height ? "map-landscape" : "map-portrait";
   return <div className="reaction-map-studio">
     <div className="map-toolbar no-print">
       <label>系統図<select value={map.id} onChange={e=>{setMapId(e.target.value);setPuzzle(false);setEditable(false);}}>{maps.map(item=><option value={item.id} key={item.id}>{item.title}</option>)}</select></label>
@@ -153,7 +161,7 @@ export function ReactionMapStudio({ category }: { category: "organic" | "inorgan
       <button className={editable&&!puzzle?"layout-button active":"layout-button"} onClick={()=>{setPuzzle(false);setEditable(value=>!value);}}>配置編集</button>
       <button className="print-map-button" onClick={()=>window.print()}>この系統図を印刷</button>
     </div>
-    <div className="reaction-map-print-area">
+    <div className={`reaction-map-print-area ${printOrientation}`}>
       <header className="map-title"><p>{category === "organic" ? "有機化学" : "無機化学"} 反応系統図</p><h3>{map.title}</h3><span>{puzzle ? "パズル" : variants.find(([v])=>v===variant)?.[1]}</span></header>
       {puzzle ? <Puzzle key={map.id} map={map}/> : <Diagram key={map.id} map={map} variant={variant} randomSeed={randomSeed} editable={editable}/>} 
     </div>

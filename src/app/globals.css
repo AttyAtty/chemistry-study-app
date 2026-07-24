@@ -396,10 +396,11 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
   .worksheet-item p { margin: 8px 0; }
   .reaction-map-print-area, .reaction-map-print-area * { visibility: visible; }
   .reaction-map-print-area { position: absolute; inset: 0; width: 100%; padding: 8mm; border: 0; border-radius: 0; color: black; }
-  .reaction-map-print-area { page: reaction-map; }
+  .reaction-map-print-area.map-landscape { page: reaction-map-landscape; }
+  .reaction-map-print-area.map-portrait { page: reaction-map-portrait; }
   .reaction-map-print-area .reaction-path-list { overflow: visible; gap: 18px; }
   .reaction-map-print-area .reaction-path { min-width: 0; transform-origin: left center; }
-  .reaction-map-print-area .reaction-network { width: 1000px; height: 540px; background: none; transform: scale(.72); transform-origin: top left; }
+  .reaction-map-print-area .reaction-network, .reaction-map-print-area .puzzle-network { background: none; transform: scale(var(--map-print-scale,1)); transform-origin: top left; }
   .reaction-map-print-area .network-node { width: 34mm; min-height: 18mm; }
   .reaction-map-print-area .network-node.aromatic-node { width: 40mm; min-height: 35mm; }
   .reaction-map-print-area .aromatic-structure { width: 27mm; height: 19mm; }
@@ -409,6 +410,7 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
   .reaction-map-print-area .chemical-color { color: black !important; }
   .no-print, .token-bank, .puzzle-actions, .puzzle-help { display: none !important; }
   @page { size: A4 portrait; margin: 8mm; }
-  @page reaction-map { size: A4 landscape; margin: 8mm; }
+  @page reaction-map-landscape { size: A4 landscape; margin: 8mm; }
+  @page reaction-map-portrait { size: A4 portrait; margin: 8mm; }
   @page worksheet { size: A4 portrait; margin: 8mm; }
 }
