@@ -19,6 +19,7 @@ const hash = (value: string) => [...value].reduce((sum, char) => (sum * 31 + cha
 type Point = { x: number; y: number };
 
 function Diagram({ map, variant, randomSeed = 0, editable = false }: { map: ReactionMap; variant: Variant; randomSeed?: number; editable?: boolean }) {
+  const canvas = map.canvas ?? { width:1000, height:540 };
   const graph = useMemo(() => {
     const nodeMap = new Map<string, ReactionNode>();
     const edges: Array<{ id: string; from: string; to: string; step: ReactionStep }> = [];
@@ -33,20 +34,21 @@ function Diagram({ map, variant, randomSeed = 0, editable = false }: { map: Reac
     graph.edges.forEach(edge => { degree.set(edge.from,(degree.get(edge.from)??0)+1); degree.set(edge.to,(degree.get(edge.to)??0)+1); });
     const center = [...graph.nodes].sort((a,b)=>(degree.get(b.id)??0)-(degree.get(a.id)??0))[0]?.id;
     const points: Record<string,Point> = {}; const others = graph.nodes.filter(item=>item.id!==center);
-    if (center) points[center] = { x: 500, y: 270 };
+    if (center) points[center] = { x: canvas.width/2, y: canvas.height/2 };
     others.forEach((item,index) => {
       const angle = (-Math.PI / 2) + (Math.PI * 2 * index / Math.max(others.length,1));
       const radiusX = index % 2 === 0 ? 360 : 285; const radiusY = index % 2 === 0 ? 205 : 155;
-      points[item.id] = { x: 500 + Math.cos(angle)*radiusX, y: 270 + Math.sin(angle)*radiusY };
+      points[item.id] = { x: canvas.width/2 + Math.cos(angle)*radiusX, y: canvas.height/2 + Math.sin(angle)*radiusY };
     });
     if (map.positions) graph.nodes.forEach(item => { const custom=map.positions?.[item.node.name]; if(custom) points[item.id]=custom; });
     return points;
-  }, [graph,map]);
+  }, [canvas.height,canvas.width,graph,map]);
   const [positions, setPositions] = useState(initial);
   const [activeBlank, setActiveBlank] = useState<{ id:string; kind:"node"|"step"; correct:string } | null>(null);
   const [blankResults, setBlankResults] = useState<Record<string,{ correct:boolean; chosen:string }>>({});
   const boardRef = useRef<HTMLDivElement>(null);
   const hidden = (key: string) => variant === "random" && hash(`${key}-${randomSeed}`) % 3 === 0;
+  const nodeById = new Map(graph.nodes.map(item=>[item.id,item.node]));
   const choices = activeBlank ? [...new Set([
     activeBlank.correct,
     ...(activeBlank.kind === "node" ? graph.nodes.map(item=>nodeText(item.node)) : graph.edges.map(edge=>stepText(edge.step))),
@@ -55,12 +57,12 @@ function Diagram({ map, variant, randomSeed = 0, editable = false }: { map: Reac
   const moveNode = (id: string, clientX: number, clientY: number) => {
     if (!editable || !boardRef.current) return;
     const rect = boardRef.current.getBoundingClientRect();
-    setPositions(current => ({ ...current, [id]: { x: Math.max(85,Math.min(915,clientX-rect.left)), y: Math.max(48,Math.min(492,clientY-rect.top)) } }));
+    setPositions(current => ({ ...current, [id]: { x: Math.max(105,Math.min(canvas.width-105,clientX-rect.left)), y: Math.max(85,Math.min(canvas.height-85,clientY-rect.top)) } }));
   };
-  return <div className={`reaction-network ${editable ? "editing" : ""}`} ref={boardRef}>
-    <svg className="reaction-edge-layer" viewBox="0 0 1000 540" preserveAspectRatio="none" aria-hidden="true">
+  return <div className={`reaction-network ${editable ? "editing" : ""}`} style={{width:canvas.width,height:canvas.height}} ref={boardRef}>
+    <svg className="reaction-edge-layer" viewBox={`0 0 ${canvas.width} ${canvas.height}`} preserveAspectRatio="none" aria-hidden="true">
       <defs><marker id={`arrow-${map.id}`} markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" /></marker></defs>
-      {graph.edges.map(edge => { const a=positions[edge.from], b=positions[edge.to]; if(!a||!b)return null; const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1; const sx=a.x+dx/len*82,sy=a.y+dy/len*38,ex=b.x-dx/len*88,ey=b.y-dy/len*42; return <line key={edge.id} x1={sx} y1={sy} x2={ex} y2={ey} markerEnd={`url(#arrow-${map.id})`} />; })}
+      {graph.edges.map(edge => { const a=positions[edge.from], b=positions[edge.to]; if(!a||!b)return null; const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len;const boundary=(node?:ReactionNode)=>{const hw=isAromaticCompound(node?.name??"")?98:88,hh=isAromaticCompound(node?.name??"")?82:45;return Math.min(Math.abs(ux)>0.001?hw/Math.abs(ux):Infinity,Math.abs(uy)>0.001?hh/Math.abs(uy):Infinity)+8;};const start=boundary(nodeById.get(edge.from)),end=boundary(nodeById.get(edge.to)); const sx=a.x+ux*start,sy=a.y+uy*start,ex=b.x-ux*end,ey=b.y-uy*end; return <line key={edge.id} x1={sx} y1={sy} x2={ex} y2={ey} markerEnd={`url(#arrow-${map.id})`} />; })}
     </svg>
     {graph.edges.map(edge => { const a=positions[edge.from],b=positions[edge.to];if(!a||!b)return null;const blank=variant==="no-reactions"||variant==="names"||hidden(edge.id);const solved=blankResults[edge.id]?.correct;const hide=blank&&!solved; return <div role={hide&&variant==="random"?"button":undefined} tabIndex={hide&&variant==="random"?0:undefined} onClick={()=>hide&&variant==="random"&&setActiveBlank({id:edge.id,kind:"step",correct:stepText(edge.step)})} className={`network-edge-label ${edge.step.important?"important":""} ${hide?"blank-label clickable-blank":""} ${blankResults[edge.id]?(blankResults[edge.id].correct?"blank-correct":"blank-wrong"):""}`} style={{left:`${(a.x+b.x)/2}px`,top:`${(a.y+b.y)/2}px`}} key={edge.id}>{hide ? "反応・条件" : <><b>{edge.step.label}</b>{edge.step.condition&&<small>{edge.step.condition}</small>}</>}</div>; })}
     {graph.nodes.map(({id,node}) => { const point=positions[id];const resultKey=`node-${id}`;const blank=variant==="no-substances"||hidden(resultKey);const solved=blankResults[resultKey]?.correct;const hide=blank&&!solved; const aromatic=isAromaticCompound(node.name); return <div role={hide&&variant==="random"?"button":undefined} tabIndex={hide&&variant==="random"?0:undefined} onClick={()=>hide&&variant==="random"&&setActiveBlank({id:resultKey,kind:"node",correct:nodeText(node)})} draggable={editable} onDragEnd={e=>moveNode(id,e.clientX,e.clientY)} className={`network-node substance-box ${aromatic?"aromatic-node":""} ${hide?"blank clickable-blank":""} ${blankResults[resultKey]?(blankResults[resultKey].correct?"blank-correct":"blank-wrong"):""}`} style={{left:point.x,top:point.y}} key={id}>{!hide&&<><b>{node.name}</b>{variant!=="names"&&<><span>{node.formula}</span><AromaticStructure name={node.name}/>{node.appearance&&<em className="appearance-badge" style={{color:node.appearanceColor,borderColor:node.appearanceColor}}>● {node.appearance}</em>}</>}</>}</div>; })}
@@ -70,6 +72,7 @@ function Diagram({ map, variant, randomSeed = 0, editable = false }: { map: Reac
 }
 
 function Puzzle({ map }: { map: ReactionMap }) {
+  const canvas = map.canvas ?? { width:1000, height:540 };
   const graph = useMemo(() => {
     const nodes = new Map<string,ReactionNode>(); const edges: Array<{id:string;from:string;to:string;step:ReactionStep}>=[];
     map.paths.forEach((path,pi)=>path.nodes.forEach((node,ni)=>{const id=`${node.name}|${node.formula}`;nodes.set(id,node);if(path.steps[ni]&&path.nodes[ni+1])edges.push({id:`edge-${pi}-${ni}`,from:id,to:`${path.nodes[ni+1].name}|${path.nodes[ni+1].formula}`,step:path.steps[ni]});}));
@@ -77,8 +80,8 @@ function Puzzle({ map }: { map: ReactionMap }) {
   },[map]);
   const positions = useMemo(()=>{
     const result:Record<string,Point>={}; const count=graph.nodes.length;
-    graph.nodes.forEach((item,index)=>{const custom=map.positions?.[item.node.name];const angle=-Math.PI/2+Math.PI*2*index/Math.max(count,1);result[item.id]=custom??{x:500+Math.cos(angle)*360,y:270+Math.sin(angle)*205};});return result;
-  },[graph,map]);
+    graph.nodes.forEach((item,index)=>{const custom=map.positions?.[item.node.name];const angle=-Math.PI/2+Math.PI*2*index/Math.max(count,1);result[item.id]=custom??{x:canvas.width/2+Math.cos(angle)*360,y:canvas.height/2+Math.sin(angle)*205};});return result;
+  },[canvas.height,canvas.width,graph,map]);
   const tokens = useMemo<Token[]>(() => [
     ...graph.nodes.map(item=>({id:`node:${item.id}`,kind:"node" as const,text:nodeText(item.node)})),
     ...graph.edges.map(edge=>({id:`step:${edge.id}`,kind:"step" as const,text:stepText(edge.step)})),
@@ -121,8 +124,8 @@ function Puzzle({ map }: { map: ReactionMap }) {
 
   return <div className="reaction-puzzle network-puzzle">
     <p className="puzzle-help">下のカードを、薄い黒枠または矢印の上へドラッグしてください。カードを選んでから枠を押す方法でも置けます。</p>
-    <div className="puzzle-network">
-      <svg className="reaction-edge-layer" viewBox="0 0 1000 540" preserveAspectRatio="none"><defs><marker id={`puzzle-arrow-${map.id}`} markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z"/></marker></defs>{graph.edges.map(edge=>{const a=positions[edge.from],b=positions[edge.to];return <line key={edge.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y} markerEnd={`url(#puzzle-arrow-${map.id})`}/>;})}</svg>
+    <div className="puzzle-network" style={{width:canvas.width,height:canvas.height}}>
+      <svg className="reaction-edge-layer" viewBox={`0 0 ${canvas.width} ${canvas.height}`} preserveAspectRatio="none"><defs><marker id={`puzzle-arrow-${map.id}`} markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z"/></marker></defs>{graph.edges.map(edge=>{const a=positions[edge.from],b=positions[edge.to];return <line key={edge.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y} markerEnd={`url(#puzzle-arrow-${map.id})`}/>;})}</svg>
       {graph.nodes.map(item=>{const slot=`node:${item.id}`,point=positions[item.id];return <button style={{left:point.x,top:point.y}} className={`puzzle-slot network-node substance-box ${checked?(placed[slot]===slot?"correct":"wrong"):""}`} onDragOver={e=>e.preventDefault()} onDrop={e=>dragged&&put(slot,dragged,e.timeStamp)} onClick={e=>dragged&&put(slot,dragged,e.timeStamp)} key={slot}>{placed[slot]?byId.get(placed[slot])?.text.split("\n").map(x=><span key={x}>{x}</span>):<span>物質名・化学式</span>}</button>;})}
       {graph.edges.map((edge,index)=>{const slot=`step:${edge.id}`,a=positions[edge.from],b=positions[edge.to];const offset=(index%2?18:-18);return <button style={{left:(a.x+b.x)/2,top:(a.y+b.y)/2+offset}} className={`puzzle-slot network-edge-label ${checked?(placed[slot]===slot?"correct":"wrong"):""}`} onDragOver={e=>e.preventDefault()} onDrop={e=>dragged&&put(slot,dragged,e.timeStamp)} onClick={e=>dragged&&put(slot,dragged,e.timeStamp)} key={slot}>{placed[slot]?byId.get(placed[slot])?.text:"反応・条件"}</button>;})}
     </div>
