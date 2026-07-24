@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState, type CSSProperties } from "react";
 import { reactionMaps, type ReactionMap, type ReactionNode, type ReactionStep } from "@/data/reactionMaps";
 import { AromaticStructure, isAromaticCompound } from "@/components/AromaticStructure";
+import { computeBoundingBox, computeLayout, computeScaleToFitA4, getBestPageOrientation, type LayoutNode } from "@/lib/reactionLayout";
 
 type Variant = "full" | "no-substances" | "no-reactions" | "names" | "random";
 type Token = { id: string; kind: "node" | "step"; text: string };
@@ -16,36 +17,28 @@ const nodeText = (node: ReactionNode) => `${node.name}\n${node.formula}${node.ap
 const stepText = (step: ReactionStep) => `${step.label}${step.condition ? `｜${step.condition}` : ""}`;
 const hash = (value: string) => [...value].reduce((sum, char) => (sum * 31 + char.charCodeAt(0)) >>> 0, 7);
 
-type Point = { x: number; y: number };
+function buildGraph(map:ReactionMap) {
+  const nodeMap=new Map<string,ReactionNode>();const edges:Array<{id:string;from:string;to:string;step:ReactionStep}>=[];
+  map.paths.forEach((path,pi)=>path.nodes.forEach((node,ni)=>{const id=`${node.name}|${node.formula}`;nodeMap.set(id,node);if(path.steps[ni]&&path.nodes[ni+1])edges.push({id:`edge-${pi}-${ni}`,from:id,to:`${path.nodes[ni+1].name}|${path.nodes[ni+1].formula}`,step:path.steps[ni]});}));
+  return {nodes:[...nodeMap.entries()].map(([id,node])=>({id,node})),edges};
+}
 
-function Diagram({ map, variant, randomSeed = 0, editable = false }: { map: ReactionMap; variant: Variant; randomSeed?: number; editable?: boolean }) {
+function layoutGraph(map:ReactionMap,graph:ReturnType<typeof buildGraph>) {
+  const canvas=map.canvas??{width:1000,height:540};const degree=new Map(graph.nodes.map(item=>[item.id,0]));
+  graph.edges.forEach(edge=>{degree.set(edge.from,(degree.get(edge.from)??0)+1);degree.set(edge.to,(degree.get(edge.to)??0)+1);});
+  const centerId=graph.nodes.find(item=>item.node.name===map.centerNode)?.id??[...graph.nodes].sort((a,b)=>(degree.get(b.id)??0)-(degree.get(a.id)??0))[0]?.id;
+  const layoutNodes:LayoutNode[]=graph.nodes.map(item=>({id:item.id,width:isAromaticCompound(item.node.name)?196:176,height:isAromaticCompound(item.node.name)?164:90,zone:item.id===centerId?"center":map.zones?.[item.node.name]}));
+  const positions=computeLayout(layoutNodes,canvas.width,canvas.height);if(centerId)positions[centerId]={x:canvas.width/2,y:canvas.height/2};
+  return {canvas,layoutNodes,positions,bbox:computeBoundingBox(layoutNodes,positions)};
+}
+
+type PrintConfig = { orientation:"portrait"|"landscape"; scale:number; rotate:boolean; offsetX:number; offsetY:number };
+
+function Diagram({ map, variant, randomSeed = 0, editable = false, printConfig }: { map: ReactionMap; variant: Variant; randomSeed?: number; editable?: boolean; printConfig:PrintConfig }) {
   const canvas = map.canvas ?? { width:1000, height:540 };
-  const landscape = canvas.width >= canvas.height;
-  const printScale = Math.min(1,(landscape?1040:700)/canvas.width,(landscape?700:1040)/canvas.height);
-  const canvasStyle = {width:canvas.width,height:canvas.height,"--map-print-scale":printScale} as CSSProperties;
-  const graph = useMemo(() => {
-    const nodeMap = new Map<string, ReactionNode>();
-    const edges: Array<{ id: string; from: string; to: string; step: ReactionStep }> = [];
-    map.paths.forEach((path, pi) => path.nodes.forEach((node, ni) => {
-      const key = `${node.name}|${node.formula}`; nodeMap.set(key, node);
-      if (path.steps[ni] && path.nodes[ni + 1]) edges.push({ id: `e-${pi}-${ni}`, from: key, to: `${path.nodes[ni + 1].name}|${path.nodes[ni + 1].formula}`, step: path.steps[ni] });
-    }));
-    return { nodes: [...nodeMap.entries()].map(([id,node]) => ({ id,node })), edges };
-  }, [map]);
-  const initial = useMemo(() => {
-    const degree = new Map(graph.nodes.map(item => [item.id, 0]));
-    graph.edges.forEach(edge => { degree.set(edge.from,(degree.get(edge.from)??0)+1); degree.set(edge.to,(degree.get(edge.to)??0)+1); });
-    const center = [...graph.nodes].sort((a,b)=>(degree.get(b.id)??0)-(degree.get(a.id)??0))[0]?.id;
-    const points: Record<string,Point> = {}; const others = graph.nodes.filter(item=>item.id!==center);
-    if (center) points[center] = { x: canvas.width/2, y: canvas.height/2 };
-    others.forEach((item,index) => {
-      const angle = (-Math.PI / 2) + (Math.PI * 2 * index / Math.max(others.length,1));
-      const radiusX = index % 2 === 0 ? 360 : 285; const radiusY = index % 2 === 0 ? 205 : 155;
-      points[item.id] = { x: canvas.width/2 + Math.cos(angle)*radiusX, y: canvas.height/2 + Math.sin(angle)*radiusY };
-    });
-    if (map.positions) graph.nodes.forEach(item => { const custom=map.positions?.[item.node.name]; if(custom) points[item.id]=custom; });
-    return points;
-  }, [canvas.height,canvas.width,graph,map]);
+  const canvasStyle = {width:canvas.width,height:canvas.height,"--map-print-scale":printConfig.scale,"--map-print-x":`${printConfig.offsetX}px`,"--map-print-y":`${printConfig.offsetY}px`} as CSSProperties;
+  const graph = useMemo(() => buildGraph(map),[map]);
+  const initial = useMemo(() => layoutGraph(map,graph).positions,[graph,map]);
   const [positions, setPositions] = useState(initial);
   const [activeBlank, setActiveBlank] = useState<{ id:string; kind:"node"|"step"; correct:string } | null>(null);
   const [blankResults, setBlankResults] = useState<Record<string,{ correct:boolean; chosen:string }>>({});
@@ -67,27 +60,18 @@ function Diagram({ map, variant, randomSeed = 0, editable = false }: { map: Reac
       <defs><marker id={`arrow-${map.id}`} markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" /></marker></defs>
       {graph.edges.map(edge => { const a=positions[edge.from], b=positions[edge.to]; if(!a||!b)return null; const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len;const boundary=(node?:ReactionNode)=>{const hw=isAromaticCompound(node?.name??"")?98:88,hh=isAromaticCompound(node?.name??"")?82:45;return Math.min(Math.abs(ux)>0.001?hw/Math.abs(ux):Infinity,Math.abs(uy)>0.001?hh/Math.abs(uy):Infinity)+8;};const start=boundary(nodeById.get(edge.from)),end=boundary(nodeById.get(edge.to)); const sx=a.x+ux*start,sy=a.y+uy*start,ex=b.x-ux*end,ey=b.y-uy*end; return <line key={edge.id} x1={sx} y1={sy} x2={ex} y2={ey} markerEnd={`url(#arrow-${map.id})`} />; })}
     </svg>
-    {graph.edges.map(edge => { const a=positions[edge.from],b=positions[edge.to];if(!a||!b)return null;const blank=variant==="no-reactions"||variant==="names"||hidden(edge.id);const solved=blankResults[edge.id]?.correct;const hide=blank&&!solved; return <div role={hide&&variant==="random"?"button":undefined} tabIndex={hide&&variant==="random"?0:undefined} onClick={()=>hide&&variant==="random"&&setActiveBlank({id:edge.id,kind:"step",correct:stepText(edge.step)})} className={`network-edge-label ${edge.step.important?"important":""} ${hide?"blank-label clickable-blank":""} ${blankResults[edge.id]?(blankResults[edge.id].correct?"blank-correct":"blank-wrong"):""}`} style={{left:`${(a.x+b.x)/2}px`,top:`${(a.y+b.y)/2}px`}} key={edge.id}>{hide ? "反応・条件" : <><b>{edge.step.label}</b>{edge.step.condition&&<small>{edge.step.condition}</small>}</>}</div>; })}
+    {graph.edges.map((edge,index) => { const a=positions[edge.from],b=positions[edge.to];if(!a||!b)return null;const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1,side=index%2?1:-1,distance=24+(index%3)*9,labelX=(a.x+b.x)/2-dy/len*distance*side,labelY=(a.y+b.y)/2+dx/len*distance*side;const blank=variant==="no-reactions"||variant==="names"||hidden(edge.id);const solved=blankResults[edge.id]?.correct;const hide=blank&&!solved; return <div role={hide&&variant==="random"?"button":undefined} tabIndex={hide&&variant==="random"?0:undefined} onClick={()=>hide&&variant==="random"&&setActiveBlank({id:edge.id,kind:"step",correct:stepText(edge.step)})} className={`network-edge-label ${edge.step.important?"important":""} ${hide?"blank-label clickable-blank":""} ${blankResults[edge.id]?(blankResults[edge.id].correct?"blank-correct":"blank-wrong"):""}`} style={{left:labelX,top:labelY}} key={edge.id}>{hide ? "反応・条件" : <><b>{edge.step.label}</b>{edge.step.condition&&<small>{edge.step.condition}</small>}</>}</div>; })}
     {graph.nodes.map(({id,node}) => { const point=positions[id];const resultKey=`node-${id}`;const blank=variant==="no-substances"||hidden(resultKey);const solved=blankResults[resultKey]?.correct;const hide=blank&&!solved; const aromatic=isAromaticCompound(node.name); return <div role={hide&&variant==="random"?"button":undefined} tabIndex={hide&&variant==="random"?0:undefined} onClick={()=>hide&&variant==="random"&&setActiveBlank({id:resultKey,kind:"node",correct:nodeText(node)})} draggable={editable} onDragEnd={e=>moveNode(id,e.clientX,e.clientY)} className={`network-node substance-box ${aromatic?"aromatic-node":""} ${hide?"blank clickable-blank":""} ${blankResults[resultKey]?(blankResults[resultKey].correct?"blank-correct":"blank-wrong"):""}`} style={{left:point.x,top:point.y}} key={id}>{!hide&&<><b>{node.name}</b>{variant!=="names"&&<><span>{node.formula}</span><AromaticStructure name={node.name}/>{node.appearance&&<em className="appearance-badge" style={{color:node.appearanceColor,borderColor:node.appearanceColor}}>● {node.appearance}</em>}</>}</>}</div>; })}
     {activeBlank && <div className="blank-choice-panel no-print"><b>空欄に入るものを選択</b><div>{choices.map(choice=><button onClick={()=>{const correct=choice===activeBlank.correct;setBlankResults(current=>({...current,[activeBlank.id]:{correct,chosen:choice}}));if(correct)setActiveBlank(null);}} key={choice}>{choice}</button>)}</div>{blankResults[activeBlank.id]&&!blankResults[activeBlank.id].correct&&<p><strong>不正解</strong>　正答：{activeBlank.correct}<br/><small>{activeBlank.kind==="node"?"物質名と化学式を、つながる反応から確認しましょう。":"反応名だけでなく、試薬・触媒・温度条件までセットで確認しましょう。"}</small></p>}<button className="close-panel" onClick={()=>setActiveBlank(null)}>閉じる</button></div>}
     {editable && <button className="reset-layout no-print" onClick={()=>setPositions(initial)}>配置を元に戻す</button>}
   </div>;
 }
 
-function Puzzle({ map }: { map: ReactionMap }) {
+function Puzzle({ map, printConfig }: { map: ReactionMap; printConfig:PrintConfig }) {
   const canvas = map.canvas ?? { width:1000, height:540 };
-  const landscape = canvas.width >= canvas.height;
-  const printScale = Math.min(1,(landscape?1040:700)/canvas.width,(landscape?700:1040)/canvas.height);
-  const canvasStyle = {width:canvas.width,height:canvas.height,"--map-print-scale":printScale} as CSSProperties;
-  const graph = useMemo(() => {
-    const nodes = new Map<string,ReactionNode>(); const edges: Array<{id:string;from:string;to:string;step:ReactionStep}>=[];
-    map.paths.forEach((path,pi)=>path.nodes.forEach((node,ni)=>{const id=`${node.name}|${node.formula}`;nodes.set(id,node);if(path.steps[ni]&&path.nodes[ni+1])edges.push({id:`edge-${pi}-${ni}`,from:id,to:`${path.nodes[ni+1].name}|${path.nodes[ni+1].formula}`,step:path.steps[ni]});}));
-    return {nodes:[...nodes.entries()].map(([id,node])=>({id,node})),edges};
-  },[map]);
-  const positions = useMemo(()=>{
-    const result:Record<string,Point>={}; const count=graph.nodes.length;
-    graph.nodes.forEach((item,index)=>{const custom=map.positions?.[item.node.name];const angle=-Math.PI/2+Math.PI*2*index/Math.max(count,1);result[item.id]=custom??{x:canvas.width/2+Math.cos(angle)*360,y:canvas.height/2+Math.sin(angle)*205};});return result;
-  },[canvas.height,canvas.width,graph,map]);
+  const canvasStyle = {width:canvas.width,height:canvas.height,"--map-print-scale":printConfig.scale,"--map-print-x":`${printConfig.offsetX}px`,"--map-print-y":`${printConfig.offsetY}px`} as CSSProperties;
+  const graph = useMemo(()=>buildGraph(map),[map]);
+  const positions = useMemo(()=>layoutGraph(map,graph).positions,[graph,map]);
   const tokens = useMemo<Token[]>(() => [
     ...graph.nodes.map(item=>({id:`node:${item.id}`,kind:"node" as const,text:nodeText(item.node)})),
     ...graph.edges.map(edge=>({id:`step:${edge.id}`,kind:"step" as const,text:stepText(edge.step)})),
@@ -150,20 +134,31 @@ export function ReactionMapStudio({ category }: { category: "organic" | "inorgan
   const [puzzle, setPuzzle] = useState(false);
   const [editable, setEditable] = useState(false);
   const [randomSeed, setRandomSeed] = useState(1);
+  const [printDirection, setPrintDirection] = useState<"auto"|"portrait"|"landscape"|"rotate">("auto");
+  const [printSizing, setPrintSizing] = useState<"fit"|"actual">("fit");
   const map = maps.find(item => item.id === mapId) ?? maps[0];
-  const mapCanvas = map.canvas ?? {width:1000,height:540};
-  const printOrientation = mapCanvas.width >= mapCanvas.height ? "map-landscape" : "map-portrait";
+  const printLayout = layoutGraph(map,buildGraph(map));
+  const bestOrientation=getBestPageOrientation(printLayout.bbox),rotate=printDirection==="rotate";
+  const orientation=printDirection==="auto"?bestOrientation:printDirection==="landscape"?"landscape":"portrait";
+  const scaleBox=rotate?{width:printLayout.bbox.height,height:printLayout.bbox.width}:printLayout.bbox;
+  const scale=computeScaleToFitA4(scaleBox,orientation,printSizing==="fit"),safe=orientation==="landscape"?{width:1040,height:700}:{width:700,height:1040};
+  const offsetX=rotate?(safe.width-printLayout.bbox.height*scale)/2+printLayout.bbox.maxY*scale:(safe.width-printLayout.bbox.width*scale)/2-printLayout.bbox.minX*scale;
+  const offsetY=rotate?(safe.height-printLayout.bbox.width*scale)/2-printLayout.bbox.minX*scale:(safe.height-printLayout.bbox.height*scale)/2-printLayout.bbox.minY*scale;
+  const printConfig:PrintConfig={orientation,rotate,scale,offsetX,offsetY};
+  const printOrientation = orientation==="landscape" ? "map-landscape" : "map-portrait";
   return <div className="reaction-map-studio">
     <div className="map-toolbar no-print">
       <label>系統図<select value={map.id} onChange={e=>{setMapId(e.target.value);setPuzzle(false);setEditable(false);}}>{maps.map(item=><option value={item.id} key={item.id}>{item.title}</option>)}</select></label>
       <div className="variant-buttons">{variants.map(([value,label])=><button className={!puzzle&&variant===value?"active":""} onClick={()=>{setVariant(value);setPuzzle(false);if(value==="random")setRandomSeed(x=>x+1);}} key={value}>{label}</button>)}</div>
       <button className={puzzle?"puzzle-button active":"puzzle-button"} onClick={()=>setPuzzle(true)}>パズルモード</button>
       <button className={editable&&!puzzle?"layout-button active":"layout-button"} onClick={()=>{setPuzzle(false);setEditable(value=>!value);}}>配置編集</button>
+      <label>印刷方向<select value={printDirection} onChange={e=>setPrintDirection(e.target.value as typeof printDirection)}><option value="auto">自動</option><option value="portrait">縦</option><option value="landscape">横</option><option value="rotate">縦へ90°回転</option></select></label>
+      <label>印刷倍率<select value={printSizing} onChange={e=>setPrintSizing(e.target.value as typeof printSizing)}><option value="fit">ページに合わせる</option><option value="actual">100%</option></select></label>
       <button className="print-map-button" onClick={()=>window.print()}>この系統図を印刷</button>
     </div>
-    <div className={`reaction-map-print-area ${printOrientation}`}>
+    <div className={`reaction-map-print-area ${printOrientation} ${rotate?"print-rotate":""}`}>
       <header className="map-title"><p>{category === "organic" ? "有機化学" : "無機化学"} 反応系統図</p><h3>{map.title}</h3><span>{puzzle ? "パズル" : variants.find(([v])=>v===variant)?.[1]}</span></header>
-      {puzzle ? <Puzzle key={map.id} map={map}/> : <Diagram key={map.id} map={map} variant={variant} randomSeed={randomSeed} editable={editable}/>} 
+      {puzzle ? <Puzzle key={map.id} map={map} printConfig={printConfig}/> : <Diagram key={map.id} map={map} variant={variant} randomSeed={randomSeed} editable={editable} printConfig={printConfig}/>} 
     </div>
   </div>;
 }

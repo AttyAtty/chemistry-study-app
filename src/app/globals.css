@@ -400,7 +400,8 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
   .reaction-map-print-area.map-portrait { page: reaction-map-portrait; }
   .reaction-map-print-area .reaction-path-list { overflow: visible; gap: 18px; }
   .reaction-map-print-area .reaction-path { min-width: 0; transform-origin: left center; }
-  .reaction-map-print-area .reaction-network, .reaction-map-print-area .puzzle-network { background: none; transform: scale(var(--map-print-scale,1)); transform-origin: top left; }
+  .reaction-map-print-area .reaction-network, .reaction-map-print-area .puzzle-network { background: none; transform: translate(var(--map-print-x,0),var(--map-print-y,0)) scale(var(--map-print-scale,1)); transform-origin: top left; }
+  .reaction-map-print-area.print-rotate .reaction-network, .reaction-map-print-area.print-rotate .puzzle-network { transform: translate(var(--map-print-x,0),var(--map-print-y,0)) rotate(90deg) scale(var(--map-print-scale,1)); }
   .reaction-map-print-area .network-node { width: 34mm; min-height: 18mm; }
   .reaction-map-print-area .network-node.aromatic-node { width: 40mm; min-height: 35mm; }
   .reaction-map-print-area .aromatic-structure { width: 27mm; height: 19mm; }

@@ -1,7 +1,7 @@
 export type ReactionNode = { name: string; formula: string; appearance?: string; appearanceColor?: string };
 export type ReactionStep = { label: string; condition?: string; important?: boolean };
 export type ReactionPath = { nodes: ReactionNode[]; steps: ReactionStep[] };
-export type ReactionMap = { id: string; title: string; category: "organic" | "inorganic"; paths: ReactionPath[]; positions?: Record<string,{ x: number; y: number }>; canvas?: { width:number; height:number } };
+export type ReactionMap = { id: string; title: string; category: "organic" | "inorganic"; paths: ReactionPath[]; centerNode?:string; zones?:Record<string,"top"|"bottom"|"left"|"right">; canvas?: { width:number; height:number } };
 
 const n = (name: string, formula: string): ReactionNode => ({ name, formula });
 const colored = (name: string, formula: string, appearance: string, appearanceColor: string): ReactionNode => ({ name, formula, appearance, appearanceColor });
@@ -35,11 +35,10 @@ export const reactionMaps: ReactionMap[] = [
   { id: "nitrobenzene", title: "ニトロベンゼン", category: "organic", paths: [
     { nodes: [n("ベンゼン","C₆H₆"),n("ニトロベンゼン","C₆H₅NO₂"),n("アニリン塩酸塩","C₆H₅NH₃Cl"),n("アニリン","C₆H₅NH₂")], steps: [s("ニトロ化","濃HNO₃＋濃H₂SO₄",true),s("還元","Sn＋濃HCl・加熱",true),s("遊離","NaOH水溶液")] },
   ]},
-  { id: "aniline", title: "アニリン", category: "organic", canvas: {width:1120,height:792}, positions: {
-    "アニリン": {x:560,y:396}, "ニトロベンゼン": {x:285,y:100}, "アニリン塩酸塩": {x:575,y:95},
-    "アニリン硫酸水素塩": {x:125,y:275}, "塩化ベンゼンジアゾニウム": {x:155,y:500}, "フェノール": {x:370,y:670},
-    "p-フェニルアゾフェノール": {x:105,y:690}, "プソイドモーベイン": {x:950,y:170}, "アニリンブラック": {x:975,y:410},
-    "アセトアニリド": {x:625,y:680}, "酢酸": {x:925,y:675},
+  { id: "aniline", title: "アニリン", category: "organic", canvas: {width:1120,height:792}, centerNode:"アニリン", zones: {
+    "ニトロベンゼン":"top", "アニリン塩酸塩":"top", "アニリン硫酸水素塩":"left", "塩化ベンゼンジアゾニウム":"left",
+    "フェノール":"left", "p-フェニルアゾフェノール":"left", "プソイドモーベイン":"right", "アニリンブラック":"right",
+    "アセトアニリド":"bottom", "酢酸":"bottom",
   }, paths: [
     { nodes: [n("ニトロベンゼン","C₆H₅NO₂"),n("アニリン塩酸塩","C₆H₅NH₃Cl"),n("アニリン","C₆H₅NH₂")], steps: [s("還元","Sn、HCl",true),s("遊離","NaOH",true)] },
     { nodes: [n("ニトロベンゼン","C₆H₅NO₂"),n("アニリン","C₆H₅NH₂")], steps: [s("接触還元","H₂、Ni触媒、加圧",true)] },
