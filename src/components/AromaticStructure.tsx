@@ -5,6 +5,7 @@ const structures: Array<[RegExp, Substituent[]]> = [
   [/^ニトロベンゼン$/, [{ position: 0, label: "NO₂", tone: "red" }]],
   [/^アニリン$/, [{ position: 0, label: "NH₂", tone: "blue" }]],
   [/^アニリン塩酸塩$/, [{ position: 0, label: "NH₃⁺", tone: "blue" }, { position: 3, label: "Cl⁻" }]],
+  [/^アニリン硫酸水素塩$/, [{ position: 0, label: "NH₃⁺", tone: "blue" }, { position: 3, label: "HSO₄⁻" }]],
   [/^フェノール$/, [{ position: 0, label: "OH", tone: "red" }]],
   [/^クロロベンゼン$/, [{ position: 0, label: "Cl" }]],
   [/^ベンゼンスルホン酸$/, [{ position: 0, label: "SO₃H", tone: "red" }]],
@@ -15,6 +16,8 @@ const structures: Array<[RegExp, Substituent[]]> = [
   [/^2,4,6-トリブロモフェノール$/, [{ position: 0, label: "OH", tone: "red" }, { position: 1, label: "Br" }, { position: 3, label: "Br" }, { position: 5, label: "Br" }]],
   [/^2,4,6-トリブロモアニリン$/, [{ position: 0, label: "NH₂", tone: "blue" }, { position: 1, label: "Br" }, { position: 3, label: "Br" }, { position: 5, label: "Br" }]],
   [/^ピクリン酸$/, [{ position: 0, label: "OH", tone: "red" }, { position: 1, label: "NO₂", tone: "red" }, { position: 3, label: "NO₂", tone: "red" }, { position: 5, label: "NO₂", tone: "red" }]],
+  [/^p-フェニルアゾフェノール$/, [{ position: 0, label: "N=N−Ph", tone: "blue" }, { position: 3, label: "OH", tone: "red" }]],
+  [/^アセトアニリド$/, [{ position: 0, label: "NHCOCH₃", tone: "blue" }]],
 ];
 
 export function isAromaticCompound(name: string) {

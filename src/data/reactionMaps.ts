@@ -1,9 +1,10 @@
-export type ReactionNode = { name: string; formula: string };
+export type ReactionNode = { name: string; formula: string; appearance?: string; appearanceColor?: string };
 export type ReactionStep = { label: string; condition?: string; important?: boolean };
 export type ReactionPath = { nodes: ReactionNode[]; steps: ReactionStep[] };
-export type ReactionMap = { id: string; title: string; category: "organic" | "inorganic"; paths: ReactionPath[] };
+export type ReactionMap = { id: string; title: string; category: "organic" | "inorganic"; paths: ReactionPath[]; positions?: Record<string,{ x: number; y: number }> };
 
 const n = (name: string, formula: string): ReactionNode => ({ name, formula });
+const colored = (name: string, formula: string, appearance: string, appearanceColor: string): ReactionNode => ({ name, formula, appearance, appearanceColor });
 const s = (label: string, condition?: string, important = false): ReactionStep => ({ label, condition, important });
 
 export const reactionMaps: ReactionMap[] = [
@@ -34,10 +35,23 @@ export const reactionMaps: ReactionMap[] = [
   { id: "nitrobenzene", title: "ニトロベンゼン", category: "organic", paths: [
     { nodes: [n("ベンゼン","C₆H₆"),n("ニトロベンゼン","C₆H₅NO₂"),n("アニリン塩酸塩","C₆H₅NH₃Cl"),n("アニリン","C₆H₅NH₂")], steps: [s("ニトロ化","濃HNO₃＋濃H₂SO₄",true),s("還元","Sn＋濃HCl・加熱",true),s("遊離","NaOH水溶液")] },
   ]},
-  { id: "aniline", title: "アニリン", category: "organic", paths: [
-    { nodes: [n("ニトロベンゼン","C₆H₅NO₂"),n("アニリン","C₆H₅NH₂"),n("アニリン塩酸塩","C₆H₅NH₃Cl")], steps: [s("還元","Sn＋濃HCl → NaOH",true),s("塩形成","HCl")] },
-    { nodes: [n("アニリン","C₆H₅NH₂"),n("塩化ベンゼンジアゾニウム","C₆H₅N₂Cl"),n("フェノール","C₆H₅OH")], steps: [s("ジアゾ化","NaNO₂＋HCl・0〜5 ℃",true),s("加水分解","温水・加熱",true)] },
-    { nodes: [n("アニリン","C₆H₅NH₂"),n("2,4,6-トリブロモアニリン","C₆H₂Br₃NH₂")], steps: [s("臭素化","Br₂水・白色沈殿",true)] },
+  { id: "aniline", title: "アニリン", category: "organic", positions: {
+    "アニリン": {x:500,y:270}, "ニトロベンゼン": {x:250,y:70}, "アニリン塩酸塩": {x:500,y:65},
+    "アニリン硫酸水素塩": {x:120,y:205}, "塩化ベンゼンジアゾニウム": {x:135,y:340}, "フェノール": {x:350,y:445},
+    "p-フェニルアゾフェノール": {x:105,y:455}, "プソイドモーベイン": {x:835,y:155}, "アニリンブラック": {x:875,y:330},
+    "アセトアニリド": {x:610,y:450}, "酢酸": {x:850,y:460},
+  }, paths: [
+    { nodes: [n("ニトロベンゼン","C₆H₅NO₂"),n("アニリン塩酸塩","C₆H₅NH₃Cl"),n("アニリン","C₆H₅NH₂")], steps: [s("還元","Sn、HCl",true),s("遊離","NaOH",true)] },
+    { nodes: [n("ニトロベンゼン","C₆H₅NO₂"),n("アニリン","C₆H₅NH₂")], steps: [s("接触還元","H₂、Ni触媒、加圧",true)] },
+    { nodes: [n("アニリン","C₆H₅NH₂"),n("アニリン塩酸塩","C₆H₅NH₃Cl")], steps: [s("塩形成","濃HCl")] },
+    { nodes: [n("アニリン","C₆H₅NH₂"),n("アニリン硫酸水素塩","[C₆H₅NH₃]HSO₄")], steps: [s("塩形成","濃H₂SO₄")] },
+    { nodes: [n("アニリン","C₆H₅NH₂"),n("塩化ベンゼンジアゾニウム","C₆H₅N₂Cl")], steps: [s("ジアゾ化","希HCl、NaNO₂、0〜5 ℃",true)] },
+    { nodes: [n("塩化ベンゼンジアゾニウム","C₆H₅N₂Cl"),n("フェノール","C₆H₅OH")], steps: [s("加水分解","H₂O、加熱、N₂発生",true)] },
+    { nodes: [n("塩化ベンゼンジアゾニウム","C₆H₅N₂Cl"),colored("p-フェニルアゾフェノール","p-HOC₆H₄−N=N−C₆H₅","橙黄色","#d78314")], steps: [s("ジアゾカップリング","フェノール、NaOH水溶液",true)] },
+    { nodes: [n("アニリン","C₆H₅NH₂"),colored("プソイドモーベイン","酸化生成物","紫色","#7c3da5")], steps: [s("さらし粉反応・検出","さらし粉水溶液 CaCl(ClO)·H₂O",true)] },
+    { nodes: [n("アニリン","C₆H₅NH₂"),colored("アニリンブラック","酸化重合体","黒色","#111827")], steps: [s("酸化重合","K₂Cr₂O₇、硫酸酸性、加熱",true)] },
+    { nodes: [n("アニリン","C₆H₅NH₂"),n("アセトアニリド","C₆H₅NHCOCH₃")], steps: [s("アセチル化","無水酢酸 (CH₃CO)₂O",true)] },
+    { nodes: [n("アニリン","C₆H₅NH₂"),n("酢酸","CH₃COOH")], steps: [s("アセチル化の副生成物","無水酢酸からCH₃COOH生成")] },
   ]},
   { id: "phenol", title: "フェノール", category: "organic", paths: [
     { nodes: [n("フェノール","C₆H₅OH"),n("ナトリウムフェノキシド","C₆H₅ONa"),n("サリチル酸ナトリウム","o-HOC₆H₄COONa"),n("サリチル酸","o-HOC₆H₄COOH")], steps: [s("中和","NaOH"),s("Kolbe-Schmitt反応","CO₂・高温高圧",true),s("酸析出","HCl")] },
