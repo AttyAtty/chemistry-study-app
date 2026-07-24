@@ -205,15 +205,30 @@ tbody tr:last-child td { border-bottom: 0; }
 .map-toolbar label { display: grid; gap: 4px; color: var(--muted); font-size: 12px; font-weight: 800; }
 .map-toolbar select { min-width: 190px; border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px; background: white; color: var(--text); }
 .variant-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
-.variant-buttons button, .puzzle-button, .print-map-button { border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px; background: white; color: var(--text); cursor: pointer; font-weight: 750; }
-.variant-buttons button.active, .puzzle-button.active { border-color: var(--primary); background: var(--primary); color: white; }
+.variant-buttons button, .puzzle-button, .layout-button, .print-map-button { border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px; background: white; color: var(--text); cursor: pointer; font-weight: 750; }
+.variant-buttons button.active, .puzzle-button.active, .layout-button.active { border-color: var(--primary); background: var(--primary); color: white; }
 .print-map-button { margin-left: auto; border-color: #172033; background: #172033; color: white; }
-.reaction-map-print-area { padding: 24px; border: 1px solid var(--line); border-radius: 18px; background: white; }
+.reaction-map-print-area { overflow-x: auto; padding: 24px; border: 1px solid var(--line); border-radius: 18px; background: white; }
 .map-title { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #172033; }
 .map-title p, .map-title h3 { margin: 0; }
 .map-title p { color: var(--muted); font-size: 12px; font-weight: 800; }
 .map-title h3 { font-size: 25px; }
 .map-title span { margin-left: auto; font-size: 12px; }
+.reaction-network { position: relative; width: 1000px; height: 540px; overflow: hidden; border-radius: 14px; background-image: radial-gradient(#d8dee8 1px, transparent 1px); background-size: 22px 22px; }
+.reaction-network.editing { outline: 3px solid rgba(36,87,230,.18); background-color: #f8fbff; }
+.reaction-edge-layer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.reaction-edge-layer line { stroke: #485363; stroke-width: 3.5; vector-effect: non-scaling-stroke; }
+.reaction-edge-layer marker path { fill: #485363; }
+.network-node { position: absolute; z-index: 3; width: 166px; min-height: 78px; transform: translate(-50%,-50%); }
+.editing .network-node { cursor: grab; box-shadow: 0 8px 20px rgba(31,45,65,.16); }
+.editing .network-node:active { cursor: grabbing; }
+.network-edge-label { position: absolute; z-index: 4; max-width: 170px; display: grid; justify-items: center; transform: translate(-50%,calc(-50% - 22px)); padding: 3px 7px; border: 1px solid #d6dce5; border-radius: 7px; background: rgba(255,255,255,.94); color: #3d4654; text-align: center; font-size: 11px; line-height: 1.35; box-shadow: 0 2px 5px rgba(30,40,55,.08); pointer-events: none; }
+.network-edge-label small { color: #667085; font-size: 10px; font-weight: 700; }
+.network-edge-label.important { border-color: #e6aaaa; }
+.network-edge-label.important b { color: #c73535; font-size: 12px; font-weight: 950; }
+.network-edge-label.important small { color: #9b431f; font-weight: 850; }
+.network-edge-label.blank-label { min-width: 85px; border-style: dashed; color: #99a2af; }
+.reset-layout { position: absolute; right: 10px; bottom: 10px; z-index: 6; border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; background: white; color: var(--muted); cursor: pointer; }
 .reaction-path-list, .puzzle-board { display: grid; gap: 28px; overflow-x: auto; padding: 4px 2px 12px; }
 .reaction-path { display: flex; align-items: stretch; min-width: max-content; }
 .reaction-fragment { display: flex; align-items: center; }
@@ -327,6 +342,7 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
   .map-toolbar { align-items: stretch; flex-direction: column; }
   .print-map-button { margin-left: 0; }
   .reaction-map-print-area { padding: 16px 12px; }
+  .reaction-map-print-area { overflow-x: auto; }
   .substance-box { width: 130px; }
   .reaction-arrow { width: 135px; }
   .question-footer, .bottom-cta { align-items: stretch; flex-direction: column; }
@@ -349,6 +365,9 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
   .reaction-map-print-area { position: absolute; inset: 0; width: 100%; padding: 8mm; border: 0; border-radius: 0; color: black; }
   .reaction-map-print-area .reaction-path-list { overflow: visible; gap: 18px; }
   .reaction-map-print-area .reaction-path { min-width: 0; transform-origin: left center; }
+  .reaction-map-print-area .reaction-network { width: 1000px; height: 540px; background: none; transform: scale(.72); transform-origin: top left; }
+  .reaction-map-print-area .network-node { width: 34mm; min-height: 18mm; }
+  .reaction-map-print-area .network-edge-label { max-width: 35mm; box-shadow: none; }
   .reaction-map-print-area .substance-box { width: 34mm; min-height: 18mm; padding: 2mm; }
   .reaction-map-print-area .reaction-arrow { width: 35mm; min-height: 18mm; }
   .reaction-map-print-area .chemical-color { color: black !important; }

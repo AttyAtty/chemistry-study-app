@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { reactionMaps, type ReactionMap, type ReactionNode, type ReactionStep } from "@/data/reactionMaps";
 
 type Variant = "full" | "no-substances" | "no-reactions" | "names" | "random";
@@ -15,25 +15,47 @@ const nodeText = (node: ReactionNode) => `${node.name}\n${node.formula}`;
 const stepText = (step: ReactionStep) => `${step.label}${step.condition ? `｜${step.condition}` : ""}`;
 const hash = (value: string) => [...value].reduce((sum, char) => (sum * 31 + char.charCodeAt(0)) >>> 0, 7);
 
-function Diagram({ map, variant, randomSeed = 0 }: { map: ReactionMap; variant: Variant; randomSeed?: number }) {
+type Point = { x: number; y: number };
+
+function Diagram({ map, variant, randomSeed = 0, editable = false }: { map: ReactionMap; variant: Variant; randomSeed?: number; editable?: boolean }) {
+  const graph = useMemo(() => {
+    const nodeMap = new Map<string, ReactionNode>();
+    const edges: Array<{ id: string; from: string; to: string; step: ReactionStep }> = [];
+    map.paths.forEach((path, pi) => path.nodes.forEach((node, ni) => {
+      const key = `${node.name}|${node.formula}`; nodeMap.set(key, node);
+      if (path.steps[ni] && path.nodes[ni + 1]) edges.push({ id: `e-${pi}-${ni}`, from: key, to: `${path.nodes[ni + 1].name}|${path.nodes[ni + 1].formula}`, step: path.steps[ni] });
+    }));
+    return { nodes: [...nodeMap.entries()].map(([id,node]) => ({ id,node })), edges };
+  }, [map]);
+  const initial = useMemo(() => {
+    const degree = new Map(graph.nodes.map(item => [item.id, 0]));
+    graph.edges.forEach(edge => { degree.set(edge.from,(degree.get(edge.from)??0)+1); degree.set(edge.to,(degree.get(edge.to)??0)+1); });
+    const center = [...graph.nodes].sort((a,b)=>(degree.get(b.id)??0)-(degree.get(a.id)??0))[0]?.id;
+    const points: Record<string,Point> = {}; const others = graph.nodes.filter(item=>item.id!==center);
+    if (center) points[center] = { x: 500, y: 270 };
+    others.forEach((item,index) => {
+      const angle = (-Math.PI / 2) + (Math.PI * 2 * index / Math.max(others.length,1));
+      const radiusX = index % 2 === 0 ? 360 : 285; const radiusY = index % 2 === 0 ? 205 : 155;
+      points[item.id] = { x: 500 + Math.cos(angle)*radiusX, y: 270 + Math.sin(angle)*radiusY };
+    });
+    return points;
+  }, [graph]);
+  const [positions, setPositions] = useState(initial);
+  const boardRef = useRef<HTMLDivElement>(null);
   const hidden = (key: string) => variant === "random" && hash(`${key}-${randomSeed}`) % 3 === 0;
-  return <div className="reaction-path-list">
-    {map.paths.map((path, pathIndex) => <div className="reaction-path" key={`${map.id}-${pathIndex}`}>
-      {path.nodes.map((node, nodeIndex) => {
-        const hideNode = variant === "no-substances" || hidden(`n-${pathIndex}-${nodeIndex}`);
-        const step = path.steps[nodeIndex];
-        const hideStep = variant === "no-reactions" || variant === "names" || hidden(`s-${pathIndex}-${nodeIndex}`);
-        return <div className="reaction-fragment" key={`${node.name}-${nodeIndex}`}>
-          <div className={`substance-box ${hideNode ? "blank" : ""}`}>
-            {!hideNode && <><b>{node.name}</b>{variant !== "names" && <span>{node.formula}</span>}</>}
-          </div>
-          {step && <div className={`reaction-arrow ${step.important ? "important" : ""}`}>
-            <span className="arrow-line">→</span>
-            {!hideStep ? <span className="reaction-label"><b>{step.label}</b>{step.condition && <small>{step.condition}</small>}</span> : <span className="reaction-label blank-label">反応・条件</span>}
-          </div>}
-        </div>;
-      })}
-    </div>)}
+  const moveNode = (id: string, clientX: number, clientY: number) => {
+    if (!editable || !boardRef.current) return;
+    const rect = boardRef.current.getBoundingClientRect();
+    setPositions(current => ({ ...current, [id]: { x: Math.max(85,Math.min(915,clientX-rect.left)), y: Math.max(48,Math.min(492,clientY-rect.top)) } }));
+  };
+  return <div className={`reaction-network ${editable ? "editing" : ""}`} ref={boardRef}>
+    <svg className="reaction-edge-layer" viewBox="0 0 1000 540" preserveAspectRatio="none" aria-hidden="true">
+      <defs><marker id={`arrow-${map.id}`} markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" /></marker></defs>
+      {graph.edges.map(edge => { const a=positions[edge.from], b=positions[edge.to]; if(!a||!b)return null; const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1; const sx=a.x+dx/len*82,sy=a.y+dy/len*38,ex=b.x-dx/len*88,ey=b.y-dy/len*42; return <line key={edge.id} x1={sx} y1={sy} x2={ex} y2={ey} markerEnd={`url(#arrow-${map.id})`} />; })}
+    </svg>
+    {graph.edges.map(edge => { const a=positions[edge.from],b=positions[edge.to];if(!a||!b)return null;const hide=variant==="no-reactions"||variant==="names"||hidden(edge.id); return <div className={`network-edge-label ${edge.step.important?"important":""} ${hide?"blank-label":""}`} style={{left:`${(a.x+b.x)/2}px`,top:`${(a.y+b.y)/2}px`}} key={edge.id}>{hide ? "反応・条件" : <><b>{edge.step.label}</b>{edge.step.condition&&<small>{edge.step.condition}</small>}</>}</div>; })}
+    {graph.nodes.map(({id,node}) => { const point=positions[id]; const hide=variant==="no-substances"||hidden(`node-${id}`); return <div draggable={editable} onDragEnd={e=>moveNode(id,e.clientX,e.clientY)} className={`network-node substance-box ${hide?"blank":""}`} style={{left:point.x,top:point.y}} key={id}>{!hide&&<><b>{node.name}</b>{variant!=="names"&&<span>{node.formula}</span>}</>}</div>; })}
+    {editable && <button className="reset-layout no-print" onClick={()=>setPositions(initial)}>配置を元に戻す</button>}
   </div>;
 }
 
@@ -82,18 +104,20 @@ export function ReactionMapStudio({ category }: { category: "organic" | "inorgan
   const [mapId, setMapId] = useState(maps[0].id);
   const [variant, setVariant] = useState<Variant>("full");
   const [puzzle, setPuzzle] = useState(false);
+  const [editable, setEditable] = useState(false);
   const [randomSeed, setRandomSeed] = useState(1);
   const map = maps.find(item => item.id === mapId) ?? maps[0];
   return <div className="reaction-map-studio">
     <div className="map-toolbar no-print">
-      <label>系統図<select value={map.id} onChange={e=>{setMapId(e.target.value);setPuzzle(false);}}>{maps.map(item=><option value={item.id} key={item.id}>{item.title}</option>)}</select></label>
+      <label>系統図<select value={map.id} onChange={e=>{setMapId(e.target.value);setPuzzle(false);setEditable(false);}}>{maps.map(item=><option value={item.id} key={item.id}>{item.title}</option>)}</select></label>
       <div className="variant-buttons">{variants.map(([value,label])=><button className={!puzzle&&variant===value?"active":""} onClick={()=>{setVariant(value);setPuzzle(false);if(value==="random")setRandomSeed(x=>x+1);}} key={value}>{label}</button>)}</div>
       <button className={puzzle?"puzzle-button active":"puzzle-button"} onClick={()=>setPuzzle(true)}>パズルモード</button>
+      <button className={editable&&!puzzle?"layout-button active":"layout-button"} onClick={()=>{setPuzzle(false);setEditable(value=>!value);}}>配置編集</button>
       <button className="print-map-button" onClick={()=>window.print()}>この系統図を印刷</button>
     </div>
     <div className="reaction-map-print-area">
       <header className="map-title"><p>{category === "organic" ? "有機化学" : "無機化学"} 反応系統図</p><h3>{map.title}</h3><span>{puzzle ? "パズル" : variants.find(([v])=>v===variant)?.[1]}</span></header>
-      {puzzle ? <Puzzle key={map.id} map={map}/> : <Diagram map={map} variant={variant} randomSeed={randomSeed}/>} 
+      {puzzle ? <Puzzle key={map.id} map={map}/> : <Diagram key={map.id} map={map} variant={variant} randomSeed={randomSeed} editable={editable}/>} 
     </div>
   </div>;
 }
