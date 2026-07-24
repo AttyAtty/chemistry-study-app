@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { reactionMaps, type ReactionMap, type ReactionNode, type ReactionStep } from "@/data/reactionMaps";
+import { AromaticStructure, isAromaticCompound } from "@/components/AromaticStructure";
 
 type Variant = "full" | "no-substances" | "no-reactions" | "names" | "random";
 type Token = { id: string; kind: "node" | "step"; text: string };
@@ -54,7 +55,7 @@ function Diagram({ map, variant, randomSeed = 0, editable = false }: { map: Reac
       {graph.edges.map(edge => { const a=positions[edge.from], b=positions[edge.to]; if(!a||!b)return null; const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1; const sx=a.x+dx/len*82,sy=a.y+dy/len*38,ex=b.x-dx/len*88,ey=b.y-dy/len*42; return <line key={edge.id} x1={sx} y1={sy} x2={ex} y2={ey} markerEnd={`url(#arrow-${map.id})`} />; })}
     </svg>
     {graph.edges.map(edge => { const a=positions[edge.from],b=positions[edge.to];if(!a||!b)return null;const hide=variant==="no-reactions"||variant==="names"||hidden(edge.id); return <div className={`network-edge-label ${edge.step.important?"important":""} ${hide?"blank-label":""}`} style={{left:`${(a.x+b.x)/2}px`,top:`${(a.y+b.y)/2}px`}} key={edge.id}>{hide ? "反応・条件" : <><b>{edge.step.label}</b>{edge.step.condition&&<small>{edge.step.condition}</small>}</>}</div>; })}
-    {graph.nodes.map(({id,node}) => { const point=positions[id]; const hide=variant==="no-substances"||hidden(`node-${id}`); return <div draggable={editable} onDragEnd={e=>moveNode(id,e.clientX,e.clientY)} className={`network-node substance-box ${hide?"blank":""}`} style={{left:point.x,top:point.y}} key={id}>{!hide&&<><b>{node.name}</b>{variant!=="names"&&<span>{node.formula}</span>}</>}</div>; })}
+    {graph.nodes.map(({id,node}) => { const point=positions[id]; const hide=variant==="no-substances"||hidden(`node-${id}`); const aromatic=isAromaticCompound(node.name); return <div draggable={editable} onDragEnd={e=>moveNode(id,e.clientX,e.clientY)} className={`network-node substance-box ${aromatic?"aromatic-node":""} ${hide?"blank":""}`} style={{left:point.x,top:point.y}} key={id}>{!hide&&<><b>{node.name}</b>{variant!=="names"&&<><span>{node.formula}</span><AromaticStructure name={node.name}/></>}</>}</div>; })}
     {editable && <button className="reset-layout no-print" onClick={()=>setPositions(initial)}>配置を元に戻す</button>}
   </div>;
 }

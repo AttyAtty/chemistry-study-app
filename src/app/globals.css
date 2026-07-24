@@ -220,6 +220,13 @@ tbody tr:last-child td { border-bottom: 0; }
 .reaction-edge-layer line { stroke: #485363; stroke-width: 3.5; vector-effect: non-scaling-stroke; }
 .reaction-edge-layer marker path { fill: #485363; }
 .network-node { position: absolute; z-index: 3; width: 166px; min-height: 78px; transform: translate(-50%,-50%); }
+.network-node.aromatic-node { width: 184px; min-height: 150px; padding: 8px 10px 5px; }
+.aromatic-structure { width: 118px; height: 82px; margin: 1px auto 0; overflow: visible; }
+.aromatic-structure polygon, .aromatic-structure circle, .aromatic-structure line { fill: none; stroke: #111; stroke-width: 2.1; vector-effect: non-scaling-stroke; }
+.aromatic-structure circle { stroke-width: 1.7; }
+.aromatic-structure text { fill: #111; font-family: Arial, sans-serif; font-size: 10px; font-weight: 900; }
+.aromatic-structure text.red { fill: #b83232; }
+.aromatic-structure text.blue { fill: #235eae; }
 .editing .network-node { cursor: grab; box-shadow: 0 8px 20px rgba(31,45,65,.16); }
 .editing .network-node:active { cursor: grabbing; }
 .network-edge-label { position: absolute; z-index: 4; max-width: 170px; display: grid; justify-items: center; transform: translate(-50%,calc(-50% - 22px)); padding: 3px 7px; border: 1px solid #d6dce5; border-radius: 7px; background: rgba(255,255,255,.94); color: #3d4654; text-align: center; font-size: 11px; line-height: 1.35; box-shadow: 0 2px 5px rgba(30,40,55,.08); pointer-events: none; }
@@ -367,6 +374,8 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
   .reaction-map-print-area .reaction-path { min-width: 0; transform-origin: left center; }
   .reaction-map-print-area .reaction-network { width: 1000px; height: 540px; background: none; transform: scale(.72); transform-origin: top left; }
   .reaction-map-print-area .network-node { width: 34mm; min-height: 18mm; }
+  .reaction-map-print-area .network-node.aromatic-node { width: 40mm; min-height: 35mm; }
+  .reaction-map-print-area .aromatic-structure { width: 27mm; height: 19mm; }
   .reaction-map-print-area .network-edge-label { max-width: 35mm; box-shadow: none; }
   .reaction-map-print-area .substance-box { width: 34mm; min-height: 18mm; padding: 2mm; }
   .reaction-map-print-area .reaction-arrow { width: 35mm; min-height: 18mm; }
