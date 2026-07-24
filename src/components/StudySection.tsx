@@ -1,5 +1,7 @@
 import type { StudySection as StudySectionType } from "@/data/chemistry";
 import { ElectrolysisWorkbench } from "@/components/ElectrolysisWorkbench";
+import { ColoredChemText } from "@/components/ColoredChemText";
+import { BatteryReactionWorksheet } from "@/components/BatteryReactionWorksheet";
 
 export function StudySection({ section }: { section: StudySectionType }) {
   return (
@@ -13,9 +15,9 @@ export function StudySection({ section }: { section: StudySectionType }) {
         <div className="knowledge-grid">
           {section.entries.map((entry) => (
             <article className="knowledge-card" key={entry.title}>
-              <h3>{entry.title}</h3>
-              <p>{entry.body}</p>
-              {entry.equation && <div className="equation-box">{entry.equation}</div>}
+              <h3><ColoredChemText>{entry.title}</ColoredChemText></h3>
+              <p><ColoredChemText>{entry.body}</ColoredChemText></p>
+              {entry.equation && <div className="equation-box"><ColoredChemText>{entry.equation}</ColoredChemText></div>}
               {entry.note && <small>{entry.note}</small>}
             </article>
           ))}
@@ -31,7 +33,7 @@ export function StudySection({ section }: { section: StudySectionType }) {
             <tbody>
               {section.rows.map((row, rowIndex) => (
                 <tr key={`${section.id}-${rowIndex}`}>
-                  {row.map((cell, cellIndex) => <td key={`${section.id}-${rowIndex}-${cellIndex}`}>{cell}</td>)}
+                  {row.map((cell, cellIndex) => <td key={`${section.id}-${rowIndex}-${cellIndex}`}><ColoredChemText>{cell}</ColoredChemText></td>)}
                 </tr>
               ))}
             </tbody>
@@ -47,7 +49,7 @@ export function StudySection({ section }: { section: StudySectionType }) {
               <div className="flow-nodes">
                 {flow.nodes.map((node, index) => (
                   <div className="flow-fragment" key={`${flow.title}-${node}`}>
-                    <span className="flow-node">{node}</span>
+                    <span className="flow-node"><ColoredChemText>{node}</ColoredChemText></span>
                     {index < flow.nodes.length - 1 && <span className="flow-arrow">→</span>}
                   </div>
                 ))}
@@ -59,6 +61,7 @@ export function StudySection({ section }: { section: StudySectionType }) {
       )}
 
       {section.kind === "electrolysis" && <ElectrolysisWorkbench cases={section.cases} />}
+      {section.kind === "batteryWorksheet" && <BatteryReactionWorksheet />}
     </section>
   );
 }

@@ -61,6 +61,12 @@ export type StudySection =
       description?: string;
       kind: "electrolysis";
       cases: ElectrolysisCase[];
+    }
+  | {
+      id: string;
+      title: string;
+      description?: string;
+      kind: "batteryWorksheet";
     };
 
 export type ChemistryUnit = {
@@ -568,6 +574,12 @@ export const chemistryUnits: ChemistryUnit[] = [
           },
         ],
       },
+      {
+        id: "battery-print-worksheet",
+        title: "印刷用・電池の反応式総合プリント",
+        description: "各電池の負極・正極・全体反応式をまとめて練習します。印刷すると問題編と解答編が分かれます。",
+        kind: "batteryWorksheet",
+      },
     ],
     questions: [
       {
@@ -723,6 +735,75 @@ export const chemistryUnits: ChemistryUnit[] = [
           ["ZnS", "白色", "Zn²⁺ + S²⁻ → ZnS↓"],
           ["CuS", "黒色", "Cu²⁺ + S²⁻ → CuS↓"],
           ["CdS", "黄色", "Cd²⁺ + S²⁻ → CdS↓"],
+        ],
+      },
+      {
+        id: "complex-ion-reactions",
+        title: "錯イオンの生成と色の変化",
+        kind: "table",
+        columns: ["出発物質", "加える試薬", "観察・錯イオン", "代表的なイオン反応式"],
+        rows: [
+          ["Cu²⁺（青色）", "NH₃水を少量", "Cu(OH)₂（青白色沈殿）", "Cu²⁺ + 2OH⁻ → Cu(OH)₂↓"],
+          ["Cu(OH)₂", "NH₃水を過剰", "[Cu(NH₃)₄]²⁺（深青色溶液）", "Cu(OH)₂ + 4NH₃ → [Cu(NH₃)₄]²⁺ + 2OH⁻"],
+          ["AgCl（白色沈殿）", "NH₃水を過剰", "[Ag(NH₃)₂]⁺（無色、沈殿が溶解）", "AgCl + 2NH₃ → [Ag(NH₃)₂]⁺ + Cl⁻"],
+          ["Zn(OH)₂（白色沈殿）", "NaOH水溶液を過剰", "[Zn(OH)₄]²⁻（無色、沈殿が溶解）", "Zn(OH)₂ + 2OH⁻ → [Zn(OH)₄]²⁻"],
+          ["Al(OH)₃（白色沈殿）", "NaOH水溶液を過剰", "[Al(OH)₄]⁻（無色、沈殿が溶解）", "Al(OH)₃ + OH⁻ → [Al(OH)₄]⁻"],
+          ["Fe³⁺（黄褐色）", "SCN⁻", "[FeSCN]²⁺（血赤色）", "Fe³⁺ + SCN⁻ ⇄ [FeSCN]²⁺"],
+        ],
+      },
+      {
+        id: "cation-separation-flow",
+        title: "金属イオンの系統分離",
+        description: "混合水溶液に試薬を順に加え、沈殿する組と溶液に残る組を分けます。",
+        kind: "flow",
+        flows: [
+          {
+            title: "① 希塩酸を加える",
+            nodes: ["混合溶液", "AgCl・PbCl₂（白色沈殿）", "Cu²⁺・Cd²⁺・Fe³⁺・Al³⁺・Zn²⁺などはろ液へ"],
+            note: "Ag⁺ + Cl⁻ → AgCl↓。PbCl₂は熱水に溶けやすく、AgClはNH₃水に溶けるので区別できます。",
+          },
+          {
+            title: "② 酸性でH₂Sを通す",
+            nodes: ["①のろ液", "CuS（黒色）・CdS（黄色）", "Fe³⁺・Al³⁺・Zn²⁺などはろ液へ"],
+            note: "酸性ではS²⁻濃度が低くても沈殿する、溶解度の非常に小さい硫化物を分離します。",
+          },
+          {
+            title: "③ NH₄Cl共存下でNH₃水を加える",
+            nodes: ["②のろ液", "Fe(OH)₃（赤褐色）・Al(OH)₃（白色）", "Zn²⁺などはろ液へ"],
+            note: "NH₄⁺によりOH⁻濃度を抑え、選択的に水酸化物を沈殿させます。Al(OH)₃は過剰NaOHに溶解します。",
+          },
+          {
+            title: "④ 塩基性でH₂Sを通す",
+            nodes: ["③のろ液", "ZnS（白色）・NiS（黒色）など", "アルカリ・アルカリ土類金属イオンはろ液へ"],
+            note: "塩基性ではH₂Sの電離が進みS²⁻濃度が上がるため、酸性では沈殿しなかった硫化物も沈殿します。",
+          },
+        ],
+      },
+      {
+        id: "individual-ion-flows",
+        title: "頻出イオンの反応系統図",
+        kind: "flow",
+        flows: [
+          {
+            title: "Cu²⁺の反応",
+            nodes: ["Cu²⁺（青色）", "Cu(OH)₂（青白色）", "[Cu(NH₃)₄]²⁺（深青色）"],
+            note: "NH₃水を少量加えると沈殿、さらに過剰に加えると錯イオンとなって溶けます。H₂SではCuS（黒色）。",
+          },
+          {
+            title: "Fe²⁺・Fe³⁺の反応",
+            nodes: ["Fe²⁺（淡緑色）", "Fe(OH)₂（緑白色）", "空気酸化", "Fe(OH)₃（赤褐色）"],
+            note: "Fe²⁺は酸化されFe³⁺へ。Fe³⁺はSCN⁻により[FeSCN]²⁺（血赤色）を生じます。",
+          },
+          {
+            title: "Ag⁺の反応",
+            nodes: ["Ag⁺（無色）", "AgCl（白色）", "[Ag(NH₃)₂]⁺（無色）", "AgCl再沈殿"],
+            note: "Cl⁻で沈殿、NH₃水で錯イオンとして溶解し、酸を加えてNH₃をNH₄⁺にすると再沈殿します。",
+          },
+          {
+            title: "Cr(VI)の平衡",
+            nodes: ["CrO₄²⁻（黄色）", "酸性にする", "Cr₂O₇²⁻（橙色）", "塩基性にする", "CrO₄²⁻（黄色）"],
+            note: "2CrO₄²⁻ + 2H⁺ ⇄ Cr₂O₇²⁻ + H₂O。酸性で右、塩基性で左へ移動します。",
+          },
         ],
       },
       {
