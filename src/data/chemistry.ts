@@ -1,4 +1,5 @@
 import { inorganicComplexesUnit } from "@/data/inorganicComplexes";
+import { gasUnit } from "@/data/gasUnit";
 
 export type QuizQuestion = {
   id: string;
@@ -76,6 +77,12 @@ export type StudySection =
       description?: string;
       kind: "reactionMaps";
       category: "organic" | "inorganic";
+    }
+  | {
+      id: string;
+      title: string;
+      description?: string;
+      kind: "gasLab";
     };
 
 export type ChemistryUnit = {
@@ -1121,6 +1128,7 @@ export const chemistryUnits: ChemistryUnit[] = [
     ],
   },
   inorganicComplexesUnit,
+  gasUnit,
 ];
 
 export function getUnit(slug: string) {

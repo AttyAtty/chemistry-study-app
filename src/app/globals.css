@@ -292,6 +292,22 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
 .puzzle-result b { margin-top: 4px; font-size: 18px; }
 .puzzle-result ul { margin-bottom: 0; }
 .perfect-result { margin-bottom: 0; color: #126d5c; font-weight: 850; }
+.gas-lab { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: white; }
+.gas-mode-tabs { display: flex; gap: 7px; padding: 14px; border-bottom: 1px solid var(--line); background: #f5f8fc; }
+.gas-mode-tabs button { border: 1px solid var(--line); border-radius: 999px; padding: 9px 13px; background: white; cursor: pointer; font-weight: 800; }
+.gas-mode-tabs button.active { border-color: var(--primary); background: var(--primary); color: white; }
+.gas-card-mode { min-height: 420px; display: grid; grid-template-columns: 48px minmax(280px,620px) 48px; justify-content: center; align-items: center; gap: 14px; padding: 28px 16px; background: radial-gradient(circle at top,#edf5ff,#fff 60%); }
+.gas-nav { height: 48px; border: 1px solid var(--line); border-radius: 50%; background: white; color: var(--primary); cursor: pointer; font-size: 22px; }
+.gas-flashcard { min-height: 350px; display: grid; place-content: center; gap: 10px; padding: 28px; border: 3px solid #172033; border-radius: 20px; background: white; color: #172033; cursor: pointer; text-align: center; box-shadow: 0 16px 35px rgba(31,48,78,.12); }
+.gas-flashcard > strong { font-size: 34px; }.gas-flashcard > b { color: var(--primary); font-size: 30px; }.gas-flashcard > span,.gas-flashcard > small { color: var(--muted); }
+.gas-flashcard.flipped { place-content: stretch; text-align: left; }
+.gas-flashcard.flipped > strong { font-size: 23px; text-align: center; }
+.gas-flashcard dl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0 0; }
+.gas-flashcard dl div { padding: 9px; border-radius: 9px; background: #f3f6fa; }.gas-flashcard dt { color: var(--muted); font-size: 11px; font-weight: 900; }.gas-flashcard dd { margin: 4px 0 0; font-size: 13px; }
+.gas-fill-mode,.gas-classify-mode { padding: 24px; }.gas-selector label,.classification-toolbar label { display: grid; gap: 4px; color: var(--muted); font-size: 12px; font-weight: 800; }.gas-selector select,.classification-toolbar select { border: 1px solid var(--line); border-radius: 9px; padding: 8px; background: white; }
+.gas-fill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }.gas-fill-grid button { min-height: 82px; display: grid; gap: 5px; padding: 12px; border: 2px dashed #aab4c3; border-radius: 12px; background: #f8fafc; cursor: pointer; text-align: left; }.gas-fill-grid button.revealed { border-style: solid; border-color: #3ca78e; background: #edf9f6; }.gas-fill-grid span { color: var(--muted); font-size: 11px; font-weight: 900; }.gas-fill-grid b { font-size: 14px; }
+.classification-toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: 9px; margin-bottom: 16px; }.classification-toolbar button { border: 0; border-radius: 9px; padding: 9px 12px; background: var(--primary); color: white; cursor: pointer; font-weight: 800; }.classification-toolbar b { margin-left: auto; color: #126d5c; }
+.gas-drop-zones { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 10px; }.gas-drop-zones section { min-height: 145px; padding: 11px; border: 2px dashed #aab4c3; border-radius: 12px; background: #f8fafc; }.gas-drop-zones h4 { margin: 0 0 9px; }.gas-drop-zones button,.gas-token-bank button { margin: 3px; border: 1px solid #69758a; border-radius: 8px; padding: 7px 9px; background: white; cursor: grab; font-weight: 750; }.gas-drop-zones button.correct { border-color: #3ca78e; background: #e9f8f4; }.gas-drop-zones button.wrong { border-color: #dd6670; background: #fff0f1; }.gas-token-bank { margin-top: 14px; padding: 12px; border-radius: 12px; background: #eef2f7; }.gas-token-bank button.selected { border-color: var(--primary); outline: 3px solid rgba(36,87,230,.18); }.tap-classify { color: var(--muted); font-size: 12px; }
 .bottom-cta { margin: 70px 0; padding: 34px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-radius: 24px; color: white; background: linear-gradient(135deg, #173984, #2457e6); }
 
 .page-intro { margin: 48px 0 28px; }
@@ -373,6 +389,7 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
   .worksheet-toolbar { align-items: stretch; flex-direction: column; }
   .map-toolbar { align-items: stretch; flex-direction: column; }
   .puzzle-result > div { grid-template-columns: 1fr; }
+  .gas-mode-tabs { overflow-x: auto; }.gas-card-mode { grid-template-columns: 38px minmax(0,1fr) 38px; padding: 18px 8px; }.gas-flashcard { min-height: 390px; padding: 18px 12px; }.gas-flashcard dl,.gas-fill-grid { grid-template-columns: 1fr; }.gas-fill-mode,.gas-classify-mode { padding: 16px 12px; }.classification-toolbar { align-items: stretch; flex-direction: column; }.classification-toolbar b { margin-left: 0; }
   .print-map-button { margin-left: 0; }
   .reaction-map-print-area { padding: 16px 12px; }
   .reaction-map-print-area { overflow-x: auto; }
