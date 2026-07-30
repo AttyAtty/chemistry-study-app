@@ -1,3 +1,5 @@
+import { inorganicComplexesUnit } from "@/data/inorganicComplexes";
+
 export type QuizQuestion = {
   id: string;
   prompt: string;
@@ -1118,6 +1120,7 @@ export const chemistryUnits: ChemistryUnit[] = [
       },
     ],
   },
+  inorganicComplexesUnit,
 ];
 
 export function getUnit(slug: string) {

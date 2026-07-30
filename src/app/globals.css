@@ -156,6 +156,7 @@ th { color: #33415f; background: #eef3fb; font-size: 13px; }
 td { font-size: 14px; }
 tbody tr:last-child td { border-bottom: 0; }
 .chemical-color { font-weight: 900; text-decoration-color: currentColor; }
+.color-chip { display: inline-block; margin: 1px 2px; padding: 2px 7px; border: 1px solid currentColor; border-radius: 999px; background: rgba(255,255,255,.92); font-size: .92em; line-height: 1.35; }
 .flow-list { display: grid; gap: 16px; }
 .flow-card { padding: 24px; }
 .flow-nodes { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 18px 0; }
