@@ -1,5 +1,6 @@
 import { inorganicComplexesUnit } from "@/data/inorganicComplexes";
 import { gasUnit } from "@/data/gasUnit";
+import { electrochemistryQuestions } from "@/data/electrochemistry";
 
 export type QuizQuestion = {
   id: string;
@@ -83,6 +84,12 @@ export type StudySection =
       title: string;
       description?: string;
       kind: "gasLab";
+    }
+  | {
+      id: string;
+      title: string;
+      description?: string;
+      kind: "electrochemistryLab";
     };
 
 export type ChemistryUnit = {
@@ -362,6 +369,23 @@ export const chemistryUnits: ChemistryUnit[] = [
     keywords: ["電池", "電気分解", "電極", "酸化", "還元", "起電力", "ファラデー定数", "一次電池", "二次電池", "燃料電池"],
     sections: [
       {
+        id: "electrode-signs",
+        title: "最重要：電池と電気分解の極性",
+        description: "陽極では常に酸化、陰極では常に還元。ただし陽極が常に正極とは限りません。",
+        kind: "table",
+        columns: ["種類", "陽極", "陰極", "酸化", "還元", "電子"],
+        rows: [
+          ["電池（放電）", "負極", "正極", "負極・陽極", "正極・陰極", "負極から正極へ外部回路を流れる"],
+          ["電気分解", "正極", "負極", "正極・陽極", "負極・陰極", "電源負極から陰極へ供給"],
+        ],
+      },
+      {
+        id: "electrochemistry-card-lab",
+        title: "電池・電気分解カード",
+        description: "16条件を、装置図・暗記・比較の3つの表示で確認できます。",
+        kind: "electrochemistryLab",
+      },
+      {
         id: "battery-table",
         title: "電池の基本と歴史的な電池",
         kind: "table",
@@ -612,6 +636,7 @@ export const chemistryUnits: ChemistryUnit[] = [
       },
     ],
     questions: [
+      ...electrochemistryQuestions,
       {
         id: "bat-1",
         prompt: "ダニエル電池の放電中、電子は外部回路をどちら向きに流れますか。",

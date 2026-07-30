@@ -4,6 +4,7 @@ import { ColoredChemText } from "@/components/ColoredChemText";
 import { BatteryReactionWorksheet } from "@/components/BatteryReactionWorksheet";
 import { ReactionMapStudio } from "@/components/ReactionMapStudio";
 import { GasStudyLab } from "@/components/GasStudyLab";
+import { ElectrochemistryLab } from "@/components/ElectrochemistryLab";
 
 export function StudySection({ section }: { section: StudySectionType }) {
   return (
@@ -66,6 +67,7 @@ export function StudySection({ section }: { section: StudySectionType }) {
       {section.kind === "batteryWorksheet" && <BatteryReactionWorksheet />}
       {section.kind === "reactionMaps" && <ReactionMapStudio category={section.category} />}
       {section.kind === "gasLab" && <GasStudyLab />}
+      {section.kind === "electrochemistryLab" && <ElectrochemistryLab />}
     </section>
   );
 }
