@@ -90,6 +90,18 @@ export type StudySection =
       title: string;
       description?: string;
       kind: "electrochemistryLab";
+    }
+  | {
+      id: string;
+      title: string;
+      description?: string;
+      kind: "electrochemistrySimulator";
+    }
+  | {
+      id: string;
+      title: string;
+      description?: string;
+      kind: "electrochemistryQuizGenerator";
     };
 
 export type ChemistryUnit = {
@@ -384,6 +396,18 @@ export const chemistryUnits: ChemistryUnit[] = [
         title: "電池・電気分解カード",
         description: "16条件を、装置図・暗記・比較の3つの表示で確認できます。",
         kind: "electrochemistryLab",
+      },
+      {
+        id: "electrochemistry-simulator",
+        title: "電池・電気分解シミュレーション",
+        description: "電子・イオン・気泡・析出・溶解・濃度変化を段階的に確認します。",
+        kind: "electrochemistrySimulator",
+      },
+      {
+        id: "electrochemistry-quiz-generator",
+        title: "A4小テスト自動生成",
+        description: "カードデータから問題・模範解答・静止装置図を生成し、印刷またはPDF保存できます。",
+        kind: "electrochemistryQuizGenerator",
       },
       {
         id: "battery-table",

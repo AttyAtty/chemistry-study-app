@@ -5,6 +5,8 @@ import { BatteryReactionWorksheet } from "@/components/BatteryReactionWorksheet"
 import { ReactionMapStudio } from "@/components/ReactionMapStudio";
 import { GasStudyLab } from "@/components/GasStudyLab";
 import { ElectrochemistryLab } from "@/components/ElectrochemistryLab";
+import { ElectrochemistrySimulator } from "@/components/ElectrochemistrySimulator";
+import { ElectrochemistryQuizGenerator } from "@/components/ElectrochemistryQuizGenerator";
 
 export function StudySection({ section }: { section: StudySectionType }) {
   return (
@@ -68,6 +70,8 @@ export function StudySection({ section }: { section: StudySectionType }) {
       {section.kind === "reactionMaps" && <ReactionMapStudio category={section.category} />}
       {section.kind === "gasLab" && <GasStudyLab />}
       {section.kind === "electrochemistryLab" && <ElectrochemistryLab />}
+      {section.kind === "electrochemistrySimulator" && <ElectrochemistrySimulator />}
+      {section.kind === "electrochemistryQuizGenerator" && <ElectrochemistryQuizGenerator />}
     </section>
   );
 }
