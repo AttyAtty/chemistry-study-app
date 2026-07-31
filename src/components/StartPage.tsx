@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChemicaLogo, type ChemicaMarkState } from "@/components/ChemicaLogo";
-import { ChemicaStartBackground } from "@/components/ChemicaStartBackground";
 
 export function StartPage() {
   const router = useRouter();
@@ -27,7 +26,6 @@ export function StartPage() {
   }
 
   return <main className={`start-page ${transitioning ? "is-transitioning" : ""}`} aria-busy={transitioning}>
-    <ChemicaStartBackground />
     <section className="start-content" aria-labelledby="start-title">
       <h1 id="start-title" className="start-logo"><ChemicaLogo variant="hero" showTagline markState={markState}/></h1>
       <button className="start-button" type="button" disabled={transitioning} onClick={start}>{transitioning ? "読み込み中" : "始める"}</button>

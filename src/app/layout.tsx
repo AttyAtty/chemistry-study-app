@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { SharePanel } from "@/components/SharePanel";
-import { ChemicaBackground } from "@/components/ChemicaBackground";
+import { ChemicaAnimatedBackground } from "@/components/ChemicaAnimatedBackground";
 
 export const metadata: Metadata = {
   title: { default: "Chemica", template: "%s | Chemica" },
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <html lang="ja"><body>
-    <ChemicaBackground />
+    <ChemicaAnimatedBackground />
     <Header />
     {children}
     <SharePanel />

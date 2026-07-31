@@ -52,6 +52,15 @@ body {
 .mint-stroke { color: #79cdb8; stroke: #79cdb8; }.blue-stroke { color: #88bde0; stroke: #88bde0; }.pink-stroke { color: #e5a4bd; stroke: #e5a4bd; }.lavender-stroke { color: #aa9bd7; stroke: #aa9bd7; }.yellow-stroke { color: #d8bd70; stroke: #d8bd70; }
 .chem-bg-apparatus .liquid { stroke-width: 5; opacity: .6; }
 .chem-bg-dots circle { opacity: .62; }.mint-fill { fill: #91dac9; }.blue-fill { fill: #a7d4ef; }.pink-fill { fill: #efbdd0; }.lavender-fill { fill: #c3b9e7; }.yellow-fill { fill: #efdc9a; }
+.chemica-animated-background { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; user-select: none; transition: opacity .65s ease; }
+.chemica-animated-background.background-entrance { opacity: 1; }.chemica-animated-background.background-home { opacity: .68; }.chemica-animated-background.background-content { opacity: .42; }
+.animated-background-wash { position: absolute; z-index: 2; inset: 8% 15%; border-radius: 50%; background: radial-gradient(ellipse at center,rgba(255,255,255,.84),rgba(255,255,255,.48) 48%,transparent 76%); filter: blur(26px); }
+.chemistry-motif { position: absolute; z-index: 1; left: var(--motif-x); bottom: -30vh; width: var(--motif-size); height: var(--motif-size); color: var(--motif-color); opacity: var(--motif-opacity); animation: motifFloatUp var(--motif-duration) linear var(--motif-delay) infinite; transform-origin: center; will-change: transform; }
+.chemistry-motif > span { display: block; width: max-content; max-width: 34vw; color: currentColor; font-family: Georgia,"Times New Roman",serif; font-size: var(--motif-size); font-weight: 700; line-height: 1.2; white-space: nowrap; }
+.chemistry-motif.motif-reaction { width: auto; height: auto; }.chemistry-motif.motif-reaction > span { font-family: Consolas,"Courier New",monospace; font-size: var(--motif-size); }
+.chemistry-motif svg { display: block; width: 100%; height: 100%; overflow: visible; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.chemistry-motif.motif-bubble > i { display: block; width: 100%; height: 100%; border: 2px solid currentColor; border-radius: 50%; background: color-mix(in srgb,currentColor 10%,transparent); }
+@keyframes motifFloatUp { 0% { transform: translate3d(0,0,0) rotate(0); } 48% { transform: translate3d(calc(var(--motif-drift) * -.35),-67vh,0) rotate(calc(var(--motif-rotation) * .45)); } 100% { transform: translate3d(var(--motif-drift),-145vh,0) rotate(var(--motif-rotation)); } }
 a { color: inherit; text-decoration: none; }
 button, input, select { font: inherit; }
 button { cursor: pointer; }
@@ -523,6 +532,11 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
 }
 
 @media (max-width: 680px) {
+  .chemica-animated-background.background-entrance { opacity: .72; }
+  .chemica-animated-background.background-home { opacity: .48; }
+  .chemica-animated-background.background-content { opacity: .3; }
+  .chemistry-motif > span { max-width: 72vw; }
+  .animated-background-wash { inset: 10% 5%; background: radial-gradient(ellipse at center,rgba(255,255,255,.88),rgba(255,255,255,.5) 55%,transparent 82%); }
   .start-content { gap: 52px; width: calc(100% - 24px); padding: 40px 8px; }
   .start-logo .chemica-logo-hero .chemica-mark { width: clamp(68px,21vw,84px); height: clamp(68px,21vw,84px); transform: translateY(-5px); }
   .start-logo .chemica-logo-hero .chemica-wordmark strong { margin-left: -7px; font-size: clamp(48px,15vw,62px); letter-spacing: .045em; }
@@ -596,9 +610,11 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .floating-formula, .floating-motif, .start-bubbles i { animation: none !important; transform: translateY(-52vh); }
   .start-aurora { animation: none !important; }
+  .chemistry-motif { animation: none !important; transform: translate3d(0,-66vh,0) rotate(0); will-change: auto; }
 }
 
 @media print {
+  .chemica-animated-background { display: none !important; }
   .chemica-background { display: none !important; }
   body { background: white !important; }
   body * { visibility: hidden; }
