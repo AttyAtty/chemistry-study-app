@@ -31,17 +31,14 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
     <section className="hero home-hero">
       <div className="home-hero-main">
         <p className="eyebrow">CHEMICA</p>
-        <h1>化学を、<br />つなげて覚える。</h1>
-        <p className="hero-copy">反応も、色も、構造も。理解から演習までひとつに。</p>
+        <h1>化学は、<br />暗記だ。</h1>
+        <p className="hero-copy">反応・色・構造。覚えるべき膨大な知識を、図と問題に凝縮。</p>
         <div className="hero-actions">
           <a className="button primary" href="#units">単元を選ぶ</a>
           <Link className="button secondary" href="/quiz?unit=all&count=10">10問チャレンジ</Link>
         </div>
       </div>
       <div className="hero-visual" aria-hidden="true">
-        <span className="formula formula-b">e⁻</span>
-        <span className="formula formula-c">C₆H₆</span>
-        <div className="molecule"><i /><i /><i /><i /><i /><i /></div>
         <div className="featured-ion" style={{ "--ion-color": featuredIon.tone } as React.CSSProperties}>
           <small>今日のイオン</small>
           <strong>{featuredIon.formula}</strong>
