@@ -1,11 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ChemistryUnit } from "@/data/chemistry";
+
+const coloredMetalIons = [
+  { formula: "Cr³⁺", name: "クロム(III)イオン", color: "緑色", tone: "#73c49b" },
+  { formula: "Mn²⁺", name: "マンガン(II)イオン", color: "淡桃色", tone: "#efb2c4" },
+  { formula: "Fe²⁺", name: "鉄(II)イオン", color: "淡緑色", tone: "#a8d79d" },
+  { formula: "Fe³⁺", name: "鉄(III)イオン", color: "黄褐色", tone: "#d9a953" },
+  { formula: "Co²⁺", name: "コバルト(II)イオン", color: "赤色", tone: "#e28c9d" },
+  { formula: "Ni²⁺", name: "ニッケル(II)イオン", color: "緑色", tone: "#62bd8e" },
+  { formula: "Cu²⁺", name: "銅(II)イオン", color: "青色", tone: "#68afe6" },
+] as const;
 
 export function HomeClient({ units }: { units: ChemistryUnit[] }) {
   const [query, setQuery] = useState("");
+  const [ionIndex, setIonIndex] = useState(0);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setIonIndex(Math.floor(Math.random() * coloredMetalIons.length)), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+  const featuredIon = coloredMetalIons[ionIndex];
   const filtered = useMemo(() => {
     const word = query.trim().toLowerCase();
     return word ? units.filter(unit => [unit.title, unit.summary, ...unit.keywords].join(" ").toLowerCase().includes(word)) : units;
@@ -15,18 +31,23 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
     <section className="hero home-hero">
       <div className="home-hero-main">
         <p className="eyebrow">CHEMICA</p>
-        <h1>高校化学を、<br />見て、解いて、定着。</h1>
-        <p className="hero-copy">反応・色・構造を図で理解し、そのまま問題演習へ。</p>
+        <h1>化学を、<br />つなげて覚える。</h1>
+        <p className="hero-copy">反応も、色も、構造も。理解から演習までひとつに。</p>
         <div className="hero-actions">
           <a className="button primary" href="#units">単元を選ぶ</a>
           <Link className="button secondary" href="/quiz?unit=all&count=10">10問チャレンジ</Link>
         </div>
       </div>
       <div className="hero-visual" aria-hidden="true">
-        <span className="formula formula-a">Cu²⁺</span>
         <span className="formula formula-b">e⁻</span>
         <span className="formula formula-c">C₆H₆</span>
         <div className="molecule"><i /><i /><i /><i /><i /><i /></div>
+        <div className="featured-ion" style={{ "--ion-color": featuredIon.tone } as React.CSSProperties}>
+          <small>今日のイオン</small>
+          <strong>{featuredIon.formula}</strong>
+          <span>{featuredIon.color}</span>
+          <em>{featuredIon.name}</em>
+        </div>
       </div>
       <div className="hero-features" aria-label="このサイトでできること">
         <span><b>01</b> 図で理解</span>
