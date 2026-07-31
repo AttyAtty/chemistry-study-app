@@ -11,6 +11,6 @@ export function ChemicaMark({ className = "" }: { className?: string }) {
 export function ChemicaLogo({ variant = "header", showTagline = false }: LogoProps) {
   return <span className={`chemica-logo chemica-logo-${variant}`} aria-label="Chemica">
     <span className="chemica-wordmark"><ChemicaMark/><strong>hemica</strong></span>
-    {showTagline && <small>化学を、<span>味方に。</span></small>}
+    {showTagline && <small>化学の、<span>味方に。</span></small>}
   </span>;
 }

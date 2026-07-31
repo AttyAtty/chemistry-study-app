@@ -38,8 +38,7 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
   return <>
     <section className="hero home-hero">
       <div className="home-hero-main">
-        <p className="eyebrow">CHEMICA LEARNING</p>
-        <h1>化学を、<br /><span>もっと身近に。</span></h1>
+        <ChemicaLogo variant="hero" showTagline />
         <p className="hero-copy">反応・色・構造・実験を、図と問題でつなげて学べる高校化学学習アプリ。</p>
         <div className="hero-actions">
           <a className="button primary" href="#units">単元を選ぶ</a>
@@ -47,7 +46,6 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
         </div>
       </div>
       <div className="hero-visual">
-        <ChemicaLogo variant="hero" showTagline />
         <span className="hero-orb orb-a" aria-hidden="true"/><span className="hero-orb orb-b" aria-hidden="true"/><span className="hero-hexagon" aria-hidden="true"/>
         <div className="featured-ion" style={{ "--ion-color": featuredIon.tone } as CSSProperties}>
           <small>今日のイオン</small><strong>{featuredIon.formula}</strong><span>{featuredIon.color}</span><em>{featuredIon.name}</em>
@@ -56,11 +54,14 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
       </div>
     </section>
 
-    <section className="home-feature-grid" aria-label="Chemicaでできること">
-      {features.map(feature => <article className="home-feature-card" key={feature.number}>
-        <div className="feature-card-top"><span>{feature.number}</span><svg viewBox="0 0 24 24" aria-hidden="true">{feature.icon}</svg></div>
-        <h2>{feature.title}</h2><p>{feature.description}</p>
-      </article>)}
+    <section className="home-capabilities" aria-labelledby="capabilities-title">
+      <div className="capabilities-intro"><p className="eyebrow">WHAT YOU CAN DO</p><h2 id="capabilities-title">理解から定着まで、<br/>ひとつの場所で。</h2><p>見る、覚える、解く、印刷する。高校化学の学習を一つにつなげます。</p></div>
+      <div className="home-feature-grid">
+        {features.map(feature => <article className="home-feature-card" key={feature.number}>
+          <div className="feature-card-top"><span>{feature.number}</span><svg viewBox="0 0 24 24" aria-hidden="true">{feature.icon}</svg></div>
+          <h3>{feature.title}</h3><p>{feature.description}</p>
+        </article>)}
+      </div>
     </section>
 
     <section className="section-block" id="units">
