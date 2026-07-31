@@ -1,10 +1,5 @@
-import { HomeClient } from "@/components/HomeClient";
-import { chemistryUnits } from "@/data/chemistry";
+import { StartPage } from "@/components/StartPage";
 
-export default function Home() {
-  return (
-    <main className="page-container home-page">
-      <HomeClient units={chemistryUnits} />
-    </main>
-  );
+export default function Page() {
+  return <StartPage />;
 }

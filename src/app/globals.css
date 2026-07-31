@@ -105,6 +105,24 @@ nav a:hover { color: var(--primary); }
 
 .page-container { width: min(var(--content-max-width), calc(100% - 32px)); margin: 0 auto; }
 .home-page { padding-bottom: 72px; }
+.start-page { position: relative; width: 100%; min-height: 100svh; display: grid; place-items: center; overflow: hidden; isolation: isolate; background: radial-gradient(circle at 50% 44%,rgba(255,255,255,.98),rgba(248,252,255,.9) 48%,rgba(241,249,255,.82)); }
+body:has(.start-page) { overflow: hidden; }
+body:has(.start-page) > .site-header, body:has(.start-page) > .share-widget, body:has(.start-page) > .site-footer, body:has(.start-page) > .chemica-background { display: none; }
+.start-content { position: relative; z-index: 3; display: grid; justify-items: center; gap: clamp(48px,7vh,76px); width: min(1040px,calc(100% - 36px)); padding: 60px 20px; text-align: center; }
+.start-logo { margin: 0; font-size: inherit; font-weight: inherit; }
+.start-logo .chemica-logo-hero .chemica-mark { width: clamp(112px,13vw,158px); height: clamp(112px,13vw,158px); transform: translateY(-7px); }
+.start-logo .chemica-logo-hero .chemica-wordmark strong { margin-left: -12px; font-size: clamp(88px,12vw,142px); font-weight: 540; letter-spacing: .065em; }
+.start-logo .chemica-logo-hero > small { margin-top: 12px; margin-right: 2%; font-size: clamp(18px,2.2vw,27px); letter-spacing: .24em; }
+.start-button { min-width: 176px; min-height: 54px; display: inline-grid; place-items: center; padding: 0 34px; border-radius: 999px; background: linear-gradient(100deg,#70a8ff 0%,#a794ff 52%,#f28ac6 100%); color: white; box-shadow: 0 14px 35px rgba(123,126,223,.22); font-size: 16px; font-weight: 850; letter-spacing: .12em; transition: transform .2s ease,filter .2s ease,box-shadow .2s ease; }
+.start-button:hover { filter: brightness(1.06); transform: translateY(-2px); box-shadow: 0 18px 42px rgba(123,126,223,.27); }.start-button:active { transform: scale(.97); }.start-button:focus-visible { outline: 4px solid rgba(112,168,255,.35); outline-offset: 5px; }
+.start-background { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.start-background::after { content: ""; position: absolute; inset: 12% 18%; border-radius: 50%; background: rgba(255,255,255,.74); filter: blur(45px); }
+.start-aurora { position: absolute; border-radius: 50%; filter: blur(12px); opacity: .34; animation: auroraRise 55s ease-in-out infinite alternate; }.aurora-one { width: 360px; height: 360px; left: -100px; bottom: -120px; background: radial-gradient(circle,#a6f2d5,transparent 68%); }.aurora-two { width: 430px; height: 430px; right: -130px; bottom: -180px; background: radial-gradient(circle,#d5c4ff 0%,#ffcee1 43%,transparent 70%); animation-duration: 68s; }
+.floating-formula { position: absolute; z-index: 1; left: var(--float-x); bottom: -14vh; color: #7893ba; font-family: Georgia,"Times New Roman",serif; font-size: var(--float-size); font-weight: 700; opacity: .11; animation: chemistryRise var(--float-duration) linear var(--float-delay) infinite; will-change: transform; }
+.floating-motif { position: absolute; z-index: 1; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; opacity: .1; animation: chemistryRise 62s linear infinite; will-change: transform; }.motif-ring { width: 105px; left: 8%; bottom: -130px; color: #8baaf2; animation-delay: -18s; }.motif-flask { width: 82px; right: 10%; bottom: -150px; color: #65cdb3; animation-delay: -39s; animation-duration: 74s; }.motif-molecule { width: 112px; left: 74%; bottom: -120px; color: #dc8fb2; animation-delay: -8s; animation-duration: 57s; }
+.start-bubbles i { position: absolute; bottom: -40px; width: 12px; height: 12px; border: 2px solid #8cc9ff; border-radius: 50%; opacity: .12; animation: chemistryRise 42s linear infinite; }.start-bubbles i:nth-child(1){left:13%;animation-delay:-8s}.start-bubbles i:nth-child(2){left:24%;width:20px;height:20px;animation-delay:-27s;animation-duration:58s}.start-bubbles i:nth-child(3){left:38%;animation-delay:-16s}.start-bubbles i:nth-child(4){left:62%;width:17px;height:17px;animation-delay:-34s}.start-bubbles i:nth-child(5){left:82%;animation-delay:-5s}.start-bubbles i:nth-child(6){left:91%;width:24px;height:24px;animation-delay:-42s;animation-duration:65s}.start-bubbles i:nth-child(7){left:48%;width:8px;height:8px;animation-delay:-21s}.start-bubbles i:nth-child(8){left:5%;width:16px;height:16px;animation-delay:-48s;animation-duration:67s}
+@keyframes chemistryRise { from { transform: translate3d(0,0,0) rotate(0deg); } to { transform: translate3d(0,-125vh,0) rotate(10deg); } }
+@keyframes auroraRise { from { transform: translate3d(0,35px,0) scale(.96); } to { transform: translate3d(30px,-80px,0) scale(1.08); } }
 .hero {
   margin: 44px 0 64px;
   padding: 54px;
@@ -486,6 +504,13 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
 }
 
 @media (max-width: 680px) {
+  .start-content { gap: 52px; width: calc(100% - 24px); padding: 40px 8px; }
+  .start-logo .chemica-logo-hero .chemica-mark { width: clamp(68px,21vw,84px); height: clamp(68px,21vw,84px); transform: translateY(-5px); }
+  .start-logo .chemica-logo-hero .chemica-wordmark strong { margin-left: -7px; font-size: clamp(48px,15vw,62px); letter-spacing: .045em; }
+  .start-logo .chemica-logo-hero > small { margin-top: 10px; font-size: 15px; letter-spacing: .17em; }
+  .start-button { min-width: 168px; min-height: 54px; }
+  .floating-formula:nth-of-type(n+7), .motif-molecule { display: none; }
+  .start-aurora { opacity: .25; }
   .chemica-background svg { width: 145%; margin-left: -22%; opacity: .14; }
   .chemica-background::after { background: rgba(255,255,255,.68); }
   .header-inner { min-height: 64px; padding: 8px 0; align-items: center; }
@@ -550,6 +575,8 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .floating-formula, .floating-motif, .start-bubbles i { animation: none !important; transform: translateY(-52vh); }
+  .start-aurora { animation: none !important; }
 }
 
 @media print {
