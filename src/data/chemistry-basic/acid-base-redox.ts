@@ -1,0 +1,100 @@
+import type { QuizQuestion } from "@/data/chemistry";
+import { cards, factQuestions, makeBasicUnit, table, type BasicFact } from "./helpers";
+
+const facts: BasicFact[] = [
+  { term: "アレニウスの酸", definition: "水溶液中でH⁺を生じる物質", distractors: ["水溶液中でOH⁻を生じる物質", "電子を受け取る物質だけ", "水に溶けない物質"] },
+  { term: "アレニウスの塩基", definition: "水溶液中でOH⁻を生じる物質", distractors: ["水溶液中でH⁺を生じる物質", "酸素を失う物質", "中性塩だけ"] },
+  { term: "酸・塩基の価数", definition: "酸1分子が出せるH⁺、または塩基1化学式単位が出せるOH⁻の数", distractors: ["電離の割合", "溶液の濃度", "pHの値"] },
+  { term: "酸・塩基の強弱", definition: "水中での電離の程度を表す性質", distractors: ["溶液中の物質量だけ", "価数と同じ概念", "色の濃さ"] },
+  { term: "強酸", definition: "HCl・HNO₃・H₂SO₄など、水中でほぼ完全に電離する酸", distractors: ["CH₃COOHとH₂CO₃", "NH₃だけ", "濃度が高い酸の総称"] },
+  { term: "弱塩基", definition: "NH₃など、水との反応・電離が一部にとどまる塩基", distractors: ["NaOHとKOH", "Ca(OH)₂とBa(OH)₂", "濃度が低い塩基の総称"] },
+  { term: "電離度", definition: "溶解した電解質のうち電離した割合", distractors: ["酸の価数", "溶質の質量百分率", "中和に必要な体積"] },
+  { term: "強電解質", definition: "水溶液中でほぼ完全に電離する物質", distractors: ["水に溶けてもイオンを生じない物質", "一部だけ電離する物質", "固体で電気を通す金属だけ"] },
+  { term: "pH", definition: "pH=−log₁₀[H⁺]で表される酸性・塩基性の尺度", distractors: ["[H⁺]そのもの", "酸の価数", "溶質質量の割合"] },
+  { term: "水のイオン積", definition: "常温で[H⁺][OH⁻]=1.0×10⁻¹⁴", distractors: ["[H⁺]+[OH⁻]=14", "[H⁺][OH⁻]=1", "pH×pOH=14"] },
+  { term: "BTB", definition: "酸性で黄、中性で緑、塩基性で青を示す指示薬", distractors: ["酸性で赤、塩基性で無色", "常に紫色", "塩基性で黄色だけ"] },
+  { term: "フェノールフタレイン", definition: "酸性・中性で無色、塩基性で赤〜赤紫色を示す指示薬", distractors: ["酸性で黄、中性で緑", "塩基性で無色", "酸性で青"] },
+  { term: "中和", definition: "酸と塩基が反応し、基本的に水と塩を生じる反応", distractors: ["金属だけが溶ける反応", "酸素だけを生じる反応", "電子を生じない反応すべて"] },
+  { term: "中和の正味イオン反応式", definition: "H⁺+OH⁻→H₂O", distractors: ["H₂O→H⁺+OH⁻のみ", "H⁺+e⁻→H", "Na⁺+Cl⁻→NaCl↓"] },
+  { term: "中和の量的関係", definition: "酸が出すH⁺のmolと塩基が出すOH⁻のmolが等しい", distractors: ["酸と塩基の体積が常に等しい", "pHが常に7になる前だけ", "質量が常に等しい"] },
+  { term: "中和点", definition: "酸と塩基が化学量論的に過不足なく反応した点", distractors: ["指示薬の色を目で判断した点だけ", "滴定開始点", "必ずpH 7の点"] },
+  { term: "終点", definition: "指示薬の変色などから実験的に滴定終了と判断した点", distractors: ["理論上の中和点だけ", "溶液を量り始めた点", "沸騰した点"] },
+  { term: "ビュレットの共洗い", definition: "内部の水による滴定液の希釈を防ぐため、使用液で洗う操作", distractors: ["外側を乾かすだけ", "蒸留水を残して濃度を下げる操作", "反応を速める操作"] },
+  { term: "ホールピペット", definition: "一定体積の溶液を高精度で量り取る器具", distractors: ["滴下量を連続測定する器具", "溶液を加熱する器具", "固体質量を測る器具"] },
+  { term: "メスフラスコ", definition: "標線まで液を加え、一定体積の溶液を調製する器具", distractors: ["加熱して蒸留する器具", "滴定液を滴下する器具", "気体を集める器具"] },
+  { term: "酸性塩", definition: "陰イオン中に電離可能なHを残す塩で、名称と水溶液の液性は別問題", distractors: ["水溶液が必ず酸性の塩", "OHを含む塩だけ", "中和で生じない塩"] },
+  { term: "加水分解", definition: "塩のイオンが水と反応し、溶液の液性へ影響する反応", distractors: ["水を電気分解すること", "塩が沈殿するだけの現象", "状態変化"] },
+  { term: "酸化（電子）", definition: "電子を失う変化", distractors: ["電子を受け取る変化", "酸素を失う変化だけ", "酸化数が減少する変化"] },
+  { term: "還元（電子）", definition: "電子を受け取る変化", distractors: ["電子を失う変化", "水素を失う変化", "酸化数が増加する変化"] },
+  { term: "酸化数", definition: "結合電子を一定規則で割り当てたときの仮想的な電荷", distractors: ["原子番号", "価電子数だけ", "実在するイオン電荷だけ"] },
+  { term: "酸化数の増加", definition: "酸化されたことを表す", distractors: ["還元されたことを表す", "電離していないことを表す", "中和だけを表す"] },
+  { term: "酸化剤", definition: "相手を酸化し、自身は電子を受け取って還元される物質", distractors: ["相手を還元し自身が酸化される物質", "電子を必ず放出する物質", "触媒の別名"] },
+  { term: "還元剤", definition: "相手を還元し、自身は電子を失って酸化される物質", distractors: ["相手を酸化し自身が還元される物質", "電子を必ず受け取る物質", "塩基の別名"] },
+  { term: "酸化半反応", definition: "電子を生成物側に含む半反応式", distractors: ["電子を反応物側に含む半反応式", "電子を含まない中和式", "必ず酸素を含む式"] },
+  { term: "イオン化傾向", definition: "金属が電子を失って陽イオンになろうとする傾向", distractors: ["陰イオンが電子を失う傾向", "非金属の沸点順", "金属の密度順"] },
+  { term: "犠牲防食", definition: "鉄よりイオン化傾向の大きい金属を先に酸化させて鉄を守る方法", distractors: ["鉄を強制的に酸化する方法", "酸を加える方法", "電解質を増やす方法"] },
+  { term: "電池の負極", definition: "酸化が起こり、電子を外部回路へ送り出す電極", distractors: ["還元が起こる正極", "電解液中を電子が流れ込む場所", "常に銅だけでできた電極"] },
+  { term: "電池の正極", definition: "還元が起こり、外部回路から電子を受け取る電極", distractors: ["酸化が起こる負極", "電子を外部へ出す電極", "常に亜鉛だけでできた電極"] },
+  { term: "ダニエル電池の全反応", definition: "Zn+Cu²⁺→Zn²⁺+Cu", distractors: ["Cu+Zn²⁺→Cu²⁺+Zn", "Zn²⁺+2e⁻→Znだけ", "2H⁺+2e⁻→H₂だけ"] },
+];
+
+const customQuestions: QuizQuestion[] = [
+  { id: "basic3-calc-1", prompt: "[H⁺]=1.0×10⁻³ mol/Lの水溶液のpHは？", choices: ["3", "11", "−3", "14"], answerIndex: 0, explanation: "pH=−log₁₀(10⁻³)=3です。", tags: ["計算", "pH"] },
+  { id: "basic3-calc-2", prompt: "常温で[OH⁻]=1.0×10⁻⁴ mol/Lの水溶液のpHは？", choices: ["10", "4", "14", "8"], answerIndex: 0, explanation: "pOH=4、pH+pOH=14よりpH=10です。", tags: ["計算", "pH"] },
+  { id: "basic3-calc-3", prompt: "0.10 mol/L HCl 20.0 mLを中和する0.20 mol/L NaOHは何mL必要ですか。", choices: ["10.0 mL", "20.0 mL", "40.0 mL", "5.0 mL"], answerIndex: 0, explanation: "どちらも1価。0.10×20.0=0.20×VよりV=10.0 mLです。", tags: ["計算", "中和"] },
+  { id: "basic3-calc-4", prompt: "0.10 mol/L H₂SO₄ 10 mLのH⁺を中和する1価塩基の物質量は？", choices: ["2.0×10⁻³ mol", "1.0×10⁻³ mol", "1.0×10⁻² mol", "2.0 mol"], answerIndex: 0, explanation: "酸は0.10×0.010=1.0×10⁻³ mol、2価なのでH⁺は2倍です。", tags: ["計算", "価数"] },
+  { id: "basic3-calc-5", prompt: "H₂SO₄中のSの酸化数は？", choices: ["+6", "+4", "−2", "0"], answerIndex: 0, explanation: "2×(+1)+S+4×(−2)=0よりS=+6です。", tags: ["計算", "酸化数"] },
+  { id: "basic3-calc-6", prompt: "NO₃⁻中のNの酸化数は？", choices: ["+5", "+3", "−3", "+1"], answerIndex: 0, explanation: "N+3×(−2)=−1よりN=+5です。", tags: ["計算", "酸化数"] },
+  { id: "basic3-calc-7", prompt: "KMnO₄中のMnの酸化数は？", choices: ["+7", "+2", "+4", "−1"], answerIndex: 0, explanation: "+1+Mn+4×(−2)=0よりMn=+7です。", tags: ["計算", "酸化数"] },
+  { id: "basic3-calc-8", prompt: "Zn→Zn²⁺+2e⁻でZnはどう変化しましたか。", choices: ["酸化された", "還元された", "中和された", "電離していない"], answerIndex: 0, explanation: "電子を失う変化は酸化です。", tags: ["半反応式", "酸化"] },
+  { id: "basic3-exp-1", prompt: "中和滴定でコニカルビーカーを蒸留水ですすいだ後、少量の水が残ってもよい理由は？", choices: ["試料の物質量は変わらないから", "試料濃度が高くなるから", "終点が必ずpH 7だから", "滴定液の物質量が増えるから"], answerIndex: 0, explanation: "水で濃度は変わっても、量り取った試料の物質量は変わりません。", tags: ["実験", "滴定"] },
+  { id: "basic3-exp-2", prompt: "ビュレットの目盛を読む正しい方法は？", choices: ["目の高さを液面に合わせ、メニスカスを読む", "上から見下ろす", "下から見上げる", "最初の値だけ読む"], answerIndex: 0, explanation: "視差を避け、通常は液面の最下部を読みます。初値と終値の差が滴下量です。", tags: ["実験", "器具"] },
+  { id: "basic3-exp-3", prompt: "鉄の防食方法として適切なのは？", choices: ["亜鉛めっきで亜鉛を先に酸化させる", "食塩水へ浸す", "酸性に保つ", "銅イオンを加えて鉄を溶かす"], answerIndex: 0, explanation: "亜鉛は鉄よりイオン化傾向が大きく、傷があっても犠牲的に酸化されます。", tags: ["実験", "腐食"] },
+  { id: "basic3-exam-1", prompt: "『0.001 mol/LのHClは薄いので弱酸である』という説明は正しいですか。", choices: ["誤り。強弱は電離度、濃薄は濃度", "正しい。薄い酸はすべて弱酸", "正しい。pHが7に近いから", "誤り。HClは塩基だから"], answerIndex: 0, explanation: "HClは濃度が低くても強酸です。強弱と濃薄を区別します。", tags: ["共通テスト", "酸塩基"] },
+];
+
+export const chemistryBasicAcidBaseRedox = makeBasicUnit({
+  slug: "chemistry-basic-acid-base-redox",
+  title: "化学基礎Ⅲ：酸・塩基と酸化還元",
+  shortTitle: "基礎Ⅲ 酸塩基・酸化還元",
+  icon: "⇄",
+  summary: "酸・塩基、pH、中和滴定から、酸化数、電子の授受、金属、腐食、電池までをつなげます。",
+  keywords: ["化学基礎", "酸塩基", "pH", "中和滴定", "酸化還元", "電池"],
+  sections: [
+    cards("acid-base", "酸・塩基、価数、強弱、電離", "価数・強弱・濃度を別の概念として整理します。", [
+      { title: "定義と価数", body: "アレニウスの酸は水中でH⁺、塩基はOH⁻を生じます。HCl/HNO₃/CH₃COOHは1価、H₂SO₄/H₂CO₃は2価、H₃PO₄は3価。NaOH/KOH/NH₃は1価、Ca(OH)₂/Ba(OH)₂は2価です。" },
+      { title: "強弱と濃薄", body: "強酸：HCl・HNO₃・H₂SO₄、弱酸：CH₃COOH・H₂CO₃、強塩基：NaOH・KOH・Ca(OH)₂・Ba(OH)₂、弱塩基：NH₃。強弱は電離度、濃薄は濃度です。" },
+      { title: "電離式", body: "HCl→H⁺+Cl⁻、CH₃COOH⇄H⁺+CH₃COO⁻、NaOH→Na⁺+OH⁻、NH₃+H₂O⇄NH₄⁺+OH⁻。一方向矢印と平衡矢印を区別します。" },
+    ]),
+    table("indicators", "pHと指示薬", "常温で[H⁺][OH⁻]=1.0×10⁻¹⁴、pH+pOH=14です。", ["指示薬", "酸性", "中性", "塩基性・変色域"], [
+      ["リトマス", "赤", "—", "青"], ["BTB", "黄", "緑", "青（pH 6.0–7.6）"], ["フェノールフタレイン", "無色", "無色", "赤〜赤紫（pH 8.2–10.0）"], ["メチルオレンジ", "赤", "黄", "黄（pH 3.1–4.4で赤→黄）"], ["万能指示薬", "赤〜黄", "緑", "青〜紫"],
+    ]),
+    cards("neutralization", "中和と量的関係", "価数を含むH⁺とOH⁻の物質量を等しくします。", [
+      { title: "基本反応", body: "H⁺+OH⁻→H₂O。HCl+NaOH→NaCl+H₂O、H₂SO₄+2NaOH→Na₂SO₄+2H₂O、2HCl+Ca(OH)₂→CaCl₂+2H₂O。" },
+      { title: "計算式", body: "酸の濃度×体積×価数＝塩基の濃度×体積×価数。体積は同じ単位にそろえます。" },
+      { title: "塩", body: "正塩：NaCl・Na₂SO₄、酸性塩：NaHCO₃・NaHSO₄。名称の『酸性』と水溶液の液性は一致するとは限らず、加水分解も考えます。" },
+    ]),
+    cards("titration", "中和滴定と器具", "器具の役割と洗浄理由をセットで理解します。", [
+      { title: "操作", body: "ホールピペットで試料を量り、コニカルビーカーへ移し、ビュレットから標準溶液を滴下します。指示薬の変色を終点として濃度を求めます。" },
+      { title: "共洗い", body: "ホールピペットとビュレットは使用液で共洗いします。コニカルビーカーは蒸留水で洗い、水が残っても試料の物質量は変わりません。" },
+      { title: "標準溶液の調製", body: "メスフラスコは標線へメニスカスを合わせます。滴定は近い値が得られた複数回を平均し、器具の精度に応じた有効数字で記録します。" },
+    ]),
+    cards("redox", "酸化・還元と酸化数", "酸素・水素の定義から電子の授受へ統一します。", [
+      { title: "三つの見方", body: "酸化＝酸素を受け取る／水素を失う／電子を失う。還元＝酸素を失う／水素を受け取る／電子を受け取る。" },
+      { title: "酸化数の規則", body: "単体0、単原子イオンは電荷、化合物の総和0、多原子イオンの総和は電荷。Hは通常+1、Oは通常−2。増加が酸化、減少が還元です。" },
+      { title: "酸化剤と還元剤", body: "酸化剤は相手を酸化し自身は還元、還元剤は相手を還元し自身は酸化されます。名称は相手に与える作用を表します。" },
+    ]),
+    table("oxidation-numbers", "代表的な酸化数", "総和の規則から未知の酸化数を求めます。", ["物質・イオン", "注目元素", "酸化数"], [["H₂O", "H / O", "+1 / −2"], ["CO₂", "C", "+4"], ["H₂SO₄", "S", "+6"], ["NO₃⁻", "N", "+5"], ["KMnO₄", "Mn", "+7"], ["Cr₂O₇²⁻", "Cr", "+6"], ["NH₄⁺", "N", "−3"]]),
+    cards("metals", "半反応式・金属・腐食", "電子数をそろえ、金属の反応性を予測します。", [
+      { title: "半反応式", body: "Zn→Zn²⁺+2e⁻（酸化）、Cu²⁺+2e⁻→Cu（還元）。電子数をそろえて加えるとZn+Cu²⁺→Zn²⁺+Cuです。" },
+      { title: "イオン化傾向", body: "K Ca Na Mg Al Zn Fe Ni Sn Pb (H₂) Cu Hg Ag Pt Au。大きい金属ほど陽イオンになりやすく、水・酸・他の金属イオンとの反応を判断できます。" },
+      { title: "腐食と防食", body: "鉄のさびは酸化反応です。塗装、めっき、表面被膜、合金化、亜鉛などによる犠牲防食で進行を抑えます。" },
+    ]),
+    cards("battery", "酸化還元と電池", "詳細は既存の電池・電気分解単元へ接続します。", [
+      { title: "電池の原理", body: "自発的な酸化還元反応で化学エネルギーを電気エネルギーへ変換します。負極で酸化、正極で還元、電子は外部回路を負極から正極へ流れます。" },
+      { title: "ボルタ電池", body: "負極Zn→Zn²⁺+2e⁻、正極2H⁺+2e⁻→H₂。分極により起電力が低下しやすい電池です。" },
+      { title: "ダニエル電池", body: "負極Zn→Zn²⁺+2e⁻、正極Cu²⁺+2e⁻→Cu、全反応Zn+Cu²⁺→Zn²⁺+Cu。塩橋などが電気的中性を保ちます。", note: "さらに学ぶ：既存の「電池と電気分解」単元で装置・比較・シミュレーションを確認できます。" },
+    ]),
+  ],
+  questions: [...factQuestions("basic3", facts), ...customQuestions],
+});

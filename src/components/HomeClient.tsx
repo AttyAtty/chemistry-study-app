@@ -25,7 +25,8 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
   const featuredPrecipitate = dailyPrecipitates[(daySeed * 5 + 2) % dailyPrecipitates.length];
   const filtered = useMemo(() => {
     const word = query.trim().toLowerCase();
-    return word ? units.filter(unit => [unit.title, unit.summary, ...unit.keywords].join(" ").toLowerCase().includes(word)) : units;
+    const regularUnits = units.filter(unit => !unit.slug.startsWith("chemistry-basic-"));
+    return word ? regularUnits.filter(unit => [unit.title, unit.summary, ...unit.keywords].join(" ").toLowerCase().includes(word)) : regularUnits;
   }, [query, units]);
 
   return <>
@@ -55,6 +56,13 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
         <label className="search-box"><span>単元を検索</span><input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="例：電池、気体、ベンゼン" /></label>
       </div>
       <div className="unit-grid home-unit-grid">
+        <article className="unit-card home-unit-card chemistry-basic-entry">
+          <div className="unit-card-top"><span className="unit-number">COURSE</span><span className="level-chip">化学基礎</span></div>
+          <h3>化学基礎コース</h3>
+          <p>物質の構成、物質量と反応式、酸・塩基と酸化還元を、3単元の独立した学習経路で学びます。</p>
+          <div className="tag-row"><span>文系受験</span><span>共通テスト</span><span>310問以上</span></div>
+          <div className="card-actions"><Link className="text-link" href="/courses/chemistry-basic">コースを見る <span>→</span></Link><Link className="mini-button" href="/quiz?unit=chemistry-basic-comprehensive&count=10">10問</Link></div>
+        </article>
         {filtered.map(unit => <article className="unit-card home-unit-card" key={unit.slug}>
           <div className="unit-card-top"><span className="unit-number">{String(units.indexOf(unit) + 1).padStart(2, "0")}</span><span className="level-chip">{unit.level}</span></div>
           <h3>{unit.title}</h3><p>{unit.summary}</p>

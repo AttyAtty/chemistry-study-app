@@ -656,3 +656,50 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
   @page worksheet { size: A4 portrait; margin: 8mm; }
   @page electrochemistry-quiz { size: A4 portrait; margin: 8mm; }
 }
+
+/* Chemistry basics course */
+.chemistry-basic-entry { grid-column: 1 / -1; background: linear-gradient(135deg,rgba(166,242,213,.34),rgba(140,201,255,.22),rgba(197,166,255,.2)); }
+.basic-course-hero { display:grid; grid-template-columns:minmax(0,1fr) 260px; gap:32px; align-items:center; margin:26px 0 54px; padding:clamp(28px,5vw,58px); border:1px solid var(--color-border,var(--line)); border-radius:var(--radius-lg,28px); background:rgba(255,255,255,.9); box-shadow:var(--shadow-card,0 14px 40px rgba(75,94,135,.08)); }
+.basic-course-hero h1 { margin:8px 0 14px; font-size:clamp(48px,7vw,82px); color:var(--chemica-navy,#17284d); }
+.basic-course-hero p:not(.eyebrow) { max-width:720px; color:var(--chemica-text-muted,#6d7893); line-height:1.9; }
+.basic-progress-panel { display:grid; place-items:center; gap:8px; padding:24px; border-radius:22px; background:linear-gradient(145deg,rgba(140,201,255,.18),rgba(255,155,196,.15)); }
+.basic-progress-panel strong { font-size:44px; color:var(--chemica-navy,#17284d); }
+.basic-progress-panel span,.basic-progress-panel small { color:var(--chemica-text-muted,#6d7893); }
+.basic-progress-track { width:100%; height:8px; overflow:hidden; border-radius:99px; background:rgba(23,40,77,.08); }
+.basic-progress-track i { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#70a8ff,#a794ff,#f28ac6); }
+.basic-unit-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+.basic-unit-card { position:relative; min-width:0; padding:26px; overflow:hidden; border:1px solid var(--color-border,var(--line)); border-radius:22px; background:rgba(255,255,255,.92); box-shadow:0 12px 34px rgba(75,94,135,.07); }
+.basic-unit-card::before { content:""; position:absolute; inset:0 0 auto; height:5px; background:var(--basic-accent,#8cc9ff); }
+.basic-unit-card.accent-mint { --basic-accent:#a6f2d5; }.basic-unit-card.accent-purple { --basic-accent:#c5a6ff; }.basic-unit-card.accent-pink { --basic-accent:#ff9bc4; }
+.basic-unit-order { display:grid; place-items:center; width:38px; height:38px; margin-bottom:18px; border-radius:50%; background:color-mix(in srgb,var(--basic-accent) 32%,white); color:#17284d; font-weight:800; }
+.basic-unit-card .level-chip { position:absolute; top:24px; right:22px; }
+.basic-unit-card h3 { margin:0 0 10px; color:#17284d; font-size:21px; }.basic-unit-card p { min-height:88px; color:#6d7893; line-height:1.7; }
+.basic-unit-card small { display:block; margin-top:7px; color:#6d7893; }.basic-unit-card .card-actions { margin-top:20px; }
+.basic-course-tools { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:46px 0 64px; }
+.basic-course-tools a,.basic-course-tools button { display:flex; flex-direction:column; gap:5px; padding:22px; border:1px solid rgba(77,105,160,.12); border-radius:18px; background:rgba(255,255,255,.88); color:#17284d; text-align:left; font:inherit; cursor:pointer; box-shadow:0 10px 28px rgba(75,94,135,.06); }
+.basic-course-tools strong { font-size:18px; }.basic-course-tools span { color:#6d7893; font-size:13px; }
+.formula-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.formula-grid article,.glossary-grid article { padding:20px; border:1px solid rgba(77,105,160,.12); border-radius:18px; background:rgba(255,255,255,.9); break-inside:avoid; }
+.formula-grid h3,.glossary-grid h3 { margin:0 0 9px; color:#17284d; }.formula-grid code { display:block; padding:10px 12px; overflow-wrap:anywhere; border-radius:10px; background:rgba(140,201,255,.14); color:#17284d; font-size:15px; }
+.formula-grid p,.glossary-grid p { color:#6d7893; line-height:1.7; }.formula-grid small,.glossary-grid small { color:#7a6bb1; }
+.glossary-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.chemistry-basic-unit .section-nav { position:sticky; top:78px; z-index:4; background:rgba(248,251,255,.9); backdrop-filter:blur(12px); }
+
+@media (max-width:900px) {
+  .basic-course-hero { grid-template-columns:1fr; }.basic-progress-panel { max-width:none; }
+  .basic-unit-grid,.formula-grid { grid-template-columns:1fr 1fr; }.glossary-grid { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:620px) {
+  .basic-course-hero { padding:25px 18px; }.basic-course-tools,.basic-unit-grid,.formula-grid,.glossary-grid { grid-template-columns:1fr; }
+  .basic-unit-card p { min-height:0; }.chemistry-basic-unit .section-nav { position:static; }
+}
+
+@media print {
+  .chemistry-basic-print,.chemistry-basic-print * { visibility:visible !important; }
+  .chemistry-basic-print { position:absolute; inset:0; width:100%; margin:0; padding:0 7mm; background:white !important; color:black; }
+  .chemistry-basic-print .unit-hero,.chemistry-basic-print .basic-course-hero { margin:0 0 8mm; padding:5mm; box-shadow:none; background:white; }
+  .chemistry-basic-print .unit-quiz-panel,.chemistry-basic-print .basic-progress-panel,.chemistry-basic-print .basic-course-tools { display:none !important; }
+  .chemistry-basic-print article,.chemistry-basic-print table,.chemistry-basic-print .study-section { break-inside:avoid; box-shadow:none !important; }
+  .chemistry-basic-print .formula-grid { grid-template-columns:repeat(2,1fr); }
+  .chemistry-basic-print .glossary-grid { grid-template-columns:repeat(3,1fr); }
+}

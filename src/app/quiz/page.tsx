@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { QuizClient } from "@/components/QuizClient";
 import { chemistryUnits, getAllQuestions, getUnit } from "@/data/chemistry";
+import { chemistryBasicComprehensiveQuestions } from "@/data/chemistry-basic";
 
 export const metadata: Metadata = { title: "テスト" };
 
@@ -22,7 +23,7 @@ export default async function QuizPage({
   const params = await searchParams;
   const unitSlug = params.unit ?? "all";
   const rawCount = Number(params.count ?? 10);
-  const count = Number.isFinite(rawCount) ? Math.max(1, Math.min(rawCount, 30)) : 10;
+  const count = Number.isFinite(rawCount) ? Math.max(1, Math.min(rawCount, 50)) : 10;
 
   if (!params.unit) {
     return (
@@ -62,6 +63,18 @@ export default async function QuizPage({
     return (
       <main className="page-container">
         <QuizClient questions={sampleQuestions(getAllQuestions(), count)} unitSlug="all" unitTitle="総合テスト" />
+      </main>
+    );
+  }
+
+  if (unitSlug === "chemistry-basic-comprehensive") {
+    return (
+      <main className="page-container">
+        <QuizClient
+          questions={sampleQuestions(chemistryBasicComprehensiveQuestions, count)}
+          unitSlug="chemistry-basic-comprehensive"
+          unitTitle="化学基礎 総合テスト"
+        />
       </main>
     );
   }
