@@ -96,6 +96,18 @@ nav a:hover { color: var(--primary); }
 .chemica-logo { display: inline-grid; color: var(--chemica-navy); }
 .chemica-wordmark { display: inline-flex; align-items: center; }
 .chemica-mark { flex: none; width: 42px; height: 42px; overflow: visible; transform: translateY(-4px); }
+.chemica-link { stroke-dasharray: 1; stroke-dashoffset: 0; opacity: 1; }
+.chemica-mark-idle .chemica-link { stroke-dashoffset: 1; opacity: 0; }
+.chemica-mark-connecting .chemica-link { stroke-dashoffset: 1; opacity: 1; animation: chemicaConnectLine .16s ease-out forwards; }
+.chemica-mark-connecting .chemica-link-1 { animation-delay: .18s; }.chemica-mark-connecting .chemica-link-2 { animation-delay: .30s; }.chemica-mark-connecting .chemica-link-3 { animation-delay: .42s; }.chemica-mark-connecting .chemica-link-4 { animation-delay: .54s; }.chemica-mark-connecting .chemica-link-5 { animation-delay: .66s; }
+.chemica-mark-connecting .chemica-mark-dots { transform-origin: 46px 55px; animation: chemicaDotPulse .24s ease-out; filter: drop-shadow(0 0 6px rgba(140,201,255,.32)); }
+.chemica-mark-connecting .chemica-mark-motion { transform-origin: 46px 55px; animation: chemicaMarkComplete .9s ease-out forwards; }
+.chemica-mark-loading .chemica-mark-motion { transform-origin: 46px 55px; animation: chemicaMarkSpin 1.6s linear infinite; }
+.chemica-loading-mark { display: inline-grid; justify-items: center; gap: 8px; color: var(--muted); font-size: 12px; }.chemica-loading-mark .chemica-mark { width: 52px; height: 52px; }
+@keyframes chemicaConnectLine { to { stroke-dashoffset: 0; } }
+@keyframes chemicaDotPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+@keyframes chemicaMarkComplete { 0%,72% { transform: rotate(0) scale(1); } 84% { transform: rotate(24deg) scale(1.08); } 100% { transform: rotate(0) scale(1); } }
+@keyframes chemicaMarkSpin { to { transform: rotate(360deg); } }
 .chemica-wordmark strong { margin-left: -3px; font-size: 25px; font-weight: 650; letter-spacing: .055em; line-height: 1; }
 .chemica-logo-header small { display: none; }
 .chemica-logo-hero .chemica-mark { width: 92px; height: 92px; }
@@ -109,6 +121,9 @@ nav a:hover { color: var(--primary); }
 body:has(.start-page) { overflow: hidden; }
 body:has(.start-page) > .site-header, body:has(.start-page) > .share-widget, body:has(.start-page) > .site-footer, body:has(.start-page) > .chemica-background { display: none; }
 .start-content { position: relative; z-index: 3; display: grid; justify-items: center; gap: clamp(48px,7vh,76px); width: min(1040px,calc(100% - 36px)); padding: 60px 20px; text-align: center; }
+.start-page.is-transitioning .start-content { animation: startLogoExit 1.08s ease-in forwards; }
+.start-page.is-transitioning .start-button { pointer-events: none; }
+.start-button:disabled { opacity: .64; cursor: wait; }
 .start-logo { margin: 0; font-size: inherit; font-weight: inherit; }
 .start-logo .chemica-logo-hero .chemica-mark { width: clamp(112px,13vw,158px); height: clamp(112px,13vw,158px); transform: translateY(-7px); }
 .start-logo .chemica-logo-hero .chemica-wordmark strong { margin-left: -12px; font-size: clamp(88px,12vw,142px); font-weight: 540; letter-spacing: .065em; }
@@ -123,6 +138,10 @@ body:has(.start-page) > .site-header, body:has(.start-page) > .share-widget, bod
 .start-bubbles i { position: absolute; bottom: -40px; width: 12px; height: 12px; border: 2px solid #8cc9ff; border-radius: 50%; opacity: .12; animation: chemistryRise 42s linear infinite; }.start-bubbles i:nth-child(1){left:13%;animation-delay:-8s}.start-bubbles i:nth-child(2){left:24%;width:20px;height:20px;animation-delay:-27s;animation-duration:58s}.start-bubbles i:nth-child(3){left:38%;animation-delay:-16s}.start-bubbles i:nth-child(4){left:62%;width:17px;height:17px;animation-delay:-34s}.start-bubbles i:nth-child(5){left:82%;animation-delay:-5s}.start-bubbles i:nth-child(6){left:91%;width:24px;height:24px;animation-delay:-42s;animation-duration:65s}.start-bubbles i:nth-child(7){left:48%;width:8px;height:8px;animation-delay:-21s}.start-bubbles i:nth-child(8){left:5%;width:16px;height:16px;animation-delay:-48s;animation-duration:67s}
 @keyframes chemistryRise { from { transform: translate3d(0,0,0) rotate(0deg); } to { transform: translate3d(0,-125vh,0) rotate(10deg); } }
 @keyframes auroraRise { from { transform: translate3d(0,35px,0) scale(.96); } to { transform: translate3d(30px,-80px,0) scale(1.08); } }
+@keyframes startLogoExit { 0%,78% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.04); } }
+.home-page { animation: homePageEnter .38s ease-out both; }
+@keyframes homePageEnter { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+.sr-only { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
 .hero {
   margin: 44px 0 64px;
   padding: 54px;
