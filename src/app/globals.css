@@ -377,6 +377,26 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
 
 .site-footer { padding: 32px 16px 48px; border-top: 1px solid var(--line); text-align: center; color: var(--muted); }
 .site-footer p { margin: 0; font-weight: 900; color: var(--text); }
+.site-footer small, .site-credit { display: block; margin-top: 6px; }
+.site-credit { color: #395174; font-size: 13px; letter-spacing: .04em; }
+.site-credit strong { color: var(--primary); font-size: 15px; }
+.share-trigger { position: fixed; right: 22px; bottom: 22px; z-index: 40; display: flex; align-items: center; gap: 7px; padding: 12px 17px; border: 0; border-radius: 999px; background: linear-gradient(135deg,#173984,#2457e6); color: white; box-shadow: 0 10px 26px rgba(25,57,130,.3); cursor: pointer; font-weight: 900; }
+.share-trigger span { font-size: 19px; }
+.share-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 18px; background: rgba(13,25,48,.58); backdrop-filter: blur(5px); }
+.share-dialog { position: relative; width: min(440px,100%); padding: 28px; border-radius: 22px; background: white; box-shadow: 0 24px 70px rgba(0,0,0,.28); text-align: center; }
+.share-close { position: absolute; top: 12px; right: 13px; width: 34px; height: 34px; border: 0; border-radius: 50%; background: #eef2f7; color: #344158; cursor: pointer; font-size: 23px; }
+.share-kicker { color: var(--primary); font-size: 10px; font-weight: 950; letter-spacing: .14em; }
+.share-dialog h2 { margin: 7px 0; font-size: 26px; }
+.share-dialog > p { margin: 0 auto 14px; color: var(--muted); font-size: 13px; }
+.share-qr { display: block; width: 220px; height: 220px; margin: 10px auto 16px; padding: 7px; border: 1px solid var(--line); border-radius: 14px; background: white; }
+.share-url { display: grid; gap: 5px; text-align: left; }
+.share-url span { color: var(--muted); font-size: 11px; font-weight: 900; }
+.share-url input { width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 9px; background: #f7f9fc; color: var(--text); }
+.share-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+.share-actions button { border: 0; border-radius: 9px; padding: 10px; background: var(--primary); color: white; cursor: pointer; font-weight: 850; }
+.share-actions button.secondary { background: #e9effa; color: #24457c; }
+.share-dialog > small { color: var(--muted); }
+.share-dialog > small strong { color: var(--primary); }
 
 @media (max-width: 920px) {
   .hero, .unit-hero { grid-template-columns: 1fr; }
@@ -422,6 +442,10 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
   .progress-item { grid-template-columns: auto 1fr; }
   .progress-numbers { text-align: left; }
   .progress-item .mini-button { grid-column: 1 / -1; }
+  .share-trigger { right: 12px; bottom: 12px; padding: 10px 14px; }
+  .share-dialog { padding: 24px 16px 18px; }
+  .share-qr { width: 190px; height: 190px; }
+  .share-actions { grid-template-columns: 1fr; }
 }
 
 @media print {
