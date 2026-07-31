@@ -2,7 +2,7 @@
 chcp 65001 > nul
 cd /d "%~dp0"
 echo ========================================
-echo Chemistry Trainer setup and start
+echo Chemica setup and start
 echo ========================================
 where node > nul 2>&1
 if errorlevel 1 (

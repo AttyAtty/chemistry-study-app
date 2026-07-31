@@ -1,4 +1,4 @@
-# Chemistry Trainer 導入・編集ガイド
+# Chemica 導入・編集ガイド
 
 このガイドは、Windowsでプロジェクトを起動し、教材を追加し、最後にWeb公開するまでの手順です。
 

@@ -1,4 +1,4 @@
-# Chemistry Trainer
+# Chemica
 
 高校化学の暗記・確認テスト用に作った、Next.js + TypeScript の学習サイトです。
 

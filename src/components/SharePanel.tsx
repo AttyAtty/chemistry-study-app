@@ -41,7 +41,7 @@ export function SharePanel() {
     {open && <div className="share-backdrop" role="presentation" onMouseDown={() => setOpen(false)}>
       <section className="share-dialog" role="dialog" aria-modal="true" aria-labelledby="share-title" onMouseDown={event => event.stopPropagation()}>
         <button className="share-close" type="button" onClick={() => setOpen(false)} aria-label="閉じる">×</button>
-        <span className="share-kicker">SHARE CHEMISTRY TRAINER</span>
+        <span className="share-kicker">SHARE CHEMICA</span>
         <h2 id="share-title">このページを共有</h2>
         <p>QRコードを読み取るか、リンクをコピーして送れます。</p>
         {qrUrl && <img className="share-qr" src={qrUrl} alt="このページを開くQRコード" width="220" height="220" />}
