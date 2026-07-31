@@ -53,9 +53,9 @@ body {
 .chem-bg-apparatus .liquid { stroke-width: 5; opacity: .6; }
 .chem-bg-dots circle { opacity: .62; }.mint-fill { fill: #91dac9; }.blue-fill { fill: #a7d4ef; }.pink-fill { fill: #efbdd0; }.lavender-fill { fill: #c3b9e7; }.yellow-fill { fill: #efdc9a; }
 .chemica-animated-background { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; user-select: none; transition: opacity .65s ease; }
-.chemica-animated-background.background-entrance { opacity: 1; }.chemica-animated-background.background-home { opacity: .68; }.chemica-animated-background.background-content { opacity: .42; }
-.animated-background-wash { position: absolute; z-index: 2; inset: 8% 15%; border-radius: 50%; background: radial-gradient(ellipse at center,rgba(255,255,255,.84),rgba(255,255,255,.48) 48%,transparent 76%); filter: blur(26px); }
-.chemistry-motif { position: absolute; z-index: 1; left: var(--motif-x); bottom: -30vh; width: var(--motif-size); height: var(--motif-size); color: var(--motif-color); opacity: var(--motif-opacity); animation: motifFloatUp var(--motif-duration) linear var(--motif-delay) infinite; transform-origin: center; will-change: transform; }
+.chemica-animated-background.background-entrance, .chemica-animated-background.background-home { opacity: .92; }.chemica-animated-background.background-content { opacity: .58; }
+.animated-background-wash { position: absolute; z-index: 2; inset: 8% 15%; border-radius: 50%; background: radial-gradient(ellipse at center,rgba(255,255,255,.6),rgba(255,255,255,.26) 48%,transparent 76%); filter: blur(26px); }
+.chemistry-motif { position: absolute; z-index: 1; left: var(--motif-x); bottom: -30vh; width: var(--motif-size); height: var(--motif-size); color: var(--motif-color); opacity: clamp(.14,calc(var(--motif-opacity) + .07),.23); animation: motifFloatUp var(--motif-duration) linear var(--motif-delay) infinite; transform-origin: center; will-change: transform; }
 .chemistry-motif > span { display: block; width: max-content; max-width: 34vw; color: currentColor; font-family: Georgia,"Times New Roman",serif; font-size: var(--motif-size); font-weight: 700; line-height: 1.2; white-space: nowrap; }
 .chemistry-motif.motif-reaction { width: auto; height: auto; }.chemistry-motif.motif-reaction > span { font-family: Consolas,"Courier New",monospace; font-size: var(--motif-size); }
 .chemistry-motif svg { display: block; width: 100%; height: 100%; overflow: visible; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
@@ -126,7 +126,7 @@ nav a:hover { color: var(--primary); }
 
 .page-container { width: min(var(--content-max-width), calc(100% - 32px)); margin: 0 auto; }
 .home-page { padding-bottom: 72px; }
-.start-page { position: relative; width: 100%; min-height: 100svh; display: grid; place-items: center; overflow: hidden; isolation: isolate; background: radial-gradient(circle at 50% 44%,rgba(255,255,255,.98),rgba(248,252,255,.9) 48%,rgba(241,249,255,.82)); }
+.start-page { position: relative; width: 100%; min-height: 100svh; display: grid; place-items: center; overflow: hidden; isolation: isolate; background: radial-gradient(circle at 50% 44%,rgba(255,255,255,.68),rgba(248,252,255,.38) 48%,rgba(241,249,255,.2)); }
 body:has(.start-page) { overflow: hidden; }
 body:has(.start-page) > .site-header, body:has(.start-page) > .share-widget, body:has(.start-page) > .site-footer, body:has(.start-page) > .chemica-background { display: none; }
 .start-content { position: relative; z-index: 3; display: grid; justify-items: center; gap: clamp(48px,7vh,76px); width: min(1040px,calc(100% - 36px)); padding: 60px 20px; text-align: center; }
@@ -532,11 +532,10 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
 }
 
 @media (max-width: 680px) {
-  .chemica-animated-background.background-entrance { opacity: .72; }
-  .chemica-animated-background.background-home { opacity: .48; }
-  .chemica-animated-background.background-content { opacity: .3; }
+  .chemica-animated-background.background-entrance, .chemica-animated-background.background-home { opacity: .82; }
+  .chemica-animated-background.background-content { opacity: .48; }
   .chemistry-motif > span { max-width: 72vw; }
-  .animated-background-wash { inset: 10% 5%; background: radial-gradient(ellipse at center,rgba(255,255,255,.88),rgba(255,255,255,.5) 55%,transparent 82%); }
+  .animated-background-wash { inset: 10% 5%; background: radial-gradient(ellipse at center,rgba(255,255,255,.62),rgba(255,255,255,.28) 55%,transparent 82%); }
   .start-content { gap: 52px; width: calc(100% - 24px); padding: 40px 8px; }
   .start-logo .chemica-logo-hero .chemica-mark { width: clamp(68px,21vw,84px); height: clamp(68px,21vw,84px); transform: translateY(-5px); }
   .start-logo .chemica-logo-hero .chemica-wordmark strong { margin-left: -7px; font-size: clamp(48px,15vw,62px); letter-spacing: .045em; }
