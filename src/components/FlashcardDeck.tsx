@@ -36,7 +36,7 @@ export function FlashcardDeck({ cards, unitId, title = "暗記カードで復習
   const [progress, setProgress] = useState<FlashcardProgressData>({});
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setProgress(readFlashcardProgress()), 0);
+    const timer = window.setTimeout(() => {setProgress(readFlashcardProgress());if(new URLSearchParams(window.location.search).get("flashcards")==="review")setMode("review");}, 0);
     return () => window.clearTimeout(timer);
   }, []);
 

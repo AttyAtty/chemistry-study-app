@@ -545,6 +545,11 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
 .progress-item span, .progress-item small { color: var(--muted); }
 .progress-numbers { min-width: 80px; text-align: right; }
 .progress-numbers strong, .progress-numbers small { display: block; }
+.progress-page>section:not(.page-intro) { margin-bottom:clamp(36px,6vw,64px); }
+.progress-empty-welcome { padding:28px; border:1px solid var(--chemica-border); border-radius:22px; background:linear-gradient(135deg,rgba(140,201,255,.15),rgba(255,255,255,.92),rgba(166,242,213,.14)); text-align:center; }.progress-empty-welcome h2 { margin:0 0 8px; }.progress-empty-welcome p { color:var(--muted); }.progress-empty-welcome>div { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-top:18px; }
+.review-action-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }.review-action-grid article { display:grid; align-content:start; gap:12px; min-width:0; padding:24px; border:1px solid var(--chemica-border); border-radius:22px; background:rgba(255,255,255,.92); box-shadow:var(--shadow-card); }.review-action-grid article>span { color:var(--muted); font-weight:800; }.review-action-grid article>strong { color:var(--chemica-navy); font-size:42px; }.review-action-grid article>strong small { margin-left:4px; font-size:15px; }.review-action-grid article>p { margin:0; color:var(--muted); }
+.weak-unit-grid { display:grid; gap:10px; }.weak-unit-grid article { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:14px; padding:17px 19px; border:1px solid var(--chemica-border); border-radius:17px; background:rgba(255,255,255,.9); }.weak-rank { display:grid; place-items:center; width:34px; height:34px; border-radius:50%; background:#eef3ff; color:#45639c; font-weight:900; }.weak-unit-grid h3 { margin:0 0 4px; }.weak-unit-grid p { margin:0; color:var(--muted); font-size:12px; }.weak-unit-grid p strong { color:var(--chemica-navy); }
+.learning-status-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }.learning-status-grid>div { min-width:0; padding:18px; border:1px solid var(--chemica-border); border-radius:17px; background:rgba(255,255,255,.88); }.learning-status-grid span,.learning-status-grid em { display:block; color:var(--muted); font-size:12px; font-style:normal; }.learning-status-grid strong { display:block; margin-top:7px; color:var(--chemica-navy); font-size:30px; }.learning-status-grid strong small { margin-left:3px; font-size:12px; }.past-results .summary-grid { margin-top:0; }
 .danger-link { border: 0; color: var(--danger); background: transparent; font-weight: 800; }
 
 .site-footer { padding: 32px 16px 48px; border-top: 1px solid var(--line); text-align: center; color: var(--muted); }
@@ -651,6 +656,10 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
   .progress-item { grid-template-columns: auto 1fr; }
   .progress-numbers { text-align: left; }
   .progress-item .mini-button { grid-column: 1 / -1; }
+  .review-action-grid,.learning-status-grid { grid-template-columns:1fr; }
+  .review-action-grid article { padding:19px 17px; }.review-action-grid article>strong { font-size:36px; }
+  .weak-unit-grid article { grid-template-columns:auto 1fr; padding:15px 13px; }.weak-unit-grid article .mini-button { grid-column:1 / -1; min-height:44px; }
+  .learning-status-grid { grid-template-columns:1fr 1fr; }.learning-status-grid>div { padding:15px 12px; }.learning-status-grid strong { font-size:26px; }
   .share-trigger { right: 12px; bottom: 12px; padding: 10px 14px; }
   .share-dialog { padding: 24px 16px 18px; }
   .share-qr { width: 190px; height: 190px; }
