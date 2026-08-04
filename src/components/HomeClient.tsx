@@ -1,10 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import type { ChemistryUnit } from "@/data/chemistry";
 import { ChemicaLogo } from "@/components/ChemicaLogo";
+import { ColoredChemText } from "@/components/ColoredChemText";
 import { dailyIons, dailyPrecipitates, dailyReactions, localDateSeed } from "@/data/dailyChemistry";
+
+function DailyQuestionCard({id,title,prompt,answer,tone,searchQuery,className=""}:{id:string;title:string;prompt:ReactNode;answer:ReactNode;tone:string;searchQuery:string;className?:string}){
+  const [revealed,setRevealed]=useState(false),answerId=`${id}-answer`;
+  return <article className={`daily-card daily-question-card ${revealed?"is-revealed":""} ${className}`} style={{"--daily-accent":tone} as CSSProperties}>
+    <small>{title}</small><div className="daily-prompt">{prompt}</div>
+    <button type="button" className="daily-answer-button" aria-expanded={revealed} aria-controls={answerId} onClick={()=>setRevealed(value=>!value)}>{revealed?"答えを隠す":"答えを見る"}</button>
+    <div className="daily-answer" id={answerId} hidden={!revealed}>{answer}<Link href={`/search?q=${encodeURIComponent(searchQuery)}`}>関連知識を見る</Link></div>
+  </article>;
+}
 
 export function HomeClient({ units }: { units: ChemistryUnit[] }) {
   const [daySeed, setDaySeed] = useState(0);
@@ -21,9 +31,9 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
     <section className="hero home-hero">
       <div className="home-brand-center"><ChemicaLogo variant="hero" showTagline /></div>
       <div className="daily-chemistry-grid">
-        <article className="daily-card daily-ion" style={{ "--daily-accent":featuredIon.tone } as CSSProperties}><small>今日のイオン</small><strong>{featuredIon.formula}</strong><span>{featuredIon.color}</span><em>{featuredIon.name}</em></article>
-        <article className="daily-card daily-reaction"><small>今日の反応式</small><strong>{featuredReaction.equation}</strong><span>{featuredReaction.title}</span></article>
-        <article className="daily-card daily-precipitate" style={{ "--daily-accent":featuredPrecipitate.tone } as CSSProperties}><small>今日の沈殿</small><strong>{featuredPrecipitate.formula}</strong><span>{featuredPrecipitate.color}・{featuredPrecipitate.name}</span><em>{featuredPrecipitate.ionicEquation}</em></article>
+        <DailyQuestionCard id="daily-ion" title="今日のイオン" tone={featuredIon.tone} searchQuery={featuredIon.formula} prompt={<><strong><ColoredChemText>{featuredIon.formula}</ColoredChemText></strong><span>このイオンを含む水溶液の色は？</span></>} answer={<><strong><ColoredChemText>{featuredIon.color}</ColoredChemText></strong><span>{featuredIon.name}</span><i className="daily-color-chip" style={{background:featuredIon.tone}} aria-hidden="true"/></>}/>
+        <DailyQuestionCard id="daily-reaction" title="今日の反応式" tone="#8bcfb8" searchQuery={featuredReaction.title} className="daily-reaction" prompt={<><strong>{featuredReaction.title}</strong><span>全体の反応式は？</span></>} answer={<><strong><ColoredChemText>{featuredReaction.equation}</ColoredChemText></strong>{featuredReaction.note&&<span>{featuredReaction.note}</span>}</>}/>
+        <DailyQuestionCard id="daily-precipitate" title="今日の沈殿" tone={featuredPrecipitate.tone} searchQuery={featuredPrecipitate.formula} className="daily-precipitate" prompt={<><strong><ColoredChemText>{featuredPrecipitate.ionicEquation.split("→")[0].trim()}</ColoredChemText></strong><span>混ぜると生じる沈殿は？</span></>} answer={<><strong><ColoredChemText>{featuredPrecipitate.formula}</ColoredChemText></strong><span>{featuredPrecipitate.color}・{featuredPrecipitate.name}</span><em><ColoredChemText>{featuredPrecipitate.ionicEquation}</ColoredChemText></em><i className="daily-color-chip" style={{background:featuredPrecipitate.tone}} aria-hidden="true"/></>}/>
       </div>
       <div className="hero-actions"><a className="button primary" href="#units">単元を選ぶ</a><Link className="button secondary" href="/quiz?unit=all&count=10">10問チャレンジ</Link></div>
     </section>
