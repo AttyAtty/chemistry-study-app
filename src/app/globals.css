@@ -198,11 +198,14 @@ body:has(.start-page) > .site-header, body:has(.start-page) > .share-widget, bod
 .home-unit-heading { margin-bottom: 20px; }
 .home-unit-card { position: relative; min-height: 300px; overflow: hidden; border: 1px solid var(--chemica-border); border-radius: 22px; background: rgba(255,255,255,.82); box-shadow: 0 12px 34px rgba(69,91,137,.055); transition: transform .18s ease,border-color .18s ease,box-shadow .18s ease; }
 .home-unit-card::before { content: ""; position: absolute; inset: 0 0 auto; height: 5px; background: var(--card-accent,var(--chemica-mint)); }
+.card-primary-link { position:absolute; inset:0; z-index:1; border-radius:inherit; }
+.card-primary-link:focus-visible { outline:3px solid rgba(112,168,255,.46); outline-offset:-4px; }
+.card-secondary-action { position:relative; z-index:2; }
 .home-unit-card:nth-child(6n+2){--card-accent:var(--chemica-blue)}.home-unit-card:nth-child(6n+3){--card-accent:var(--chemica-purple)}.home-unit-card:nth-child(6n+4){--card-accent:var(--chemica-pink)}.home-unit-card:nth-child(6n+5){--card-accent:var(--chemica-yellow)}.home-unit-card:nth-child(6n){--card-accent:var(--chemica-orange)}
-.home-unit-card:hover { transform: translateY(-3px); border-color: #b9c8df; box-shadow: 0 16px 34px rgba(31,50,89,.09); }
+.home-unit-card:hover { transform:translateY(-2px); border-color:#aebfda; box-shadow:0 17px 38px rgba(31,50,89,.11); }
 .unit-number { color: #a5b1c4; font-family: Georgia,serif; font-size: 27px; font-weight: 700; }
 .home-unit-card h3 { margin-top: 24px; font-size: 22px; letter-spacing: -.02em; }
-.home-unit-card .text-link span { display: inline-block; transition: transform .15s; }.home-unit-card:hover .text-link span { transform: translateX(4px); }
+.card-link-label { color:var(--primary); font-weight:800; }.card-link-label span { display:inline-block; transition:transform .15s; }.home-unit-card:hover .card-link-label span,.basic-unit-card:hover .card-link-label span { transform:translateX(4px); }
 
 .button, .mini-button {
   display: inline-flex;
@@ -658,7 +661,7 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
 }
 
 /* Chemistry basics course */
-.chemistry-basic-entry { grid-column: 1 / -1; background: linear-gradient(135deg,rgba(166,242,213,.34),rgba(140,201,255,.22),rgba(197,166,255,.2)); }
+.chemistry-basic-entry { grid-column:1 / -1; background: linear-gradient(135deg,rgba(166,242,213,.34),rgba(140,201,255,.22),rgba(197,166,255,.2)); }
 .basic-course-hero { display:grid; grid-template-columns:minmax(0,1fr) 260px; gap:32px; align-items:center; margin:26px 0 54px; padding:clamp(28px,5vw,58px); border:1px solid var(--color-border,var(--line)); border-radius:var(--radius-lg,28px); background:rgba(255,255,255,.9); box-shadow:var(--shadow-card,0 14px 40px rgba(75,94,135,.08)); }
 .basic-course-hero h1 { margin:8px 0 14px; font-size:clamp(48px,7vw,82px); color:var(--chemica-navy,#17284d); }
 .basic-course-hero p:not(.eyebrow) { max-width:720px; color:var(--chemica-text-muted,#6d7893); line-height:1.9; }
@@ -669,6 +672,8 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
 .basic-progress-track i { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#70a8ff,#a794ff,#f28ac6); }
 .basic-unit-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
 .basic-unit-card { position:relative; min-width:0; padding:26px; overflow:hidden; border:1px solid var(--color-border,var(--line)); border-radius:22px; background:rgba(255,255,255,.92); box-shadow:0 12px 34px rgba(75,94,135,.07); }
+.basic-unit-card { transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease; }
+.basic-unit-card:hover { transform:translateY(-2px); border-color:#aebfda; box-shadow:0 17px 38px rgba(31,50,89,.11); }
 .basic-unit-card::before { content:""; position:absolute; inset:0 0 auto; height:5px; background:var(--basic-accent,#8cc9ff); }
 .basic-unit-card.accent-mint { --basic-accent:#a6f2d5; }.basic-unit-card.accent-purple { --basic-accent:#c5a6ff; }.basic-unit-card.accent-pink { --basic-accent:#ff9bc4; }
 .basic-unit-order { display:grid; place-items:center; width:38px; height:38px; margin-bottom:18px; border-radius:50%; background:color-mix(in srgb,var(--basic-accent) 32%,white); color:#17284d; font-weight:800; }

@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Chemica C mark">
   <defs>
-    <linearGradient id="line-1" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8cc9ff"/><stop offset="1" stop-color="#a6f2d5"/></linearGradient>
-    <linearGradient id="line-2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a6f2d5"/><stop offset="1" stop-color="#8cc9ff"/></linearGradient>
-    <linearGradient id="line-3" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8cc9ff"/><stop offset="1" stop-color="#ff9bc4"/></linearGradient>
-    <linearGradient id="line-4" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff9bc4"/><stop offset="1" stop-color="#ffd776"/></linearGradient>
-    <linearGradient id="line-5" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8cc9ff"/><stop offset="1" stop-color="#c5a6ff"/></linearGradient>
+    <linearGradient id="line-1" gradientUnits="userSpaceOnUse" x1="43" y1="23" x2="16" y2="40"><stop offset="0" stop-color="#8cc9ff"/><stop offset="1" stop-color="#a6f2d5"/></linearGradient>
+    <linearGradient id="line-2" gradientUnits="userSpaceOnUse" x1="16" y1="40" x2="17" y2="72"><stop offset="0" stop-color="#a6f2d5"/><stop offset="1" stop-color="#8cc9ff"/></linearGradient>
+    <linearGradient id="line-3" gradientUnits="userSpaceOnUse" x1="17" y1="72" x2="45" y2="88"><stop offset="0" stop-color="#8cc9ff"/><stop offset="1" stop-color="#ff9bc4"/></linearGradient>
+    <linearGradient id="line-4" gradientUnits="userSpaceOnUse" x1="45" y1="88" x2="68" y2="75"><stop offset="0" stop-color="#ff9bc4"/><stop offset="1" stop-color="#ffd776"/></linearGradient>
+    <linearGradient id="line-5" gradientUnits="userSpaceOnUse" x1="43" y1="23" x2="69" y2="38"><stop offset="0" stop-color="#8cc9ff"/><stop offset="1" stop-color="#c5a6ff"/></linearGradient>
     <linearGradient id="surface" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffff"/><stop offset="1" stop-color="#f2f8ff"/></linearGradient>
   </defs>
   <rect width="512" height="512" rx="112" fill="url(#surface)"/>

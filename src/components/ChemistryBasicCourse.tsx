@@ -63,12 +63,13 @@ export function ChemistryBasicCourse({
           {units.map((unit, index) => {
             const unitProgress = progress[unit.slug];
             return <article className={`basic-unit-card accent-${accents[index]}`} key={unit.slug}>
+              <Link className="card-primary-link" href={`/units/${unit.slug}`} aria-label={`${unit.title}を学習する`} />
               <div className="basic-unit-order">{index + 1}</div>
               <span className="level-chip">{unit.questions.length}問</span>
               <h3>{unit.title}</h3><p>{unit.summary}</p>
               <div className="basic-progress-track"><i style={{ width: `${unitProgress?.bestPercent ?? 0}%` }} /></div>
               <small>最高得点 {unitProgress?.bestPercent ?? 0}%</small>
-              <div className="card-actions no-print"><Link className="text-link" href={`/units/${unit.slug}`}>学習する <span>→</span></Link><Link className="mini-button" href={`/quiz?unit=${unit.slug}&count=10`}>10問</Link></div>
+              <div className="card-actions no-print"><span className="card-link-label">学習する <span>→</span></span><Link className="mini-button card-secondary-action" href={`/quiz?unit=${unit.slug}&count=10`}>10問</Link></div>
             </article>;
           })}
         </div>
