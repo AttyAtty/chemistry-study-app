@@ -7,6 +7,20 @@ import { ChemicaAnimatedBackground } from "@/components/ChemicaAnimatedBackgroun
 export const metadata: Metadata = {
   title: { default: "Chemica", template: "%s | Chemica" },
   applicationName: "Chemica",
+  manifest: "/site.webmanifest",
+  icons: {
+    icon: [
+      { url: "/icons/favicon.ico", type: "image/x-icon" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
+  appleWebApp: {
+    capable: true,
+    title: "Chemica",
+    statusBarStyle: "default",
+  },
   description: "高校化学の反応・暗記・問題演習をまとめて学べる学習サイトです。",
   openGraph: { title: "Chemica", description: "化学をもっとわかりやすく。高校化学の学習Webアプリです。", type: "website", locale: "ja_JP" },
   twitter: { card: "summary", title: "Chemica", description: "化学をもっとわかりやすく。" },
