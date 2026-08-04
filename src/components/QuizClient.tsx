@@ -2,24 +2,28 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import type { QuizQuestion } from "@/data/chemistry";
 import { saveQuizResult } from "@/lib/progress";
-
-type QuizQuestionWithUnit = QuizQuestion & {
-  unitSlug?: string;
-  unitTitle?: string;
-};
+import { readQuestionHistory, recordQuestionAnswer } from "@/lib/questionHistory";
+import { filterQuestionsByMode, selectQuizQuestions, type QuizCount, type QuizMode, type QuizQuestionWithUnit } from "@/lib/quizSelection";
 
 export function QuizClient({
-  questions,
+  questionPool,
   unitSlug,
   unitTitle,
+  initialCount=10,
+  initialMode="random",
 }: {
-  questions: QuizQuestionWithUnit[];
+  questionPool: QuizQuestionWithUnit[];
   unitSlug: string;
   unitTitle: string;
+  initialCount?:QuizCount;
+  initialMode?:QuizMode;
 }) {
-  const quizQuestions = questions;
+  const [count,setCount]=useState<QuizCount>(initialCount);
+  const [mode,setMode]=useState<QuizMode>(initialMode);
+  const [history,setHistory]=useState(()=>readQuestionHistory());
+  const [quizQuestions,setQuizQuestions]=useState<QuizQuestionWithUnit[]>([]);
+  const [started,setStarted]=useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
@@ -28,6 +32,7 @@ export function QuizClient({
   const current = quizQuestions[currentIndex];
   const percent = quizQuestions.length === 0 ? 0 : Math.round((correctCount / quizQuestions.length) * 100);
   const progressPercent = quizQuestions.length === 0 ? 0 : ((currentIndex + (completed ? 1 : 0)) / quizQuestions.length) * 100;
+  const eligibleCount=filterQuestionsByMode(questionPool,mode,history,unitSlug).length;
 
   const resultMessage = useMemo(() => {
     if (percent >= 90) return "かなり定着しています。次は問題数を増やして確認しましょう。";
@@ -36,8 +41,25 @@ export function QuizClient({
     return "まだ知識が点で残っています。系統図でつなげ直してから再挑戦しましょう。";
   }, [percent]);
 
+  const startQuiz=()=>{
+    const latestHistory=readQuestionHistory();
+    const selected=selectQuizQuestions(questionPool,count,mode,latestHistory,unitSlug,unitSlug==="all");
+    setHistory(latestHistory);setQuizQuestions(selected);setCurrentIndex(0);setSelectedIndex(null);setAnswered(false);setCorrectCount(0);setCompleted(false);setStarted(true);
+  };
+
+  if(!started){
+    return <div className="quiz-shell"><section className="quiz-setup" aria-labelledby="quiz-setup-title">
+      <p className="eyebrow">QUIZ SETUP</p><h1 id="quiz-setup-title">{unitTitle}</h1>
+      <div className="quiz-option-group"><h2>問題数</h2><div>{([5,10,20,30,"all"] as QuizCount[]).map(value=><button type="button" aria-pressed={count===value} className={count===value?"active":""} onClick={()=>setCount(value)} key={value}>{value==="all"?`全問（最大${eligibleCount}問）`:`${value}問`}</button>)}</div></div>
+      <div className="quiz-option-group"><h2>出題</h2><div>{([['random','ランダム'],['review','間違えた問題'],['unseen','未出題問題']] as Array<[QuizMode,string]>).map(([value,label])=><button type="button" aria-pressed={mode===value} className={mode===value?"active":""} onClick={()=>setMode(value)} key={value}>{label}</button>)}</div></div>
+      <p className="quiz-eligible-count">対象は <strong>{eligibleCount}問</strong>{count!=="all"&&eligibleCount<count?`です。選択数より少ないため${eligibleCount}問を出題します。`:""}</p>
+      <button className="button primary" type="button" onClick={startQuiz} disabled={eligibleCount===0}>テストを始める</button>
+      {eligibleCount===0&&<div className="empty-state">このモードに該当する問題はありません。</div>}
+    </section></div>;
+  }
+
   if (quizQuestions.length === 0 || !current) {
-    return <div className="quiz-shell"><div className="empty-state">問題を準備しています。</div></div>;
+    return <div className="quiz-shell"><div className="empty-state">この条件に該当する問題はありません。</div></div>;
   }
 
   if (completed) {
@@ -49,10 +71,10 @@ export function QuizClient({
           <div className="score-circle"><strong>{percent}</strong><span>%</span></div>
           <p>{resultMessage}</p>
           <div className="result-actions">
-            <button className="button primary" type="button" onClick={() => window.location.reload()}>
-              同じ条件でもう一度
+            <button className="button primary" type="button" onClick={() => {setStarted(false);setHistory(readQuestionHistory());}}>
+              条件を選び直す
             </button>
-            <Link className="button secondary" href={unitSlug === "all" ? "/" : `/units/${unitSlug}`}>
+            <Link className="button secondary" href={unitSlug === "all" ? "/quiz" : unitSlug === "chemistry-basic-comprehensive" ? "/courses/chemistry-basic" : `/units/${unitSlug}`}>
               資料に戻る
             </Link>
             <Link className="text-link" href="/progress">学習記録を見る →</Link>
@@ -66,7 +88,9 @@ export function QuizClient({
     if (answered) return;
     setSelectedIndex(index);
     setAnswered(true);
-    if (index === current.answerIndex) setCorrectCount((value) => value + 1);
+    const correct=index===current.answerIndex;
+    if (correct) setCorrectCount((value) => value + 1);
+    recordQuestionAnswer(current.unitSlug??unitSlug,current.id,correct);
   };
 
   const nextQuestion = () => {

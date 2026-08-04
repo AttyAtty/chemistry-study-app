@@ -47,7 +47,7 @@ export function ChemistryBasicCourse({
           <p>高校化学基礎を学ぶ人、文系受験生、共通テスト対策をしたい人向け。物質の構成から酸化還元まで、3単元を順番に学べます。</p>
           <div className="hero-actions no-print">
             <Link className="button primary" href={`/units/${units[0]?.slug ?? ""}`}>最初から学ぶ</Link>
-            <Link className="button secondary" href="/quiz?unit=chemistry-basic-comprehensive&count=50">総合テスト</Link>
+            <Link className="button secondary" href="/quiz?unit=chemistry-basic-comprehensive&count=all">総合テスト</Link>
           </div>
         </div>
         <div className="basic-progress-panel" aria-label="化学基礎の進捗">
@@ -76,7 +76,7 @@ export function ChemistryBasicCourse({
       </section>
 
       <section className="basic-course-tools no-print">
-        <Link href="/quiz?unit=chemistry-basic-comprehensive&count=50"><strong>総合テスト</strong><span>{comprehensiveCount}問から出題</span></Link>
+        <Link href="/quiz?unit=chemistry-basic-comprehensive&count=all"><strong>総合テスト</strong><span>{comprehensiveCount}問から出題</span></Link>
         <a href="#glossary"><strong>復習カード</strong><span>重要語句を検索</span></a>
         <button type="button" onClick={() => window.print()}><strong>印刷教材</strong><span>公式・要点をA4/PDFへ</span></button>
       </section>
