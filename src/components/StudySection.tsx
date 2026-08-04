@@ -19,8 +19,8 @@ export function StudySection({ section }: { section: StudySectionType }) {
 
       {section.kind === "cards" && (
         <div className="knowledge-grid">
-          {section.entries.map((entry) => (
-            <article className="knowledge-card" key={entry.title}>
+          {section.entries.map((entry, entryIndex) => (
+            <article className="knowledge-card" id={`${section.id}-item-${entryIndex}`} key={entry.title}>
               <h3><ColoredChemText>{entry.title}</ColoredChemText></h3>
               <p><ColoredChemText>{entry.body}</ColoredChemText></p>
               {entry.equation && <div className="equation-box"><ColoredChemText>{entry.equation}</ColoredChemText></div>}
@@ -38,7 +38,7 @@ export function StudySection({ section }: { section: StudySectionType }) {
             </thead>
             <tbody>
               {section.rows.map((row, rowIndex) => (
-                <tr key={`${section.id}-${rowIndex}`}>
+                <tr id={`${section.id}-row-${rowIndex}`} key={`${section.id}-${rowIndex}`}>
                   {row.map((cell, cellIndex) => <td key={`${section.id}-${rowIndex}-${cellIndex}`}><ColoredChemText>{cell}</ColoredChemText></td>)}
                 </tr>
               ))}
@@ -49,8 +49,8 @@ export function StudySection({ section }: { section: StudySectionType }) {
 
       {section.kind === "flow" && (
         <div className="flow-list">
-          {section.flows.map((flow) => (
-            <article className="flow-card" key={flow.title}>
+          {section.flows.map((flow, flowIndex) => (
+            <article className="flow-card" id={`${section.id}-flow-${flowIndex}`} key={flow.title}>
               <h3>{flow.title}</h3>
               <div className="flow-nodes">
                 {flow.nodes.map((node, index) => (

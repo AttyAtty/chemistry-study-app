@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import type { ChemistryUnit } from "@/data/chemistry";
 import { ChemicaLogo } from "@/components/ChemicaLogo";
 import { dailyIons, dailyPrecipitates, dailyReactions, localDateSeed } from "@/data/dailyChemistry";
 
 export function HomeClient({ units }: { units: ChemistryUnit[] }) {
-  const [query, setQuery] = useState("");
   const [daySeed, setDaySeed] = useState(0);
   useEffect(() => {
     const timer = window.setTimeout(() => setDaySeed(localDateSeed()), 0);
@@ -16,11 +15,7 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
   const featuredIon = dailyIons[daySeed % dailyIons.length];
   const featuredReaction = dailyReactions[(daySeed * 3 + 1) % dailyReactions.length];
   const featuredPrecipitate = dailyPrecipitates[(daySeed * 5 + 2) % dailyPrecipitates.length];
-  const filtered = useMemo(() => {
-    const word = query.trim().toLowerCase();
-    const regularUnits = units.filter(unit => !unit.slug.startsWith("chemistry-basic-"));
-    return word ? regularUnits.filter(unit => [unit.title, unit.summary, ...unit.keywords].join(" ").toLowerCase().includes(word)) : regularUnits;
-  }, [query, units]);
+  const regularUnits = units.filter(unit => !unit.slug.startsWith("chemistry-basic-"));
 
   return <>
     <section className="hero home-hero">
@@ -37,7 +32,7 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
     <section className="section-block" id="units">
       <div className="section-heading home-unit-heading">
         <div><p className="eyebrow">STUDY UNITS</p><h2>学びたい単元を選ぶ</h2></div>
-        <label className="search-box"><span>単元を検索</span><input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="例：電池、気体、ベンゼン" /></label>
+        <form className="search-box home-global-search" action="/search"><label htmlFor="home-knowledge-search">Chemica全体検索</label><div><input id="home-knowledge-search" name="q" type="search" placeholder="物質名・化学式・反応を検索"/><button type="submit">検索</button></div></form>
       </div>
       <div className="unit-grid home-unit-grid">
         <article className="unit-card home-unit-card chemistry-basic-entry">
@@ -48,7 +43,7 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
           <div className="tag-row"><span>文系受験</span><span>共通テスト</span><span>310問以上</span></div>
           <div className="card-actions"><span className="card-link-label">コースを見る <span>→</span></span><Link className="mini-button card-secondary-action" href="/quiz?unit=chemistry-basic-comprehensive&count=10">10問</Link></div>
         </article>
-        {filtered.map(unit => <article className="unit-card home-unit-card" key={unit.slug}>
+        {regularUnits.map(unit => <article className="unit-card home-unit-card" key={unit.slug}>
           <Link className="card-primary-link" href={`/units/${unit.slug}`} aria-label={`${unit.title}を学習する`} />
           <div className="unit-card-top"><span className="unit-number">{String(units.indexOf(unit) + 1).padStart(2, "0")}</span><span className="level-chip">{unit.level}</span></div>
           <h3>{unit.title}</h3><p>{unit.summary}</p>
@@ -56,7 +51,6 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
           <div className="card-actions"><span className="card-link-label">学習する <span>→</span></span><Link className="mini-button card-secondary-action" href={`/quiz?unit=${unit.slug}&count=5`}>5問テスト</Link></div>
         </article>)}
       </div>
-      {filtered.length === 0 && <div className="empty-state">該当する単元がありません。別の言葉で検索してください。</div>}
     </section>
   </>;
 }
