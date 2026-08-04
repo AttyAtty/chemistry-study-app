@@ -45,14 +45,14 @@ export default async function UnitPage({ params }: { params: Promise<{ slug: str
         </div>
       </section>
 
+      {flashcards.length > 0 && <FlashcardDeck cards={flashcards} unitId={unit.slug} />}
+
       <nav className="section-nav no-print" aria-label="ページ内メニュー">
         {unit.sections.map((section) => <a href={`#${section.id}`} key={section.id}>{section.title}</a>)}
         <a href="#flashcards">暗記カード</a>
       </nav>
 
       {unit.sections.map((section) => <StudySection section={section} key={section.id} />)}
-
-      {unit.slug !== "laboratory-gases" && <FlashcardDeck cards={flashcards} unitId={unit.slug} />}
 
       <section className="bottom-cta no-print">
         <div><p className="eyebrow">CHECK</p><h2>覚えた内容を問題で確認</h2></div>

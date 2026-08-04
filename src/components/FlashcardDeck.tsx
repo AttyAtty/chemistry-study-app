@@ -7,6 +7,20 @@ import { readFlashcardProgress, saveFlashcardStatus, type FlashcardProgressData,
 
 type ReviewMode = "all" | "review" | "known" | "random";
 
+const answerColorSwatches: Array<[RegExp, string]> = [
+  [/淡青紫色/, "#c9c4ef"], [/赤橙色/, "#e88b62"], [/黄褐色/, "#b68a45"], [/赤褐色/, "#a9523d"],
+  [/濃青色/, "#2457a6"], [/青白色/, "#b8dff5"], [/淡緑色/, "#b9d8b1"], [/灰緑色/, "#819b82"],
+  [/淡桃色/, "#efb7c8"], [/赤紫色/, "#a54c91"], [/血赤色/, "#a52b3b"], [/暗赤色/, "#8a3438"],
+  [/淡黄色|淡黄/, "#f4e7a5"], [/黄緑色/, "#b9d96a"], [/黒褐色/, "#493a35"], [/暗褐色/, "#5d4037"],
+  [/無色/, "transparent"], [/白色|白/, "#ffffff"], [/黒色|黒/, "#20242c"], [/青色|青/, "#5297d8"],
+  [/緑色|緑/, "#65a77c"], [/黄色|黄/, "#ebc94f"], [/赤色|赤/, "#dc6670"], [/紫色|紫/, "#8665b8"],
+  [/橙色|橙/, "#e99b5e"],
+];
+
+const getAnswerSwatch = (card: Flashcard) => card.answerType === "color"
+  ? answerColorSwatches.find(([pattern]) => pattern.test(card.back))?.[1]
+  : undefined;
+
 const stableScore = (id: string, seed: number) => {
   let value = seed + 17;
   for (const character of id) value = (value * 31 + character.charCodeAt(0)) % 2147483647;
@@ -36,6 +50,7 @@ export function FlashcardDeck({ cards, unitId, title = "暗記カードで復習
   }, [cards, category, mode, progress, shuffleSeed]);
   const safeIndex = activeCards.length ? index % activeCards.length : 0;
   const card = activeCards[safeIndex];
+  const answerSwatch = card ? getAnswerSwatch(card) : undefined;
   const knownCount = cards.filter((item) => progress[item.id]?.status === "known").length;
   const reviewCount = cards.filter((item) => progress[item.id]?.status !== "known").length;
 
@@ -84,9 +99,9 @@ export function FlashcardDeck({ cards, unitId, title = "暗記カードで復習
     {card ? <>
       <div className="flashcard-stage no-print">
         <button className="flashcard-nav" type="button" onClick={() => move(-1)} aria-label="前のカード">←</button>
-        <button className={`universal-flashcard ${flipped ? "is-flipped" : ""}`} type="button" onClick={() => setFlipped((value) => !value)} aria-label={flipped ? "カードの表面を表示" : "カードの答えを表示"} aria-pressed={flipped}>
-          <span className="flashcard-face flashcard-front"><small>{card.category ?? "重要事項"}</small><strong><ColoredChemText>{card.front}</ColoredChemText></strong><em>タップして答えを見る</em></span>
-          <span className="flashcard-face flashcard-back"><small>ANSWER</small><strong><ColoredChemText>{card.back}</ColoredChemText></strong>{card.note && <em><ColoredChemText>{card.note}</ColoredChemText></em>}</span>
+        <button className={`universal-flashcard ${card.answerType === "color" ? "is-color-answer" : ""} ${flipped ? "is-flipped" : ""}`} type="button" onClick={() => setFlipped((value) => !value)} aria-label={flipped ? "カードの表面を表示" : "カードの答えを表示"} aria-pressed={flipped}>
+          <span className="flashcard-face flashcard-front"><small>{card.category ?? "重要事項"}</small><strong>{card.answerType === "color" ? card.front : <ColoredChemText>{card.front}</ColoredChemText>}</strong><em>タップして答えを見る</em></span>
+          <span className="flashcard-face flashcard-back"><small>ANSWER</small><strong><ColoredChemText>{card.back}</ColoredChemText></strong>{answerSwatch && <i className="flashcard-color-swatch" style={{ background: answerSwatch }} aria-hidden="true" />}{card.note && <em><ColoredChemText>{card.note}</ColoredChemText></em>}</span>
         </button>
         <button className="flashcard-nav" type="button" onClick={() => move(1)} aria-label="次のカード">→</button>
       </div>

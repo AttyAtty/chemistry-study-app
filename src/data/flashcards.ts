@@ -10,6 +10,7 @@ export type Flashcard = {
   back: string;
   note?: string;
   tags?: string[];
+  answerType?: "text" | "color" | "formula" | "equation";
 };
 
 const normalize = (value: string) => value.replace(/\s+/g, " ").trim();
@@ -18,6 +19,7 @@ export function getGasFlashcards(): Flashcard[] {
   return gases.flatMap((gas) => [
     { id: `gas-${gas.id}-formula`, unitId: "laboratory-gases", category: "名称・化学式", front: `${gas.name}の化学式`, back: gas.formula, tags: [gas.name, "化学式"] },
     { id: `gas-${gas.id}-identity`, unitId: "laboratory-gases", category: "名称・化学式", front: gas.formula, back: gas.name, note: `${gas.color}・${gas.odor}`, tags: [gas.name, "双方向"] },
+    { id: `gas-${gas.id}-color`, unitId: "laboratory-gases", category: "色", front: `${gas.name}（${gas.formula}）の色は？`, back: gas.color, note: "表面は答えを示さない中立色で表示します。", tags: [gas.name, "色"], answerType: "color" },
     { id: `gas-${gas.id}-collection`, unitId: "laboratory-gases", category: "捕集法", front: `${gas.name}の捕集法`, back: gas.collectionMethods.join("、"), note: `${solubilityLabels[gas.waterSolubility]}／${densityLabels[gas.relativeDensity]}`, tags: [gas.name, "捕集法"] },
     { id: `gas-${gas.id}-preparation`, unitId: "laboratory-gases", category: "製法", front: `${gas.name}の実験室的製法`, back: gas.preparation[0].equation, note: gas.preparation[0].reagents.join(" + "), tags: [gas.name, "反応式"] },
     { id: `gas-${gas.id}-detection`, unitId: "laboratory-gases", category: "検出・性質", front: `${gas.name}の確認・検出方法`, back: gas.detectionMethods[0].description, note: gas.detectionMethods[0].equation, tags: [gas.name, "検出"] },
@@ -49,6 +51,7 @@ function cardsFromSections(unit: ChemistryUnit): Flashcard[] {
         back: normalize([entry.body, entry.equation].filter(Boolean).join("\n")),
         note: entry.note,
         tags: unit.keywords,
+        answerType: (/色|炎色|呈色/.test(section.title) && /色/.test(entry.body)) ? "color" : "text",
       }));
     }
     if (section.kind === "table") {
@@ -56,7 +59,8 @@ function cardsFromSections(unit: ChemistryUnit): Flashcard[] {
         if (row.length < 2) return;
         const label = row[0];
         const answer = row.slice(1).map((cell, cellIndex) => `${section.columns[cellIndex + 1] ?? "要点"}：${cell}`).join("\n");
-        result.push({ id: `${unit.slug}-${section.id}-row-${index}`, unitId: unit.slug, category: section.title, front: label, back: answer, tags: [section.title] });
+        const asksForColor = section.columns.slice(1).some((column) => /色|炎色/.test(column));
+        result.push({ id: `${unit.slug}-${section.id}-row-${index}`, unitId: unit.slug, category: section.title, front: label, back: answer, tags: [section.title], answerType: asksForColor ? "color" : "text" });
         if (row.length === 2 && label.length <= 30 && row[1].length <= 45) {
           result.push({ id: `${unit.slug}-${section.id}-row-${index}-reverse`, unitId: unit.slug, category: section.title, front: row[1], back: label, tags: [section.title, "双方向"] });
         }
@@ -90,6 +94,7 @@ function cardsFromQuestions(unit: ChemistryUnit, existing: Flashcard[]): Flashca
       back: question.choices[question.answerIndex],
       note: question.explanation,
       tags: question.tags,
+      answerType: /色|呈色|炎色/.test(question.prompt) ? "color" : "text",
     }));
 }
 
