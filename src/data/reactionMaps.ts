@@ -1,5 +1,5 @@
 export type ReactionNode = { name: string; formula: string; appearance?: string; appearanceColor?: string };
-export type ReactionStep = { label: string; condition?: string; important?: boolean };
+export type ReactionStep = { label: string; condition?: string; important?: boolean; scope?: "core" | "advanced" | "supplement" | "industrial"; note?: string };
 export type ReactionPath = { nodes: ReactionNode[]; steps: ReactionStep[] };
 export type ReactionMap = { id: string; title: string; category: "organic" | "inorganic"; paths: ReactionPath[]; centerNode?:string; zones?:Record<string,"top"|"bottom"|"left"|"right">; canvas?: { width:number; height:number } };
 
@@ -7,7 +7,7 @@ const n = (name: string, formula: string): ReactionNode => ({ name, formula });
 const colored = (name: string, formula: string, appearance: string, appearanceColor: string): ReactionNode => ({ name, formula, appearance, appearanceColor });
 const s = (label: string, condition?: string, important = false): ReactionStep => ({ label, condition, important });
 
-export const reactionMaps: ReactionMap[] = [
+const legacyReactionMaps: ReactionMap[] = [
   { id: "ethylene", title: "エチレン", category: "organic", paths: [
     { nodes: [n("エタノール","C₂H₅OH"),n("エチレン","CH₂=CH₂"),n("1,2-ジブロモエタン","CH₂BrCH₂Br")], steps: [s("脱水","濃H₂SO₄・170 ℃",true),s("臭素付加","Br₂水（脱色）",true)] },
     { nodes: [n("エチレン","CH₂=CH₂"),n("エタノール","C₂H₅OH"),n("アセトアルデヒド","CH₃CHO"),n("酢酸","CH₃COOH")], steps: [s("水和","H₃PO₄触媒・高温高圧",true),s("穏やかな酸化","Cu・加熱"),s("酸化","K₂Cr₂O₇/H⁺",true)] },
@@ -76,4 +76,11 @@ export const reactionMaps: ReactionMap[] = [
     { nodes: [n("窒素","N₂"),n("アンモニア","NH₃"),n("一酸化窒素","NO"),n("二酸化窒素","NO₂"),n("硝酸","HNO₃")], steps: [s("Haber-Bosch法","3H₂・Fe触媒・高温高圧",true),s("接触酸化","O₂・Pt-Rh触媒・約900 ℃",true),s("酸化","O₂"),s("水に吸収","H₂O＋O₂",true)] },
     { nodes: [n("アンモニア","NH₃"),n("塩化アンモニウム","NH₄Cl"),n("アンモニア","NH₃")], steps: [s("白煙・塩形成","HCl"),s("弱塩基の遊離","Ca(OH)₂・加熱",true)] },
   ]},
+];
+
+import { expandedOrganicReactionMaps } from "@/data/organicReactionMaps";
+
+export const reactionMaps: ReactionMap[] = [
+  ...expandedOrganicReactionMaps,
+  ...legacyReactionMaps.filter((map) => map.category !== "organic"),
 ];

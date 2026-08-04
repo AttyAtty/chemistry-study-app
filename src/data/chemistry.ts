@@ -1,4 +1,5 @@
 import { inorganicComplexesUnit } from "@/data/inorganicComplexes";
+import { expandedOrganicQuestions } from "@/data/organicReactionMaps";
 import { gasUnit } from "@/data/gasUnit";
 import { electrochemistryQuestions } from "@/data/electrochemistry";
 import { chemistryBasicUnits } from "@/data/chemistry-basic";
@@ -84,6 +85,12 @@ export type StudySection =
       id: string;
       title: string;
       description?: string;
+      kind: "organicKnowledge";
+    }
+  | {
+      id: string;
+      title: string;
+      description?: string;
       kind: "gasLab";
     }
   | {
@@ -159,6 +166,12 @@ export const chemistryUnits: ChemistryUnit[] = [
         category: "organic",
       },
       {
+        id: "organic-knowledge-browser",
+        title: "有機化学の知識",
+        description: "8つの系統図と同じ共通データから、物質・試薬・触媒・温度・副生成物を検索できます。",
+        kind: "organicKnowledge",
+      },
+      {
         id: "functional-groups",
         title: "代表的な官能基反応",
         kind: "cards",
@@ -201,6 +214,7 @@ export const chemistryUnits: ChemistryUnit[] = [
       },
     ],
     questions: [
+      ...expandedOrganicQuestions,
       {
         id: "org-1",
         prompt: "エタノールを穏やかに酸化したとき、最初に生じる主生成物はどれですか。",

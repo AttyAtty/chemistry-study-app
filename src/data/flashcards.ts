@@ -1,6 +1,7 @@
 import type { ChemistryUnit } from "@/data/chemistry";
 import { electrochemistryCards } from "@/data/electrochemistry";
 import { densityLabels, gases, solubilityLabels } from "@/data/gases";
+import { organicReactions } from "@/data/organicReactionMaps";
 
 export type Flashcard = {
   id: string;
@@ -102,5 +103,22 @@ export function getFlashcardsForUnit(unit: ChemistryUnit): Flashcard[] {
   if (unit.slug === "laboratory-gases") return getGasFlashcards();
   if (unit.slug === "batteries-electrolysis") return getElectrochemistryFlashcards(unit.slug);
   const sectionCards = cardsFromSections(unit);
+  if (unit.slug === "organic-reactions") {
+    const reactionCards = organicReactions.filter((reaction) => reaction.importance === "core" || (
+      reaction.importance === "industrial" && /クメン|Wacker|SOHIO|重合|Kolbe|Dow|発酵/.test(`${reaction.reactionName}${reaction.conditions.join(" ")}`)
+    )).slice(0, 72).map((reaction) => {
+      return {
+        id: `organic-${reaction.id}`,
+        unitId: unit.slug,
+        category: reaction.importance === "industrial" ? "工業的反応" : "重要反応",
+        front: `${reaction.source.name} → ${reaction.target.name} の反応・条件`,
+        back: `${reaction.reactionName}${reaction.conditions.length ? `：${reaction.conditions.join("・")}` : ""}`,
+        note: reaction.notes,
+        tags: [...reaction.relatedMaps, reaction.importance],
+        answerType: "equation" as const,
+      };
+    });
+    return [...reactionCards, ...sectionCards, ...cardsFromQuestions(unit, [...reactionCards, ...sectionCards])];
+  }
   return [...sectionCards, ...cardsFromQuestions(unit, sectionCards)];
 }

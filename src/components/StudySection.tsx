@@ -7,6 +7,7 @@ import { GasStudyLab } from "@/components/GasStudyLab";
 import { ElectrochemistryLab } from "@/components/ElectrochemistryLab";
 import { ElectrochemistrySimulator } from "@/components/ElectrochemistrySimulator";
 import { ElectrochemistryQuizGenerator } from "@/components/ElectrochemistryQuizGenerator";
+import { OrganicKnowledgeBrowser } from "@/components/OrganicKnowledgeBrowser";
 
 export function StudySection({ section }: { section: StudySectionType }) {
   return (
@@ -68,6 +69,7 @@ export function StudySection({ section }: { section: StudySectionType }) {
       {section.kind === "electrolysis" && <ElectrolysisWorkbench cases={section.cases} />}
       {section.kind === "batteryWorksheet" && <BatteryReactionWorksheet />}
       {section.kind === "reactionMaps" && <ReactionMapStudio category={section.category} />}
+      {section.kind === "organicKnowledge" && <OrganicKnowledgeBrowser />}
       {section.kind === "gasLab" && <GasStudyLab />}
       {section.kind === "electrochemistryLab" && <ElectrochemistryLab />}
       {section.kind === "electrochemistrySimulator" && <ElectrochemistrySimulator />}
