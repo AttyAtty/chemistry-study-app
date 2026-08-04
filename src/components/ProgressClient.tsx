@@ -17,7 +17,6 @@ export function ProgressClient() {
 
   const summary=useMemo(()=>{const values=Object.values(progress),attempts=values.reduce((sum,item)=>sum+item.attempts,0),correct=values.reduce((sum,item)=>sum+item.correct,0),total=values.reduce((sum,item)=>sum+item.total,0);return{attempts,correct,total,percent:total?Math.round(correct/total*100):0};},[progress]);
   const insights=useMemo(()=>getLearningInsights(questionHistory,flashProgress),[questionHistory,flashProgress]);
-  const firstReviewDeck=insights.flashcardUnits.find(unit=>unit.reviewCount>0);
   const hasHistory=summary.attempts>0||insights.answeredQuestions>0||insights.knownCards+insights.reviewCards>0;
 
   const handleReset=()=>{if(!window.confirm("単元別の受験回数・得点集計を削除しますか？ 問題別の復習履歴と暗記カード記録は残ります。"))return;resetProgress();setProgress({});};
@@ -29,7 +28,7 @@ export function ProgressClient() {
 
     <section className="today-review" aria-labelledby="today-review-title"><div className="section-heading"><div><p className="eyebrow">NEXT STUDY</p><h2 id="today-review-title">今日の復習</h2></div></div><div className="review-action-grid">
       <article><span>間違えた問題</span><strong>{insights.reviewQuestions}<small>問</small></strong>{insights.reviewQuestions>0?<Link className="button primary" href="/quiz?unit=all&mode=review&count=all">間違えた問題を復習</Link>:<p>現在、復習が必要な問題はありません。</p>}</article>
-      <article><span>まだの暗記カード</span><strong>{insights.reviewCards}<small>枚</small></strong>{firstReviewDeck?<Link className="button secondary" href={`/units/${firstReviewDeck.unitSlug}?flashcards=review#flashcards`}>まだのカードを復習</Link>:<p>現在「まだ」のカードはありません。</p>}</article>
+      <article><span>今日の暗記カード</span><strong>{insights.dueCards}<small>枚</small></strong>{insights.dueCards>0?<Link className="button secondary" href="/flashcards/review?flashcards=due">カードを復習</Link>:<p>今日復習するカードはありません。</p>}</article>
     </div></section>
 
     <section className="weak-unit-section"><div className="section-heading"><div><p className="eyebrow">REVIEW PRIORITY</p><h2>苦手単元</h2></div>{insights.reviewQuestions>0&&<Link className="mini-button" href="/quiz?unit=all&mode=review&count=all">苦手だけ復習</Link>}</div>

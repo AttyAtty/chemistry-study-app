@@ -742,10 +742,12 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
 .flashcard-position { display:flex; align-items:center; justify-content:center; gap:12px; margin:17px auto 12px; color:var(--muted); font-size:12px; font-weight:800; }.flashcard-position > div { width:min(300px,60%); height:6px; overflow:hidden; border-radius:99px; background:rgba(23,40,77,.08); }.flashcard-position i { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#8cc9ff,#c5a6ff,#ff9bc4); }
 .flashcard-judgement { display:grid; grid-template-columns:repeat(2,minmax(120px,220px)); justify-content:center; gap:12px; }.flashcard-judgement button { min-height:48px; border:0; border-radius:14px; color:#17284d; font:inherit; font-weight:900; cursor:pointer; }.flashcard-judgement .needs-review { background:#fff0d7; }.flashcard-judgement .known { background:#dff9ed; }.flashcard-judgement button:disabled { opacity:.38; cursor:not-allowed; }
 .flashcard-empty { padding:40px; border-radius:18px; background:white; color:var(--muted); text-align:center; }.flashcard-print-list { display:none; }
+.flashcard-session-result { padding:36px 24px; border:1px solid rgba(91,107,156,.14); border-radius:22px; background:rgba(255,255,255,.88); text-align:center; box-shadow:0 12px 32px rgba(53,69,111,.08); }
+.flashcard-session-result h3 { margin:0 0 10px; color:var(--navy); }.flashcard-session-result strong { display:block; font-size:clamp(1.8rem,5vw,2.7rem); color:#6872c8; }.flashcard-session-result p { color:var(--muted); }.flashcard-session-result button { min-height:44px; }
 
 @media (max-width:620px) {
   .flashcard-deck { padding:18px 10px; border-radius:20px; }.flashcard-deck-header { align-items:flex-start; flex-direction:column; }.flashcard-summary { width:100%; }
-  .flashcard-toolbar { align-items:stretch; }.flashcard-mode-tabs { width:100%; overflow-x:auto; }.flashcard-mode-tabs button { flex:1; white-space:nowrap; }.flashcard-toolbar label { width:100%; justify-content:space-between; }.flashcard-toolbar select { flex:1; min-width:0; }
+  .flashcard-toolbar { align-items:stretch; }.flashcard-mode-tabs { width:100%; flex-wrap:wrap; overflow:visible; }.flashcard-mode-tabs button { flex:1 1 120px; white-space:nowrap; }.flashcard-toolbar label { width:100%; justify-content:space-between; }.flashcard-toolbar select { flex:1; min-width:0; }
   .flashcard-stage { grid-template-columns:40px minmax(0,1fr) 40px; gap:6px; }.flashcard-nav { width:38px; height:48px; }.universal-flashcard { min-height:390px; }.flashcard-face { padding:24px 15px; }.flashcard-face strong { font-size:clamp(21px,7vw,30px); }
   .flashcard-judgement { grid-template-columns:1fr 1fr; }.flashcard-judgement button { min-width:0; }
 }
@@ -756,7 +758,7 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
 
 @media print {
   .flashcard-deck,.flashcard-deck * { visibility:visible !important; }.flashcard-deck { position:absolute; inset:0; width:100%; margin:0; padding:0; border:0; box-shadow:none; background:white; }
-  .flashcard-deck-header,.flashcard-stage,.flashcard-toolbar,.flashcard-position,.flashcard-judgement,.flashcard-empty { display:none !important; }
+  .flashcard-deck-header,.flashcard-stage,.flashcard-toolbar,.flashcard-position,.flashcard-judgement,.flashcard-empty,.flashcard-session-result { display:none !important; }
   .flashcard-print-list { display:block !important; color:black; }.flashcard-print-list h2 { margin:0 0 6mm; }.flashcard-print-list table { width:100%; border-collapse:collapse; }.flashcard-print-list th,.flashcard-print-list td { padding:3mm; border:1px solid #777; color:black !important; text-align:left; vertical-align:top; }.flashcard-print-list tr { break-inside:avoid; }.flashcard-print-list small { display:block; margin-top:2mm; color:#444 !important; }
 }
 
