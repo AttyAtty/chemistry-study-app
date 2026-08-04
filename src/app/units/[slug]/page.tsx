@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/PrintButton";
+import { FlashcardDeck } from "@/components/FlashcardDeck";
 import { StudySection } from "@/components/StudySection";
 import { chemistryUnits, getUnit } from "@/data/chemistry";
+import { getFlashcardsForUnit } from "@/data/flashcards";
 
 export function generateStaticParams() {
   return chemistryUnits.map((unit) => ({ slug: unit.slug }));
@@ -20,6 +22,7 @@ export default async function UnitPage({ params }: { params: Promise<{ slug: str
   const unit = getUnit(slug);
   if (!unit) notFound();
   const isBasic = unit.slug.startsWith("chemistry-basic-");
+  const flashcards = getFlashcardsForUnit(unit);
 
   return (
     <main className={`page-container${isBasic ? " chemistry-basic-print chemistry-basic-unit" : ""}`}>
@@ -44,9 +47,12 @@ export default async function UnitPage({ params }: { params: Promise<{ slug: str
 
       <nav className="section-nav no-print" aria-label="ページ内メニュー">
         {unit.sections.map((section) => <a href={`#${section.id}`} key={section.id}>{section.title}</a>)}
+        <a href="#flashcards">暗記カード</a>
       </nav>
 
       {unit.sections.map((section) => <StudySection section={section} key={section.id} />)}
+
+      {unit.slug !== "laboratory-gases" && <FlashcardDeck cards={flashcards} unitId={unit.slug} />}
 
       <section className="bottom-cta no-print">
         <div><p className="eyebrow">CHECK</p><h2>覚えた内容を問題で確認</h2></div>
