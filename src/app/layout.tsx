@@ -3,6 +3,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { SharePanel } from "@/components/SharePanel";
 import { ChemicaAnimatedBackground } from "@/components/ChemicaAnimatedBackground";
+import { FeedbackLink } from "@/components/FeedbackLink";
 
 export const metadata: Metadata = {
   title: { default: "Chemica", template: "%s | Chemica" },
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <footer className="site-footer">
       <p>Chemica</p>
       <small>高校化学を、図・カード・問題演習で学べるサイト</small>
+      <nav className="footer-links" aria-label="サポート"><FeedbackLink /></nav>
       <span className="site-credit">Designed &amp; Created by <strong>Atty</strong></span>
     </footer>
   </body></html>;
