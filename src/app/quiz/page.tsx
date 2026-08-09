@@ -35,6 +35,12 @@ export default async function QuizPage({
               <Link className="button primary" href="/quiz?unit=all">出題条件を選ぶ</Link>
             </div>
           </article>
+          <article className="quiz-select-card">
+            <span className="unit-icon">📝</span>
+            <h2>暗記小テストメーカー</h2>
+            <p>既存教材から記述式10問を作り、A4の問題・解答を印刷できます。</p>
+            <div className="quiz-count-links"><Link className="button secondary" href="/tools/memory-quiz">小テストを作る</Link></div>
+          </article>
           {chemistryUnits.map((unit) => (
             <article className="quiz-select-card" key={unit.slug}>
               <span className="unit-icon">{unit.icon}</span>

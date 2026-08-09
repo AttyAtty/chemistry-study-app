@@ -776,6 +776,31 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
 @media(max-width:700px){.search-result-card { grid-template-columns:1fr; padding:18px; }.related-knowledge { border-top:1px solid rgba(76,94,145,.11); border-left:0; padding:16px 0 0; }.home-global-search { width:100%; }.home-global-search > div { width:100%; }.home-global-search input { flex:1; }.global-search-form > div { align-items:stretch; }.global-search-form button { padding:0 14px; }}
 @media print {.home-global-search,.search-page { display:none !important; }}
 
+/* Printable memory quiz maker */
+.memory-quiz-page { max-width:1050px; padding-bottom:70px; }
+.memory-maker-intro { margin:28px 0 24px; padding:clamp(24px,4vw,42px); border:1px solid var(--chemica-border); border-radius:26px; background:rgba(255,255,255,.9); box-shadow:var(--shadow-card); }
+.memory-maker-intro h1 { margin:6px 0 12px; color:var(--chemica-navy); font-size:clamp(34px,5vw,52px); }.memory-maker-intro>p:not(.eyebrow) { color:var(--muted); line-height:1.8; }
+.memory-maker-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; }.memory-maker-actions button { min-height:48px; cursor:pointer; }
+.memory-maker-actions button:focus-visible { outline:3px solid rgba(112,168,255,.5); outline-offset:3px; }
+.memory-print-note { font-size:13px; }.memory-category-summary { display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 0; padding:0; list-style:none; }.memory-category-summary li { display:flex; gap:8px; padding:8px 11px; border-radius:99px; background:#eef3ff; color:#56628d; font-size:12px; }.memory-category-summary strong { color:var(--chemica-navy); }
+.memory-quiz-print-area { display:grid; gap:24px; }.memory-quiz-sheet { width:min(100%,210mm); min-height:297mm; margin:0 auto; padding:12mm 13mm; border:1px solid rgba(66,84,124,.16); background:white; color:#111827; box-shadow:0 16px 40px rgba(50,66,102,.09); }
+.memory-sheet-header { display:flex; align-items:flex-end; justify-content:space-between; padding-bottom:4mm; border-bottom:2px solid #172033; }.memory-sheet-header small { color:#4b5563; font-weight:800; letter-spacing:.13em; }.memory-sheet-header h2 { margin:1mm 0 0; color:#111827; font-size:24px; }.memory-sheet-header>strong { color:#111827; font-size:15px; }
+.memory-student-meta { display:grid; grid-template-columns:1fr auto auto; gap:7mm; margin:4mm 0 5mm; color:#111827; font-size:13px; }
+.memory-question-list,.memory-answer-list { display:grid; gap:3.2mm; margin:0; padding-left:7mm; }.memory-quiz-item { padding-left:2mm; break-inside:avoid; color:#111827; }.memory-question-copy { white-space:pre-line; color:#111827 !important; font-size:13px; font-weight:650; line-height:1.48; }.memory-question-copy * { color:#111827 !important; background:none !important; }
+.memory-answer-space { display:grid; gap:2.3mm; margin-top:2.2mm; }.memory-answer-space i { display:block; height:4.2mm; border-bottom:1px solid #5d6470; }
+.memory-answer-list { gap:4mm; }.memory-answer-list .memory-question-copy { color:#4b5563 !important; font-size:11px; font-weight:600; }.memory-answer-copy { margin-top:1mm; white-space:pre-line; color:#111827; line-height:1.5; }.memory-answer-copy strong { display:block; color:#111827; font-size:13px; }.memory-answer-copy small { display:block; margin-top:.6mm; color:#4b5563; }
+@media(max-width:620px){.memory-quiz-page { padding-inline:10px; }.memory-maker-intro { padding:24px 17px; }.memory-maker-actions { display:grid; }.memory-maker-actions button { width:100%; }.memory-quiz-sheet { width:100%; min-height:0; padding:22px 16px; border-radius:18px; }.memory-student-meta { grid-template-columns:1fr; gap:9px; }.memory-question-list,.memory-answer-list { gap:18px; padding-left:24px; }.memory-question-copy { font-size:15px; }.memory-answer-space i { height:24px; }}
+@media print {
+  .memory-quiz-print-area,.memory-quiz-print-area * { visibility:visible !important; }
+  .memory-quiz-print-area { position:absolute; inset:0; display:block; width:100%; background:white; color:black; }
+  .memory-quiz-sheet { box-sizing:border-box; width:100%; min-height:0; margin:0; padding:7mm 9mm; border:0; border-radius:0; box-shadow:none; color:black; page:memory-quiz; }
+  .memory-quiz-sheet,.memory-quiz-sheet * { color:#000 !important; background:transparent !important; text-shadow:none !important; }
+  .memory-problem-sheet { break-after:page; page-break-after:always; }
+  .memory-question-list { gap:2.4mm; }.memory-question-copy { font-size:11.5px; line-height:1.38; }.memory-answer-space { gap:1.5mm; margin-top:1.4mm; }.memory-answer-space i { height:3.2mm; }
+  .memory-answer-list { gap:3mm; }.memory-answer-list .memory-question-copy { font-size:10px; }.memory-answer-copy strong { font-size:11.5px; }
+  @page memory-quiz { size:A4 portrait; margin:8mm; }
+}
+
 /* Chemistry basics course */
 .chemistry-basic-entry { grid-column:1 / -1; background: linear-gradient(135deg,rgba(166,242,213,.34),rgba(140,201,255,.22),rgba(197,166,255,.2)); }
 .basic-course-hero { display:grid; grid-template-columns:minmax(0,1fr) 260px; gap:32px; align-items:center; margin:26px 0 54px; padding:clamp(28px,5vw,58px); border:1px solid var(--color-border,var(--line)); border-radius:var(--radius-lg,28px); background:rgba(255,255,255,.9); box-shadow:var(--shadow-card,0 14px 40px rgba(75,94,135,.08)); }

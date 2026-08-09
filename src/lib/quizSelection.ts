@@ -14,6 +14,7 @@ const categoryByUnit:Record<string,TestCategory>={
   "batteries-electrolysis":"theory","ionic-equations":"theory","chemistry-basic-composition":"theory","chemistry-basic-mole-reactions":"theory","chemistry-basic-acid-base-redox":"theory",
   "industrial-processes":"other","chemistry-basic-comprehensive":"other",
 };
+export const getTestCategoryForUnit=(unitSlug:string):TestCategory=>categoryByUnit[unitSlug]??"other";
 export const getQuestionCategory=(question:QuizQuestionWithUnit,fallbackUnit:string):TestCategory=>categoryByUnit[question.unitSlug??fallbackUnit]??"other";
 const shuffle=<T,>(items:T[])=>{const copy=[...items];for(let index=copy.length-1;index>0;index--){const randomIndex=Math.floor(Math.random()*(index+1));[copy[index],copy[randomIndex]]=[copy[randomIndex],copy[index]];}return copy;};
 
