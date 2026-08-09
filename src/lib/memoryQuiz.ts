@@ -1,6 +1,6 @@
 import type { TestCategory } from "@/lib/quizSelection";
 
-export type MemoryQuestionKind = "short" | "formula" | "equation" | "color";
+export type MemoryQuestionKind = "color" | "formula" | "name" | "reaction" | "reagent" | "catalyst" | "condition" | "property" | "production" | "functional-group" | "electrode-reaction" | "short";
 
 export type MemoryQuizQuestion = {
   id: string;
@@ -11,7 +11,8 @@ export type MemoryQuizQuestion = {
   answer: string;
   note?: string;
   kind: MemoryQuestionKind;
-  answerLines: 1 | 2;
+  answerLines: 1 | 2 | 3;
+  answerSlots?: 1 | 2 | 3;
   sourceUnit: string;
 };
 
@@ -44,7 +45,9 @@ const shuffle = <T,>(items: T[], random: () => number) => {
 
 export function selectMemoryQuizQuestions(pool: MemoryQuizQuestion[], count = 10, seed = 1) {
   const random = hashSeed(seed);
-  const unique = [...new Map(pool.map((question) => [question.knowledgeKey, question])).values()];
+  const uniqueByKnowledge = new Map<string, MemoryQuizQuestion>();
+  for (const question of pool) if (!uniqueByKnowledge.has(question.knowledgeKey)) uniqueByKnowledge.set(question.knowledgeKey, question);
+  const unique = [...uniqueByKnowledge.values()];
   const target = Math.min(count, unique.length);
   const categories = Object.keys(MEMORY_QUIZ_CATEGORY_WEIGHTS) as TestCategory[];
   const totalWeight = Object.values(MEMORY_QUIZ_CATEGORY_WEIGHTS).reduce((sum, weight) => sum + weight, 0);

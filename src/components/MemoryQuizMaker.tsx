@@ -9,7 +9,7 @@ function QuestionList({ questions, answers = false }: { questions: MemoryQuizQue
   return <ol className={answers ? "memory-answer-list" : "memory-question-list"}>
     {questions.map((question) => <li className={`memory-quiz-item kind-${question.kind}`} key={question.id}>
       <div className="memory-question-copy">{question.prompt}</div>
-      {answers ? <div className="memory-answer-copy"><strong>{question.answer}</strong>{question.note && <small>{question.note}</small>}</div> : <div className={`memory-answer-space lines-${question.answerLines}`} aria-hidden="true">{Array.from({ length: question.answerLines }, (_, index) => <i key={index} />)}</div>}
+      {answers ? <div className="memory-answer-copy"><strong>{question.answer}</strong>{question.note && <small>{question.note}</small>}</div> : <div className={`memory-answer-space lines-${question.answerLines} slots-${question.answerSlots ?? 1}`} aria-hidden="true">{Array.from({ length: question.answerSlots ?? 1 }, (_, slot) => <span key={slot}>{Array.from({ length: question.answerLines }, (_, line) => <i key={line} />)}</span>)}</div>}
     </li>)}
   </ol>;
 }
