@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { SharePanel } from "@/components/SharePanel";
 import { ChemicaAnimatedBackground } from "@/components/ChemicaAnimatedBackground";
 import { FeedbackLink } from "@/components/FeedbackLink";
+import { CHEMICA_VERSION_LABEL } from "@/lib/appVersion";
 
 export const metadata: Metadata = {
   title: { default: "Chemica", template: "%s | Chemica" },
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <p>Chemica</p>
       <small>高校化学を、図・カード・問題演習で学べるサイト</small>
       <nav className="footer-links" aria-label="サポート"><FeedbackLink /></nav>
+      <small className="site-version">{CHEMICA_VERSION_LABEL}</small>
       <span className="site-credit">Designed &amp; Created by <strong>Atty</strong></span>
     </footer>
   </body></html>;

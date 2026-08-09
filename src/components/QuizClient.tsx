@@ -150,6 +150,7 @@ export function QuizClient({
             {currentIndex === quizQuestions.length - 1 ? "結果を見る" : "次の問題"}
           </button>
         </div>
+        <div className="question-report"><Link href={`/feedback?type=${encodeURIComponent("教材内容の誤り")}&source=${encodeURIComponent(`/quiz?unit=${current.unitSlug??unitSlug}#question-${current.id}`)}`}>この問題について報告</Link></div>
       </section>
     </div>
   );

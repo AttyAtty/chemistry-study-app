@@ -58,6 +58,7 @@ export default async function UnitPage({ params }: { params: Promise<{ slug: str
         <div><p className="eyebrow">CHECK</p><h2>覚えた内容を問題で確認</h2></div>
         <Link className="button primary" href={`/quiz?unit=${unit.slug}&count=10`}>テストを始める</Link>
       </section>
+      <div className="content-report no-print"><Link href={`/feedback?type=${encodeURIComponent("教材内容の誤り")}&source=${encodeURIComponent(`/units/${unit.slug}`)}`}>この内容について報告</Link></div>
     </main>
   );
 }

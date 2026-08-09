@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { FEEDBACK_CONTENT_MAX, FEEDBACK_CONTENT_MIN, isFeedbackType, isValidEmail, normalizeSourceUrl } from "@/lib/feedback";
+import { CHEMICA_VERSION_LABEL } from "@/lib/appVersion";
 
 export const runtime = "nodejs";
 
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
   if (!apiKey || !to || !from) return jsonError("送信できませんでした。時間をおいて再度お試しください。", 503);
 
   const sentAt = new Date().toISOString();
-  const text = ["Chemica フィードバック", "", `種類：\n${type}`, "", `内容：\n${content}`, "", `返信先：\n${email || "なし"}`, "", `対象ページ：\n${sourceUrl || "不明"}`, "", `送信日時：\n${sentAt}`].join("\n");
+  const text = ["Chemica フィードバック", "", `種類：\n${type}`, "", `内容：\n${content}`, "", `返信先：\n${email || "なし"}`, "", `対象ページ：\n${sourceUrl || "不明"}`, "", `Chemica version：\n${CHEMICA_VERSION_LABEL}`, "", `送信日時：\n${sentAt}`].join("\n");
 
   try {
     const response = await fetch("https://api.resend.com/emails", {
