@@ -21,9 +21,25 @@ const colors: Array<[string, string]> = [
 const pattern = new RegExp(`(${colors.map(([token]) => token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "g");
 const lookup = new Map(colors);
 
+const formulaPattern = /(\[[A-Z][A-Za-z0-9₀-₉⁰-⁹⁺⁻()]+\][0-9₀-₉⁰-⁹⁺⁻]*|(?:[A-Z][a-z]?[0-9₀-₉⁰-⁹]*[()₀-₉⁰-⁹]*){2,}[⁺⁻]*)/g;
+const isFormula = (value: string) => /^[A-Z[]/.test(value);
+const formulaClassName = (value: string) => `chemical-formula${value.length > 24 ? " is-long" : ""}`;
+
+function renderPlainText(value: string, keyPrefix: string): ReactNode[] {
+  return value.split(formulaPattern).filter(Boolean).map((part, index) =>
+    isFormula(part)
+      ? <span className={formulaClassName(part)} key={`${keyPrefix}-formula-${index}`}>{part}</span>
+      : part
+  );
+}
+
 export function ColoredChemText({ children }: { children: string }): ReactNode {
   return children.split(pattern).map((part, index) => {
     const color = lookup.get(part);
-    return color ? <span className={`chemical-color ${part.endsWith("色") ? "color-chip" : ""}`} style={{ color }} key={`${part}-${index}`}>{part}</span> : part;
+    if (color) {
+      const classes = ["chemical-color", part.endsWith("色") ? "color-chip" : "", isFormula(part) ? formulaClassName(part) : ""].filter(Boolean).join(" ");
+      return <span className={classes} style={{ color }} key={`${part}-${index}`}>{part}</span>;
+    }
+    return renderPlainText(part, `${part}-${index}`);
   });
 }
