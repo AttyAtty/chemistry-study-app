@@ -5,6 +5,7 @@ import { SharePanel } from "@/components/SharePanel";
 import { ChemicaAnimatedBackground } from "@/components/ChemicaAnimatedBackground";
 import { FeedbackLink } from "@/components/FeedbackLink";
 import { CHEMICA_VERSION_LABEL } from "@/lib/appVersion";
+import { MobileNavigation } from "@/components/MobileNavigation";
 
 export const metadata: Metadata = {
   title: { default: "Chemica", template: "%s | Chemica" },
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <ChemicaAnimatedBackground />
     <Header />
     {children}
+    <MobileNavigation />
     <SharePanel />
     <footer className="site-footer">
       <p>Chemica</p>
