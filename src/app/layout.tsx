@@ -6,6 +6,7 @@ import { ChemicaAnimatedBackground } from "@/components/ChemicaAnimatedBackgroun
 import { FeedbackLink } from "@/components/FeedbackLink";
 import { CHEMICA_VERSION_LABEL } from "@/lib/appVersion";
 import { MobileNavigation } from "@/components/MobileNavigation";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: { default: "Chemica", template: "%s | Chemica" },
@@ -43,5 +44,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <small className="site-version">{CHEMICA_VERSION_LABEL}</small>
       <span className="site-credit">Designed &amp; Created by <strong>Atty</strong></span>
     </footer>
+    <Analytics />
   </body></html>;
 }
