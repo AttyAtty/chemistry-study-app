@@ -3,6 +3,7 @@ import { expandedOrganicQuestions } from "@/data/organicReactionMaps";
 import { gasUnit } from "@/data/gasUnit";
 import { electrochemistryQuestions } from "@/data/electrochemistry";
 import { chemistryBasicUnits } from "@/data/chemistry-basic";
+import { inorganicIndustrialSection, inorganicKnowledgeQuestions, inorganicKnowledgeSections } from "@/data/inorganicKnowledge";
 
 export type QuizQuestion = {
   id: string;
@@ -281,6 +282,7 @@ export const chemistryUnits: ChemistryUnit[] = [
         kind: "reactionMaps",
         category: "inorganic",
       },
+      ...inorganicKnowledgeSections,
       {
         id: "gas-generation",
         title: "代表的な気体の発生法",
@@ -336,6 +338,7 @@ export const chemistryUnits: ChemistryUnit[] = [
       },
     ],
     questions: [
+      ...inorganicKnowledgeQuestions,
       {
         id: "inorg-1",
         prompt: "アンモニアの捕集に適する方法はどれですか。",
@@ -975,6 +978,7 @@ export const chemistryUnits: ChemistryUnit[] = [
     level: "高校化学",
     keywords: ["工業", "ハーバー", "接触法", "オストワルト", "ソルベー"],
     sections: [
+      inorganicIndustrialSection,
       {
         id: "industrial-table",
         title: "主要な工業的製法の比較",

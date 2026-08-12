@@ -2,6 +2,7 @@ import type { ChemistryUnit } from "@/data/chemistry";
 import { electrochemistryCards } from "@/data/electrochemistry";
 import { densityLabels, gases, solubilityLabels } from "@/data/gases";
 import { organicReactions } from "@/data/organicReactionMaps";
+import { inorganicKnowledgeFlashcards } from "@/data/inorganicKnowledge";
 
 export type Flashcard = {
   id: string;
@@ -103,6 +104,9 @@ export function getFlashcardsForUnit(unit: ChemistryUnit): Flashcard[] {
   if (unit.slug === "laboratory-gases") return getGasFlashcards();
   if (unit.slug === "batteries-electrolysis") return getElectrochemistryFlashcards(unit.slug);
   const sectionCards = cardsFromSections(unit);
+  if (unit.slug === "inorganic-reactions") {
+    return [...inorganicKnowledgeFlashcards, ...sectionCards, ...cardsFromQuestions(unit, [...inorganicKnowledgeFlashcards, ...sectionCards])];
+  }
   if (unit.slug === "organic-reactions") {
     const reactionCards = organicReactions.filter((reaction) => reaction.importance === "core" || (
       reaction.importance === "industrial" && /クメン|Wacker|SOHIO|重合|Kolbe|Dow|発酵/.test(`${reaction.reactionName}${reaction.conditions.join(" ")}`)

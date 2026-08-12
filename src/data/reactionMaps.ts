@@ -79,8 +79,10 @@ const legacyReactionMaps: ReactionMap[] = [
 ];
 
 import { expandedOrganicReactionMaps } from "@/data/organicReactionMaps";
+import { expandedInorganicReactionMaps } from "@/data/inorganicKnowledge";
 
 export const reactionMaps: ReactionMap[] = [
   ...expandedOrganicReactionMaps,
-  ...legacyReactionMaps.filter((map) => map.category !== "organic"),
+  ...expandedInorganicReactionMaps,
+  ...legacyReactionMaps.filter((map) => map.category !== "organic" && !expandedInorganicReactionMaps.some((expanded) => expanded.id === map.id)),
 ];
