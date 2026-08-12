@@ -65,7 +65,12 @@ function buildLevels(nodes:LayoutNode[],edges:GraphEdge[],centerId:string){
   edges.forEach(edge=>{adjacency.get(edge.from)?.push(edge.to);adjacency.get(edge.to)?.push(edge.from);});
   const level=new Map<string,number>([[centerId,0]]),queue=[centerId];
   while(queue.length){const id=queue.shift()!;for(const next of adjacency.get(id)??[])if(!level.has(next)){level.set(next,(level.get(id)??0)+1);queue.push(next);}}
-  nodes.forEach(node=>{if(!level.has(node.id))level.set(node.id,Math.max(1,...level.values())+1);});
+  nodes.forEach(node=>{
+    if(level.has(node.id))return;
+    level.set(node.id,1);
+    const componentQueue=[node.id];
+    while(componentQueue.length){const id=componentQueue.shift()!;for(const next of adjacency.get(id)??[])if(!level.has(next)){level.set(next,(level.get(id)??1)+1);componentQueue.push(next);}}
+  });
   return {adjacency,level};
 }
 
@@ -90,15 +95,25 @@ function initialGraphPositions(nodes:LayoutNode[],edges:GraphEdge[],centerId:str
     });
     return positions;
   }
-  positions[centerId]={x:500,y:400};
+  positions[centerId]={x:900,y:390};
   const rings=new Map<number,LayoutNode[]>();nodes.filter(n=>n.id!==centerId).forEach(node=>{const key=level.get(node.id)??1;rings.set(key,[...(rings.get(key)??[]),node]);});
   [...rings.entries()].sort(([a],[b])=>a-b).forEach(([ring,items])=>{
-    const radius=Math.max(290*ring,(items.length*(210+ring*10))/(2*Math.PI));
-    items.forEach((node,index)=>{
-      const zone=node.zone,zoneAngle=zone==="top"?-Math.PI/2:zone==="right"?0:zone==="bottom"?Math.PI/2:zone==="left"?Math.PI:undefined;
-      const angle=zoneAngle??(-Math.PI/2+(Math.PI*2*index/items.length)+(ring%2)*.18);
-      positions[node.id]={x:500+Math.cos(angle)*radius,y:400+Math.sin(angle)*radius};
-    });
+    const radiusX=Math.max(430*ring,(items.length*(245+ring*12))/(2*Math.PI)*1.4),radiusY=Math.max(205*ring,(items.length*(155+ring*8))/(2*Math.PI));
+    const zoneGroups=new Map<LayoutZone|"auto",LayoutNode[]>();
+    items.forEach(node=>{const zone=node.zone??"auto";zoneGroups.set(zone,[...(zoneGroups.get(zone)??[]),node]);});
+    let autoIndex=0;
+    for(const [zone,group] of zoneGroups){
+      group.forEach((node,index)=>{
+        let angle:number;
+        if(zone==="auto"){angle=-Math.PI/2+(Math.PI*2*autoIndex/Math.max(1,zoneGroups.get("auto")?.length??1))+(ring%2)*.2;autoIndex++;}
+        else {
+          const base=zone==="top"?-Math.PI/2:zone==="right"?0:zone==="bottom"?Math.PI/2:Math.PI;
+          const spread=(zone==="top"||zone==="bottom") ? .78 : .52;
+          angle=base+(group.length===1?0:(index/(group.length-1)-.5)*spread);
+        }
+        positions[node.id]={x:900+Math.cos(angle)*radiusX,y:390+Math.sin(angle)*radiusY};
+      });
+    }
   });
   return positions;
 }
