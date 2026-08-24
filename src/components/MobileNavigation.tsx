@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { CHEMICA_VERSION_LABEL } from "@/lib/appVersion";
 
 const items = [
-  { href: "/home#units", label: "単元", icon: "▦", match: (path: string) => path === "/home" || path.startsWith("/units/") || path.startsWith("/courses/") },
+  { href: "/home#fields", label: "単元", icon: "▦", match: (path: string) => path === "/home" || path.startsWith("/units/") || path.startsWith("/courses/") },
   { href: "/quiz", label: "テスト", icon: "✓", match: (path: string) => path === "/quiz" },
   { href: "/tools/memory-quiz", label: "小テスト", icon: "✎", match: (path: string) => path.startsWith("/tools/memory-quiz") },
   { href: "/progress", label: "記録", icon: "⌁", match: (path: string) => path === "/progress" },
