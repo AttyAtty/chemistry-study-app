@@ -4,6 +4,7 @@ import { electrochemistryCards } from "@/data/electrochemistry";
 import { gases } from "@/data/gases";
 import { organicCompounds, organicReactions } from "@/data/organicReactionMaps";
 import { inorganicReactions, inorganicSubstances } from "@/data/inorganicKnowledge";
+import { redoxProductPredictions } from "@/data/redoxProductPredictions";
 
 export type SearchItemType = "unit" | "ion" | "compound" | "inorganic" | "reaction" | "precipitate" | "complex" | "gas" | "battery" | "industrial" | "basic";
 export type SearchItem = {
@@ -37,10 +38,15 @@ const explicitRelations:Record<string,string[]>={
   "Fe²⁺":["Fe(OH)₂","[Fe(CN)₆]³⁻","鉄(III)イオン"],
   "NO₂":["N₂O₄","HNO₃","一酸化窒素"],
   "NaCl":["イオン交換膜法","NaOH","Cl₂"],
-  "NaHCO₃":["アンモニアソーダ法","Na₂CO₃"],
   "P₄":["P₄O₁₀","赤リン"],
   "SiO₂":["Na₂SiO₃","水ガラス","シリカゲル"],
   "SO₂":["SO₃","H₂SO₄","接触法"],
+  "MnO₄⁻":["Mn²⁺","MnO₂","MnO₄²⁻","酸化還元 生成物予測"],
+  "Cr₂O₇²⁻":["Cr³⁺","CrO₄²⁻","化学平衡"],
+  "H₂O₂":["H₂O","O₂","MnO₂"],
+  "Sn²⁺":["Sn⁴⁺","塩化スズ(II)","酸化還元 生成物予測"],
+  "セッケン":["ミセル","コロイド","硬水"],
+  "NaHCO₃":["アンモニアソーダ法","Na₂CO₃","溶解度"],
   "Ag⁺":["AgCl","[Ag(NH₃)₂]⁺","定性分析"],
   "ベンゼン":["ニトロベンゼン","アニリン","フェノール","トルエン"],
   "エタノール":["アセトアルデヒド","酢酸","エチレン","酢酸エチル"],
@@ -55,9 +61,10 @@ function buildBaseIndex():SearchItem[]{
   const inorganicReactionItems:SearchItem[]=inorganicReactions.map(item=>({id:`inorganic-reaction-${item.id}`,type:item.processName?"industrial":"reaction",title:item.processName??`${item.reactants.join(" + ")} → ${item.products.join(" + ")}`,formula:item.equation,description:compact([...(item.conditions??[]),item.catalyst?`触媒：${item.catalyst}`:"",item.description??""].filter(Boolean).join(" / ")),keywords:[item.element,...item.reactants,...item.products,...(item.byproducts??[])],category:item.processName?"工業的製法・定性分析":"無機反応",unitId:"inorganic-reactions",href:"/units/inorganic-reactions#inorganic-reaction-map-studio",relatedIds:[...item.reactants,...item.products].map(term=>inorganicSubstances.find(s=>s.formula===term||s.name===term)).filter((s):s is NonNullable<typeof s>=>Boolean(s)).map(s=>`inorganic-${s.id}`)}));
   const gasItems:SearchItem[]=gases.map(gas=>({id:`gas-${gas.id}`,type:"gas",title:gas.name,formula:gas.formula,description:`${gas.color}・${gas.odor} / ${gas.collectionMethods.join("・")}`,keywords:[gas.waterReaction??"",...gas.properties,...gas.preparation.flatMap(item=>[item.equation,...item.reagents])],category:"気体",unitId:"laboratory-gases",href:"/units/laboratory-gases#gas-study-lab"}));
   const batteries:SearchItem[]=electrochemistryCards.map(card=>({id:`battery-${card.id}`,type:"battery",title:card.name,formula:card.overallEquation,description:compact(`${card.electrolytes.join("・")} / ${card.electronFlow}`),keywords:[...card.keyPoints,...card.electrodes.flatMap(e=>[e.material,e.equation])],category:"電池・電気分解",unitId:"batteries-electrolysis",href:"/units/batteries-electrolysis#electrochemistry-lab"}));
+  const redoxProducts:SearchItem[]=redoxProductPredictions.map(item=>({id:item.id,type:"reaction",title:`${item.medium}：${item.reactant} の生成物予測`,formula:item.skeleton,description:`${item.productName}／${item.role}として自身は${item.direction}／${item.element} ${item.oxidationStateBefore} → ${item.oxidationStateAfter}`,keywords:[item.reactantName,item.product,item.productName,item.halfReaction,"酸化還元生成物予測"],category:"酸化還元 生成物予測",unitId:"ionic-equations",href:"/units/ionic-equations#redox-product-prediction"}));
   const glossary:SearchItem[]=chemistryBasicGlossary.map((entry,index)=>({id:`basic-glossary-${index}`,type:"basic",title:entry.term,description:entry.definition,category:entry.category,href:"/courses/chemistry-basic",keywords:[entry.category]}));
   const formulas:SearchItem[]=chemistryBasicFormulas.map((entry,index)=>({id:`basic-formula-${index}`,type:"basic",title:entry.title,formula:entry.formula,description:entry.meaning,category:"化学基礎・公式",href:"/courses/chemistry-basic",keywords:[entry.condition??""]}));
-  return [...units,...compounds,...reactions,...inorganicItems,...inorganicReactionItems,...gasItems,...batteries,...glossary,...formulas,...knowledge];
+  return [...units,...compounds,...reactions,...inorganicItems,...inorganicReactionItems,...redoxProducts,...gasItems,...batteries,...glossary,...formulas,...knowledge];
 }
 
 const searchable=(item:SearchItem)=>[item.title,item.formula,...(item.aliases??[])].filter((value):value is string=>Boolean(value)).map(normalizeChemicalSearchText);

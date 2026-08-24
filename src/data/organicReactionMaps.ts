@@ -1,4 +1,4 @@
-import type { ReactionMap, ReactionNode, ReactionStep } from "@/data/reactionMaps";
+import type { ReactionConditionDetails, ReactionMap, ReactionNode, ReactionStep } from "@/data/reactionMaps";
 
 type Scope = NonNullable<ReactionStep["scope"]>;
 const nodeCatalog = new Map<string,ReactionNode>();
@@ -7,13 +7,13 @@ const n = (name:string,formula:string,appearance?:string,appearanceColor?:string
   if (existing) return existing;
   const node={name,formula,appearance,appearanceColor};nodeCatalog.set(key,node);return node;
 };
-const s = (label:string,condition?:string,scope:Scope="core",important=true,note?:string):ReactionStep => ({label,condition,scope,important,note});
+const s = (label:string,condition?:string,scope:Scope="core",important=true,note?:string,details?:ReactionConditionDetails):ReactionStep => ({label,condition,scope,important,note,details});
 
 const organicMapDefinitions:ReactionMap[] = [
   {id:"toluene",title:"トルエン",category:"organic",centerNode:"トルエン",canvas:{width:1500,height:1040},paths:[
     {nodes:[n("ベンゼン","C₆H₆"),n("トルエン","C₆H₅CH₃")],steps:[s("Friedel–Craftsアルキル化","CH₃Cl・無水AlCl₃","core")]},
-    {nodes:[n("トルエン","C₆H₅CH₃"),n("o-ニトロトルエン","o-CH₃C₆H₄NO₂")],steps:[s("ニトロ化（主にo,p体）","濃HNO₃＋濃H₂SO₄・加熱","core")]},
-    {nodes:[n("トルエン","C₆H₅CH₃"),n("p-ニトロトルエン","p-CH₃C₆H₄NO₂")],steps:[s("ニトロ化（主にo,p体）","濃HNO₃＋濃H₂SO₄・加熱","core")]},
+    {nodes:[n("トルエン","C₆H₅CH₃"),n("o-ニトロトルエン","o-CH₃C₆H₄NO₂")],steps:[s("ニトロ化（主にo,p体）","濃HNO₃・濃H₂SO₄","core")]},
+    {nodes:[n("トルエン","C₆H₅CH₃"),n("p-ニトロトルエン","p-CH₃C₆H₄NO₂")],steps:[s("ニトロ化（主にo,p体）","濃HNO₃・濃H₂SO₄","core")]},
     {nodes:[n("o-ニトロトルエン","o-CH₃C₆H₄NO₂"),n("2,4-ジニトロトルエン","CH₃C₆H₃(NO₂)₂")],steps:[s("追加ニトロ化","濃HNO₃＋濃H₂SO₄","advanced")]},
     {nodes:[n("2,4-ジニトロトルエン","CH₃C₆H₃(NO₂)₂"),n("2,4,6-トリニトロトルエン（TNT）","CH₃C₆H₂(NO₂)₃")],steps:[s("追加ニトロ化","濃HNO₃＋濃H₂SO₄","advanced")]},
     {nodes:[n("トルエン","C₆H₅CH₃"),n("o-クロロトルエン","o-ClC₆H₄CH₃")],steps:[s("核塩素化","Cl₂・FeCl₃（暗所）","advanced")]},
@@ -37,7 +37,7 @@ const organicMapDefinitions:ReactionMap[] = [
   {id:"phenol",title:"フェノール",category:"organic",centerNode:"フェノール",canvas:{width:1350,height:980},paths:[
     {nodes:[n("ベンゼンスルホン酸","C₆H₅SO₃H"),n("ベンゼンスルホン酸ナトリウム","C₆H₅SO₃Na"),n("ナトリウムフェノキシド","C₆H₅ONa"),n("フェノール","C₆H₅OH")],steps:[s("中和","NaOH水溶液","core"),s("アルカリ融解","固体NaOH・加熱","core"),s("酸析出","HClなど","core")]},
     {nodes:[n("クロロベンゼン","C₆H₅Cl"),n("ナトリウムフェノキシド","C₆H₅ONa")],steps:[s("Dow法","NaOH・高温高圧","industrial")]},
-    {nodes:[n("フェノール","C₆H₅OH"),n("ナトリウムフェノキシド","C₆H₅ONa")],steps:[s("弱酸の塩形成","NaOH（またはNa・H₂発生）","core")]},
+    {nodes:[n("フェノール","C₆H₅OH"),n("ナトリウムフェノキシド","C₆H₅ONa")],steps:[s("弱酸の塩形成","NaOH水溶液","core",true,"Na金属とも反応してナトリウムフェノキシドとH₂を生じます。")]},
     {nodes:[n("ナトリウムフェノキシド","C₆H₅ONa"),n("フェノール","C₆H₅OH")],steps:[s("弱酸の遊離","CO₂＋H₂O（H₂CO₃）","core")]},
     {nodes:[n("フェノール","C₆H₅OH"),n("o-ニトロフェノール","o-NO₂C₆H₄OH")],steps:[s("ニトロ化","希HNO₃","advanced")]},
     {nodes:[n("フェノール","C₆H₅OH"),n("p-ニトロフェノール","p-NO₂C₆H₄OH")],steps:[s("ニトロ化","希HNO₃","advanced")]},
@@ -49,7 +49,7 @@ const organicMapDefinitions:ReactionMap[] = [
     {nodes:[n("フェノール","C₆H₅OH"),n("サリチル酸ナトリウム","o-HOC₆H₄COONa"),n("サリチル酸","o-HOC₆H₄COOH")],steps:[s("Kolbe–Schmitt反応","NaOH→CO₂・高温高圧","industrial"),s("酸析出","希H₂SO₄","core")]},
     {nodes:[n("サリチル酸","o-HOC₆H₄COOH"),n("サリチル酸メチル","o-HOC₆H₄COOCH₃")],steps:[s("エステル化","CH₃OH・濃H₂SO₄・加熱","core")]},
     {nodes:[n("サリチル酸","o-HOC₆H₄COOH"),n("アセチルサリチル酸","o-CH₃COOC₆H₄COOH")],steps:[s("アセチル化","無水酢酸・濃H₂SO₄触媒","advanced")]},
-    {nodes:[n("クメン","C₆H₅CH(CH₃)₂"),n("クメンヒドロペルオキシド","C₆H₅C(CH₃)₂OOH"),n("フェノール","C₆H₅OH"),n("アセトン","(CH₃)₂CO")],steps:[s("空気酸化","O₂・高温高圧","industrial"),s("酸分解","H₂SO₄","industrial"),s("併産","クメン法の副生成物","industrial",false)]},
+    {nodes:[n("クメン","C₆H₅CH(CH₃)₂"),n("クメンヒドロペルオキシド","C₆H₅C(CH₃)₂OOH"),n("フェノール","C₆H₅OH"),n("アセトン","(CH₃)₂CO")],steps:[s("空気酸化","O₂（空気）","industrial"),s("酸分解","希硫酸","industrial"),s("併産","クメン法の副生成物","industrial",false)]},
   ]},
   {id:"formaldehyde",title:"ホルムアルデヒド・ギ酸",category:"organic",centerNode:"ホルムアルデヒド",canvas:{width:1300,height:850},paths:[
     {nodes:[n("メタノール","CH₃OH"),n("ホルムアルデヒド","HCHO")],steps:[s("酸化","CuO・加熱（Cu、H₂O生成）","core")]},
@@ -71,7 +71,7 @@ const organicMapDefinitions:ReactionMap[] = [
     {nodes:[n("エチレン","CH₂=CH₂"),n("1,2-ジブロモエタン","CH₂BrCH₂Br")],steps:[s("臭素付加","Br₂/CCl₄または臭素水・脱色","core")]},
     {nodes:[n("エチレン","CH₂=CH₂"),n("1,2-ジクロロエタン","CH₂ClCH₂Cl"),n("塩化ビニル","CH₂=CHCl"),n("ポリ塩化ビニル","[−CH₂−CHCl−]ₙ")],steps:[s("塩素付加","Cl₂・FeCl₃を用いない","advanced"),s("脱塩化水素","加熱","industrial"),s("付加重合","開始剤","industrial")]},
     {nodes:[n("エチレン","CH₂=CH₂"),n("クロロエタン","CH₃CH₂Cl")],steps:[s("塩化水素付加","HCl","advanced")]},
-    {nodes:[n("エチレン","CH₂=CH₂"),n("アセトアルデヒド","CH₃CHO")],steps:[s("Wacker酸化","O₂・PdCl₂/CuCl₂","industrial")]},
+    {nodes:[n("エチレン","CH₂=CH₂"),n("アセトアルデヒド","CH₃CHO")],steps:[s("Wacker酸化","H₂O・O₂・PdCl₂/CuCl₂触媒","industrial")]},
     {nodes:[n("エチレン","CH₂=CH₂"),n("エチレングリコール","HOCH₂CH₂OH"),n("シュウ酸","(COOH)₂"),n("二酸化炭素","CO₂")],steps:[s("穏やかな酸化","希薄・冷・塩基性KMnO₄（脱色）","advanced"),s("酸化","酸化剤","advanced"),s("酸化","K₂Cr₂O₇/H⁺","advanced")]},
     {nodes:[n("エチレングリコール","HOCH₂CH₂OH"),n("PET","[−OCH₂CH₂OCOC₆H₄CO−]ₙ")],steps:[s("縮合重合","テレフタル酸・脱水","industrial")]},
     {nodes:[n("エチレン","CH₂=CH₂"),n("酢酸ビニル","CH₂=CHOCOCH₃"),n("ポリ酢酸ビニル","[−CH₂−CH(OCOCH₃)−]ₙ"),n("ポリビニルアルコール","[−CH₂−CH(OH)−]ₙ"),n("ビニロン","PVA−ホルムアルデヒド架橋体")],steps:[s("酸化的付加","CH₃COOH・O₂・Pd触媒","industrial"),s("付加重合","開始剤","industrial"),s("けん化","NaOH・CH₃OH","industrial"),s("アセタール化","HCHO","industrial")]},
@@ -84,9 +84,9 @@ const organicMapDefinitions:ReactionMap[] = [
     {nodes:[n("エタノール","C₂H₅OH"),n("ヨードホルム","CHI₃","黄色沈殿","#d6b53f")],steps:[s("ヨードホルム反応","I₂・NaOH（HCOONa、NaI、H₂O副生）","core")]},
     {nodes:[n("エタノール","C₂H₅OH"),n("ナトリウムエトキシド","C₂H₅ONa")],steps:[s("Naとの反応","Na・H₂発生","core")]},
     {nodes:[n("エタノール","C₂H₅OH"),n("ジエチルエーテル","C₂H₅OC₂H₅")],steps:[s("分子間脱水","濃H₂SO₄・約130〜140 ℃","core")]},
-    {nodes:[n("エタノール","C₂H₅OH"),n("エチレン","CH₂=CH₂")],steps:[s("分子内脱水","濃H₂SO₄・160〜170 ℃ またはP₄O₁₀・加熱","core")]},
-    {nodes:[n("エタノール","C₂H₅OH"),n("アセトアルデヒド","CH₃CHO"),n("酢酸","CH₃COOH")],steps:[s("酸化","K₂Cr₂O₇/H⁺ またはCu・加熱","core"),s("酸化","K₂Cr₂O₇/H⁺","core")]},
-    {nodes:[n("エチレン","CH₂=CH₂"),n("アセトアルデヒド","CH₃CHO")],steps:[s("Wacker酸化","O₂・PdCl₂/CuCl₂","industrial")]},
+    {nodes:[n("エタノール","C₂H₅OH"),n("エチレン","CH₂=CH₂")],steps:[s("分子内脱水","濃H₂SO₄・約170 ℃ またはAl₂O₃・約350 ℃","core")]},
+    {nodes:[n("エタノール","C₂H₅OH"),n("アセトアルデヒド","CH₃CHO"),n("酢酸","CH₃COOH")],steps:[s("穏やかな酸化","酸性K₂Cr₂O₇ または加熱したCuO","core"),s("酸化","酸性K₂Cr₂O₇など","core")]},
+    {nodes:[n("エチレン","CH₂=CH₂"),n("アセトアルデヒド","CH₃CHO")],steps:[s("Wacker酸化","H₂O・O₂・PdCl₂/CuCl₂触媒","industrial")]},
     {nodes:[n("ビニルアルコール","CH₂=CHOH"),n("アセトアルデヒド","CH₃CHO")],steps:[s("ケト–エノール互変異性","速やかにアセトアルデヒドへ","advanced")]},
     {nodes:[n("酢酸","CH₃COOH"),n("酢酸エチル","CH₃COOC₂H₅"),n("酢酸ナトリウム","CH₃COONa")],steps:[s("エステル化","エタノール・濃H₂SO₄・加熱","core"),s("けん化","NaOH・加熱（エタノール副生）","core")]},
     {nodes:[n("酢酸ナトリウム","CH₃COONa"),n("メタン","CH₄")],steps:[s("脱炭酸","NaOH/CaO（ソーダ石灰）・加熱","advanced")]},
@@ -103,7 +103,7 @@ const organicMapDefinitions:ReactionMap[] = [
     {nodes:[n("クロロベンゼン","C₆H₅Cl"),n("o-ジクロロベンゼン","o-C₆H₄Cl₂")],steps:[s("追加塩素化","Cl₂・FeCl₃（o体約39%）","advanced")]},
     {nodes:[n("クロロベンゼン","C₆H₅Cl"),n("m-ジクロロベンゼン","m-C₆H₄Cl₂")],steps:[s("異性体（少量）","直接置換では少量・画像値約6%","supplement",false)]},
     {nodes:[n("ベンゼン","C₆H₆"),n("ベンゼンヘキサクロリド（BHC）","C₆H₆Cl₆")],steps:[s("光付加","3Cl₂・紫外線","advanced")]},
-    {nodes:[n("ベンゼン","C₆H₆"),n("シクロヘキサン","C₆H₁₂"),n("アジピン酸","HOOC(CH₂)₄COOH"),n("ナイロン66","[−NH(CH₂)₆NHCO(CH₂)₄CO−]ₙ")],steps:[s("水素化","3H₂・Ni・高温高圧","industrial"),s("酸化開環","O₃等・工業的多段階酸化","supplement"),s("縮合重合","ヘキサメチレンジアミン","industrial")]},
+    {nodes:[n("ベンゼン","C₆H₆"),n("シクロヘキサン","C₆H₁₂"),n("アジピン酸","HOOC(CH₂)₄COOH"),n("ナイロン66","[−NH(CH₂)₆NHCO(CH₂)₄CO−]ₙ")],steps:[s("水素化","3H₂・Ni触媒・高温高圧","industrial"),s("工業的多段階酸化","空気酸化後、硝酸酸化など","supplement"),s("縮合重合","ヘキサメチレンジアミン・脱水","industrial")]},
     {nodes:[n("ベンゼン","C₆H₆"),n("クメン","C₆H₅CH(CH₃)₂"),n("フェノール","C₆H₅OH")],steps:[s("Friedel–Craftsアルキル化","プロペン・酸触媒","industrial"),s("クメン法","O₂→酸分解（アセトン併産）","industrial")]},
     {nodes:[n("ベンゼン","C₆H₆"),n("トルエン","C₆H₅CH₃"),n("安息香酸","C₆H₅COOH")],steps:[s("Friedel–Craftsアルキル化","CH₃Cl・AlCl₃","core"),s("側鎖酸化","KMnO₄・加熱","core")]},
     {nodes:[n("ベンゼン","C₆H₆"),n("エチルベンゼン","C₆H₅CH₂CH₃"),n("スチレン","C₆H₅CH=CH₂")],steps:[s("Friedel–Craftsアルキル化","C₂H₅Cl・AlCl₃","advanced"),s("脱水素","Fe₂O₃・加熱","industrial")]},
@@ -112,7 +112,7 @@ const organicMapDefinitions:ReactionMap[] = [
   {id:"acetylene",title:"アセチレン",category:"organic",centerNode:"アセチレン",canvas:{width:1800,height:1250},paths:[
     {nodes:[n("炭化カルシウム","CaC₂"),n("アセチレン","HC≡CH")],steps:[s("加水分解","2H₂O・Ca(OH)₂副生","core")]},
     {nodes:[n("メタン","CH₄"),n("アセチレン","HC≡CH")],steps:[s("熱分解","高温・2CH₄→C₂H₂+3H₂","industrial")]},
-    {nodes:[n("アセチレン","HC≡CH"),n("エチレン","CH₂=CH₂"),n("エタン","CH₃CH₃")],steps:[s("部分水素化","H₂・Ni/Pt/Pd","core"),s("水素化","H₂・Ni/Pt/Pd","core")]},
+    {nodes:[n("アセチレン","HC≡CH"),n("エチレン","CH₂=CH₂"),n("エタン","CH₃CH₃")],steps:[s("部分水素化","H₂・Lindlar触媒など","core"),s("水素化","H₂・Ni/Pt/Pd触媒","core")]},
     {nodes:[n("アセチレン","HC≡CH"),n("1,2-ジブロモエチレン","CHBr=CHBr"),n("1,1,2,2-テトラブロモエタン","CHBr₂CHBr₂")],steps:[s("臭素付加","Br₂","core"),s("臭素付加","Br₂","core")]},
     {nodes:[n("アセチレン","HC≡CH"),n("二酸化炭素","CO₂")],steps:[s("完全燃焼","O₂・酸素アセチレン炎","core")]},
     {nodes:[n("アセチレン","HC≡CH"),n("ポリアセチレン","[−CH=CH−]ₙ")],steps:[s("重合","Ziegler–Natta系触媒","advanced")]},
@@ -137,7 +137,8 @@ const organicMapDefinitions:ReactionMap[] = [
     {nodes:[n("アニリン","C₆H₅NH₂"),n("アニリン塩酸塩","C₆H₅NH₃Cl")],steps:[s("塩形成","希HCl","core")]},
     {nodes:[n("アニリン","C₆H₅NH₂"),n("アニリン硫酸水素塩","[C₆H₅NH₃]HSO₄")],steps:[s("塩形成","希H₂SO₄","advanced")]},
     {nodes:[n("アニリン","C₆H₅NH₂"),n("塩化ベンゼンジアゾニウム","C₆H₅N₂Cl")],steps:[s("ジアゾ化","NaNO₂＋希HCl・0〜5 ℃","core")]},
-    {nodes:[n("塩化ベンゼンジアゾニウム","C₆H₅N₂Cl"),n("フェノール","C₆H₅OH")],steps:[s("加水分解","H₂O・5 ℃より高温・N₂発生","core")]},
+    {nodes:[n("塩化ベンゼンジアゾニウム","C₆H₅N₂Cl"),n("フェノール","C₆H₅OH")],steps:[s("加水分解","H₂O・加熱・N₂発生","core")]},
+    {nodes:[n("アニリン","C₆H₅NH₂"),n("2,4,6-トリブロモアニリン","C₆H₂Br₃NH₂","白色沈殿","#d8dde5")],steps:[s("臭素化","3Br₂水・白色沈殿","core")]},
     {nodes:[n("塩化ベンゼンジアゾニウム","C₆H₅N₂Cl"),n("p-フェニルアゾフェノール","p-HOC₆H₄N=NC₆H₅","橙黄色","#d78314")],steps:[s("ジアゾカップリング","フェノール＋NaOH","core")]},
     {nodes:[n("アニリン","C₆H₅NH₂"),n("プソイドモーベイン","酸化色素","紫色","#7c3da5")],steps:[s("さらし粉反応","CaCl(ClO)水溶液・紫色","core")]},
     {nodes:[n("アニリン","C₆H₅NH₂"),n("アニリンブラック","酸化重合体","黒色","#111827")],steps:[s("酸化重合","K₂Cr₂O₇・硫酸酸性・加熱","advanced")]},
@@ -148,7 +149,7 @@ const organicMapDefinitions:ReactionMap[] = [
 
 export type OrganicImportance = "core" | "advanced" | "supplement" | "industrial";
 export type OrganicCompound = { id:string; nameJa:string; nameEn?:string; formula:string; aliases:string[]; classifications:string[]; appearance?:string; appearanceColor?:string; relatedReactionIds:string[] };
-export type OrganicReaction = { id:string; sourceId:string; targetId:string; source:ReactionNode; target:ReactionNode; additionalReactants:string[]; reagents:string[]; catalysts:string[]; conditions:string[]; temperature?:string; pressure?:string; reactionName:string; reactionType:string; byproducts:string[]; observation?:string; notes?:string; importance:OrganicImportance; relatedMaps:string[]; step:ReactionStep };
+export type OrganicReaction = { id:string; sourceId:string; targetId:string; source:ReactionNode; target:ReactionNode; additionalReactants:string[]; reagents:string[]; catalysts:string[]; solvents:string[]; conditions:string[]; otherConditions:string[]; temperature?:string; pressure?:string; reactionName:string; reactionType:string; byproducts:string[]; observation?:string; notes?:string; importance:OrganicImportance; relatedMaps:string[]; step:ReactionStep };
 
 const preferredCompoundIds:Record<string,[string,string?]>={
   "ベンゼン":["benzene","benzene"],"トルエン":["toluene","toluene"],"フェノール":["phenol","phenol"],"アニリン":["aniline","aniline"],
@@ -160,6 +161,20 @@ const preferredCompoundIds:Record<string,[string,string?]>={
 const stableHash=(value:string)=>[...value].reduce((sum,char)=>(sum*31+char.charCodeAt(0))>>>0,7).toString(36);
 const compoundId=(node:ReactionNode)=>preferredCompoundIds[node.name]?.[0]??`organic-${stableHash(`${node.name}|${node.formula}`)}`;
 const splitCondition=(condition?:string)=>condition?condition.split(/[・、]/).map(value=>value.trim()).filter(Boolean):[];
+const deriveDetails=(step:ReactionStep)=>{
+  const parts=splitCondition(step.condition),explicit=step.details;
+  const temperatures=parts.filter(value=>/℃|約\d|\d+〜\d+/.test(value));
+  const pressures=parts.filter(value=>/加圧|高圧/.test(value));
+  const byproducts=explicit?.byproducts??parts.filter(value=>/副生|副生成物|発生|析出|脱色|再生|脱離/.test(value));
+  const solvents=explicit?.solvents??parts.filter(value=>/溶媒|CCl₄|CH₃OH/.test(value));
+  const acidCatalyst=/脱水|エステル化|アセチル化|ニトロ化|水付加|酸分解/.test(step.label);
+  const catalysts=explicit?.catalysts??parts.filter(value=>/触媒|無水AlCl₃|FeCl₃|Ni\/Pt|Ni・|Pt\/Pd|Lindlar|PdCl₂\/CuCl₂|V₂O₅|Fe₂O₃|Al₂O₃|CuCl\/NH₄Cl|HgSO₄|HgCl₂|酢酸亜鉛|酸触媒|塩基触媒/.test(value)||(acidCatalyst&&/^(濃H₂SO₄|希硫酸|H₂SO₄)$/.test(value)));
+  const structural=new Set([...temperatures,...pressures,...byproducts,...solvents,...catalysts]);
+  const otherConditions=explicit?.otherConditions??parts.filter(value=>!structural.has(value)&&(/加熱|強熱|高温|低温|光|紫外線|暗所|放置|冷却|融解|乾留|空気|開始剤|架橋剤|酸処理/.test(value)||/^(酸性|塩基性)$/.test(value)));
+  const excluded=new Set([...structural,...otherConditions]);
+  const reagents=explicit?.reagents??parts.filter(value=>!excluded.has(value));
+  return {parts,reagents,catalysts,solvents,otherConditions,temperature:explicit?.temperature??(temperatures.join("・")||undefined),pressure:explicit?.pressure??(pressures.join("・")||undefined),byproducts};
+};
 const classifyCompound=(node:ReactionNode)=>[
   /ベンゼン|フェノール|アニリン|トルエン|キシレン|安息香|フタル|サリチル|スチレン|クメン/.test(`${node.name}${node.formula}`)&&"芳香族",
   /ポリ|樹脂|PET|PVC|PVA|NBR|SBR|BR|ナイロン|ビニロン/.test(node.name)&&"高分子",
@@ -171,7 +186,7 @@ const compoundStore=new Map<string,OrganicCompound>(),reactionStore=new Map<stri
 const reactionKey=(source:ReactionNode,target:ReactionNode,step:ReactionStep)=>`${compoundId(source)}|${compoundId(target)}|${step.label}|${step.condition??""}`;
 for(const map of organicMapDefinitions) for(const path of map.paths){
   path.nodes.forEach(node=>{const id=compoundId(node);if(!compoundStore.has(id))compoundStore.set(id,{id,nameJa:node.name,nameEn:preferredCompoundIds[node.name]?.[1],formula:node.formula,aliases:[],classifications:classifyCompound(node),appearance:node.appearance,appearanceColor:node.appearanceColor,relatedReactionIds:[]});});
-  path.steps.forEach((step,index)=>{const source=path.nodes[index],target=path.nodes[index+1];if(!source||!target)return;const key=reactionKey(source,target,step),existing=reactionStore.get(key);if(existing){if(!existing.relatedMaps.includes(map.id))existing.relatedMaps.push(map.id);return;}const parts=splitCondition(step.condition),id=`reaction-${stableHash(key)}`;const catalysts=parts.filter(value=>/触媒|AlCl₃|FeCl₃|Fe触媒|Ni|Pt|Pd|CuCl|HgSO₄|HgCl₂|V₂O₅|Fe₂O₃|H₃PO₄/.test(value));const temperature=parts.find(value=>/℃|高温|加熱|強熱|赤熱/.test(value));const pressure=parts.find(value=>/圧/.test(value));const byproducts=parts.filter(value=>/副生|生成|脱離|発生/.test(value));reactionStore.set(key,{id,sourceId:compoundId(source),targetId:compoundId(target),source,target,additionalReactants:parts.filter(value=>/^\+/.test(value)),reagents:parts.filter(value=>!catalysts.includes(value)&&value!==temperature&&value!==pressure&&!byproducts.includes(value)),catalysts,conditions:parts,temperature,pressure,reactionName:step.label,reactionType:step.label,byproducts,observation:target.appearance,notes:step.note,importance:step.scope??"core",relatedMaps:[map.id],step});compoundStore.get(compoundId(source))?.relatedReactionIds.push(id);compoundStore.get(compoundId(target))?.relatedReactionIds.push(id);});
+  path.steps.forEach((step,index)=>{const source=path.nodes[index],target=path.nodes[index+1];if(!source||!target)return;const key=reactionKey(source,target,step),existing=reactionStore.get(key);if(existing){if(!existing.relatedMaps.includes(map.id))existing.relatedMaps.push(map.id);return;}const details=deriveDetails(step),id=`reaction-${stableHash(key)}`;reactionStore.set(key,{id,sourceId:compoundId(source),targetId:compoundId(target),source,target,additionalReactants:details.reagents.filter(value=>/^\+/.test(value)),reagents:details.reagents,catalysts:details.catalysts,solvents:details.solvents,conditions:details.parts,otherConditions:details.otherConditions,temperature:details.temperature,pressure:details.pressure,byproducts:details.byproducts,reactionName:step.label,reactionType:step.label,observation:target.appearance,notes:step.note,importance:step.scope??"core",relatedMaps:[map.id],step});compoundStore.get(compoundId(source))?.relatedReactionIds.push(id);compoundStore.get(compoundId(target))?.relatedReactionIds.push(id);});
 }
 export const organicCompounds=[...compoundStore.values()];
 export const organicReactions=[...reactionStore.values()];

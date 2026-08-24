@@ -4,6 +4,8 @@ import { gasUnit } from "@/data/gasUnit";
 import { electrochemistryQuestions } from "@/data/electrochemistry";
 import { chemistryBasicUnits } from "@/data/chemistry-basic";
 import { inorganicIndustrialSection, inorganicKnowledgeQuestions, inorganicKnowledgeSections } from "@/data/inorganicKnowledge";
+import { theoryChemistryUnit } from "@/data/theoryChemistry";
+import { redoxProductQuestions } from "@/data/redoxProductPredictions";
 
 export type QuizQuestion = {
   id: string;
@@ -111,6 +113,12 @@ export type StudySection =
       title: string;
       description?: string;
       kind: "electrochemistryQuizGenerator";
+    }
+  | {
+      id: string;
+      title: string;
+      description?: string;
+      kind: "redoxProductTrainer";
     };
 
 export type ChemistryUnit = {
@@ -126,6 +134,7 @@ export type ChemistryUnit = {
 };
 
 export const chemistryUnits: ChemistryUnit[] = [
+  theoryChemistryUnit,
   {
     slug: "organic-reactions",
     title: "有機化学の反応系統",
@@ -1132,6 +1141,12 @@ export const chemistryUnits: ChemistryUnit[] = [
         ],
       },
       {
+        id: "redox-product-prediction",
+        title: "酸化還元 生成物予測",
+        description: "係数を合わせる前に、反応物が何へ変化するかを、液性と役割から判断します。答えを見た後に骨格、半反応式の順で確認できます。",
+        kind: "redoxProductTrainer",
+      },
+      {
         id: "redox-ionic",
         title: "酸化還元型の例",
         kind: "table",
@@ -1145,6 +1160,7 @@ export const chemistryUnits: ChemistryUnit[] = [
       },
     ],
     questions: [
+      ...redoxProductQuestions,
       {
         id: "ion-1",
         prompt: "強酸と強塩基の中和を表す正味イオン反応式はどれですか。",

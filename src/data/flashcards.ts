@@ -3,6 +3,7 @@ import { electrochemistryCards } from "@/data/electrochemistry";
 import { densityLabels, gases, solubilityLabels } from "@/data/gases";
 import { organicReactions } from "@/data/organicReactionMaps";
 import { inorganicKnowledgeFlashcards } from "@/data/inorganicKnowledge";
+import { redoxProductPredictions } from "@/data/redoxProductPredictions";
 
 export type Flashcard = {
   id: string;
@@ -103,6 +104,11 @@ function cardsFromQuestions(unit: ChemistryUnit, existing: Flashcard[]): Flashca
 export function getFlashcardsForUnit(unit: ChemistryUnit): Flashcard[] {
   if (unit.slug === "laboratory-gases") return getGasFlashcards();
   if (unit.slug === "batteries-electrolysis") return getElectrochemistryFlashcards(unit.slug);
+  if (unit.slug === "ionic-equations") {
+    const predictionCards:Flashcard[]=redoxProductPredictions.map(item=>({id:`flash-${item.id}`,unitId:unit.slug,category:"酸化還元 生成物予測",front:`${item.medium==="条件によらない"?"":`${item.medium}：`}${item.reactant} が${item.direction}されると？`,back:item.product,note:`${item.skeleton}／${item.role}・${item.element} ${item.oxidationStateBefore}→${item.oxidationStateAfter}`,tags:["酸化還元",item.medium,item.role],answerType:"formula"}));
+    const sectionCards=cardsFromSections(unit);
+    return [...predictionCards,...sectionCards,...cardsFromQuestions(unit,[...predictionCards,...sectionCards])];
+  }
   const sectionCards = cardsFromSections(unit);
   if (unit.slug === "inorganic-reactions") {
     return [...inorganicKnowledgeFlashcards, ...sectionCards, ...cardsFromQuestions(unit, [...inorganicKnowledgeFlashcards, ...sectionCards])];

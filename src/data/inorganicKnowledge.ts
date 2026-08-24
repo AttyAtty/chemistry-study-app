@@ -1,10 +1,11 @@
 import type { QuizQuestion, StudySection } from "@/data/chemistry";
 import type { Flashcard } from "@/data/flashcards";
 import type { ReactionMap, ReactionNode, ReactionStep } from "@/data/reactionMaps";
+import { frequentInorganicReactions, frequentInorganicSubstances } from "@/data/frequentReactionKnowledge";
 
 export type InorganicImportance = "core" | "standard" | "advanced";
 export type InorganicSubstance = {
-  id: string; element: "Ca"|"Fe"|"N"|"Na"|"P"|"Si"|"S"; name: string; formula: string;
+  id: string; element: "Ca"|"Fe"|"N"|"Na"|"P"|"Si"|"S"|"Sn"|"Cl"|"Mn"|"Cr"|"O"; name: string; formula: string;
   aliases?: string[]; properties?: string[]; importance: InorganicImportance; relatedIds?: string[];
 };
 export type InorganicReaction = {
@@ -15,6 +16,7 @@ export type InorganicReaction = {
 
 const sub=(id: string,element:InorganicSubstance["element"],name:string,formula:string,importance:InorganicImportance="standard",aliases:string[]=[],properties:string[]=[],relatedIds:string[]=[]):InorganicSubstance=>({id,element,name,formula,importance,aliases,properties,relatedIds});
 export const inorganicSubstances:InorganicSubstance[]=[
+  ...frequentInorganicSubstances,
   sub("ca","Ca","カルシウム","Ca","core",[],["水と反応して水素を発生","炎色反応は橙赤色"]),
   sub("cao","Ca","酸化カルシウム","CaO","core",["生石灰"]), sub("caoh2","Ca","水酸化カルシウム","Ca(OH)₂","core",["消石灰","石灰水","石灰乳"]),
   sub("caco3","Ca","炭酸カルシウム","CaCO₃","core",["石灰石","鍾乳石"],["白色固体・白色沈殿"]), sub("cahco3","Ca","炭酸水素カルシウム","Ca(HCO₃)₂","standard",["一時硬水"]),
@@ -25,7 +27,7 @@ export const inorganicSubstances:InorganicSubstance[]=[
   sub("fe2","Fe","鉄(II)イオン","Fe²⁺","core",["Fe2+","Fe^2+"],["水溶液は淡緑色"]), sub("fe3","Fe","鉄(III)イオン","Fe³⁺","core",["Fe3+","Fe^3+"],["水溶液は黄褐色"]),
   sub("fecl2","Fe","塩化鉄(II)","FeCl₂","core"), sub("fecl3","Fe","塩化鉄(III)","FeCl₃","core"), sub("feso4","Fe","硫酸鉄(II)","FeSO₄","core"), sub("feso4-7h2o","Fe","硫酸鉄(II)七水和物","FeSO₄·7H₂O","standard",["緑ばん"],["淡緑色結晶"]),
   sub("feoh2","Fe","水酸化鉄(II)","Fe(OH)₂","core",[],["緑白色沈殿","空気酸化で赤褐色へ"]), sub("feoh3","Fe","水酸化鉄(III)","Fe(OH)₃","core",["含水酸化鉄(III)"],["赤褐色沈殿"]), sub("fes","Fe","硫化鉄(II)","FeS","core",[],["黒色固体・黒色沈殿"]),
-  sub("ferrocyanide","Fe","ヘキサシアニド鉄(II)酸イオン","[Fe(CN)₆]⁴⁻","standard",["フェロシアン化物","黄血塩"]), sub("ferricyanide","Fe","ヘキサシアニド鉄(III)酸イオン","[Fe(CN)₆]³⁻","standard",["フェリシアン化物","赤血塩"]), sub("prussian-blue","Fe","プルシアンブルー","KFe[Fe(CN)₆]","standard",["ベルリンブルー","紺青","ターンブルブルー"],["濃青色沈殿"]), sub("fescn","Fe","チオシアン酸鉄(III)錯イオン","[FeSCN]²⁺","core",["[FeNCS]2+"],["血赤色溶液"]), sub("pig-iron","Fe","銑鉄","Fe + C(約4%)","standard"), sub("steel","Fe","鋼","Fe + C(約0.02〜2%)","standard"), sub("tinplate","Fe","ブリキ","Fe–Sn","standard",["スズめっき鋼板"]), sub("galvanized-iron","Fe","トタン","Fe–Zn","standard",["亜鉛めっき鋼板"]),
+  sub("ferrocyanide","Fe","ヘキサシアニド鉄(II)酸イオン","[Fe(CN)₆]⁴⁻","standard",["フェロシアン化物","黄血塩"]), sub("ferricyanide","Fe","ヘキサシアニド鉄(III)酸イオン","[Fe(CN)₆]³⁻","standard",["フェリシアン化物","赤血塩"]), sub("prussian-blue","Fe","プルシアンブルー","Fe₄[Fe(CN)₆]₃","standard",["ベルリンブルー","紺青"],["濃青色沈殿","代表組成式"]), sub("turnbull-blue","Fe","ターンブルブルー","Fe₃[Fe(CN)₆]₂","standard",[],["濃青色沈殿","酸化還元を伴い最終的にはプルシアンブルーと同等の青色顔料になる"]), sub("fescn","Fe","チオシアン酸鉄(III)錯イオン","[FeSCN]²⁺","core",["[FeNCS]2+"],["血赤色溶液"]), sub("pig-iron","Fe","銑鉄","Fe + C(約4%)","standard"), sub("steel","Fe","鋼","Fe + C(約0.02〜2%)","standard"), sub("tinplate","Fe","ブリキ","Fe–Sn","standard",["スズめっき鋼板"]), sub("galvanized-iron","Fe","トタン","Fe–Zn","standard",["亜鉛めっき鋼板"]),
   sub("n2","N","窒素","N₂","core"), sub("nh3","N","アンモニア","NH₃","core"), sub("nh4cl","N","塩化アンモニウム","NH₄Cl","core"), sub("nh4no2","N","亜硝酸アンモニウム","NH₄NO₂","standard"), sub("nh4no3","N","硝酸アンモニウム","NH₄NO₃","standard"), sub("ammonium-sulfate","N","硫酸アンモニウム","(NH₄)₂SO₄","standard",["硫安"]), sub("urea","N","尿素","(NH₂)₂CO","standard"),
   sub("no","N","一酸化窒素","NO","core",[],["無色","空気中で自動酸化"]), sub("no2","N","二酸化窒素","NO₂","core",[],["赤褐色の有毒気体"]), sub("n2o4","N","四酸化二窒素","N₂O₄","standard",[],["無色","NO₂との平衡"]), sub("n2o","N","一酸化二窒素","N₂O","standard",["笑気"]), sub("hno3","N","硝酸","HNO₃","core"), sub("nitrate","N","硝酸イオン","NO₃⁻","core",["NO3-","NO3^-" ]), sub("brown-ring","N","ニトロシル鉄錯体","[Fe(H₂O)₅NO]²⁺","standard",["褐輪錯体","[Fe(NO)]SO4"],["褐色の環"]),
   sub("na","Na","ナトリウム","Na","core",[],["水と激しく反応","炎色反応は黄色"]), sub("nacl","Na","塩化ナトリウム","NaCl","core",["食塩"]), sub("na2o","Na","酸化ナトリウム","Na₂O","standard"), sub("na2o2","Na","過酸化ナトリウム","Na₂O₂","standard"), sub("nah","Na","水素化ナトリウム","NaH","advanced"), sub("naoh","Na","水酸化ナトリウム","NaOH","core",["苛性ソーダ"]), sub("na2co3","Na","炭酸ナトリウム","Na₂CO₃","core",["ソーダ灰"]), sub("nahco3","Na","炭酸水素ナトリウム","NaHCO₃","core",["重曹"]), sub("na2co3-10h2o","Na","炭酸ナトリウム十水和物","Na₂CO₃·10H₂O","standard",["洗濯ソーダ"]), sub("na2co3-h2o","Na","炭酸ナトリウム一水和物","Na₂CO₃·H₂O","advanced"), sub("hcoona","Na","ギ酸ナトリウム","HCOONa","standard",[],[],["organic-formic-acid"]),
@@ -36,6 +38,7 @@ export const inorganicSubstances:InorganicSubstance[]=[
 
 const rx=(id:string,element:InorganicReaction["element"],reactants:string[],products:string[],equation:string,importance:InorganicImportance="standard",conditions:string[]=[],catalyst?:string,processName?:string,description?:string,relatedIds:string[]=[]):InorganicReaction=>({id,element,reactants,products,equation,importance,conditions,catalyst,processName,description,relatedIds});
 export const inorganicReactions:InorganicReaction[]=[
+  ...frequentInorganicReactions,
   rx("ca-water","Ca",["Ca","H₂O"],["Ca(OH)₂","H₂"],"Ca + 2H₂O → Ca(OH)₂ + H₂↑","core"), rx("lime-slaking","Ca",["CaO","H₂O"],["Ca(OH)₂"],"CaO + H₂O → Ca(OH)₂","core",[],undefined,"石灰の消化"), rx("lime-carbonation","Ca",["Ca(OH)₂","CO₂"],["CaCO₃","H₂O"],"Ca(OH)₂ + CO₂ → CaCO₃↓ + H₂O","core"), rx("limestone-calcination","Ca",["CaCO₃"],["CaO","CO₂"],"CaCO₃ → CaO + CO₂↑","core",["強熱"]), rx("temporary-hard-water","Ca",["CaCO₃","CO₂","H₂O"],["Ca(HCO₃)₂"],"CaCO₃ + CO₂ + H₂O → Ca(HCO₃)₂","standard"), rx("temporary-hardness-boil","Ca",["Ca(HCO₃)₂"],["CaCO₃","CO₂","H₂O"],"Ca(HCO₃)₂ → CaCO₃↓ + CO₂↑ + H₂O","standard",["煮沸"]), rx("gypsum-heat","Ca",["CaSO₄·2H₂O"],["CaSO₄·1/2H₂O","H₂O"],"CaSO₄·2H₂O → CaSO₄·1/2H₂O + 3/2H₂O","core",["加熱"]), rx("plaster-set","Ca",["CaSO₄·1/2H₂O","H₂O"],["CaSO₄·2H₂O"],"CaSO₄·1/2H₂O + 3/2H₂O → CaSO₄·2H₂O","core",["水を加えて硬化"]), rx("carbide-production","Ca",["CaO","C"],["CaC₂","CO"],"CaO + 3C → CaC₂ + CO↑","standard",["電気炉・約2000 ℃"]), rx("carbide-hydrolysis","Ca",["CaC₂","H₂O"],["C₂H₂","Ca(OH)₂"],"CaC₂ + 2H₂O → C₂H₂↑ + Ca(OH)₂","core",[],undefined,undefined,"アセチレン生成",["organic-acetylene"]), rx("bleaching-powder-production","Ca",["Ca(OH)₂","Cl₂"],["CaCl(ClO)·H₂O"],"Ca(OH)₂ + Cl₂ → CaCl(ClO)·H₂O","standard",["乾燥した消石灰"]),
   rx("iron-rust","Fe",["Fe","O₂","H₂O"],["Fe₂O₃·nH₂O"],"Fe → Fe₂O₃·nH₂O","core",["湿った空気"],undefined,"腐食","赤さびは水和酸化物を含む"), rx("iron-steam","Fe",["Fe","H₂O"],["Fe₃O₄","H₂"],"3Fe + 4H₂O → Fe₃O₄ + 4H₂↑","core",["高温水蒸気"]), rx("iron-sulfur","Fe",["Fe","S"],["FeS"],"Fe + S → FeS","core",["加熱"]), rx("fe-acid","Fe",["Fe","HCl"],["FeCl₂","H₂"],"Fe + 2HCl → FeCl₂ + H₂↑","core"), rx("fe2-chlorine","Fe",["FeCl₂","Cl₂"],["FeCl₃"],"2FeCl₂ + Cl₂ → 2FeCl₃","core"), rx("feoh2-precip","Fe",["Fe²⁺","OH⁻"],["Fe(OH)₂"],"Fe²⁺ + 2OH⁻ → Fe(OH)₂↓","core"), rx("feoh3-precip","Fe",["Fe³⁺","OH⁻"],["Fe(OH)₃"],"Fe³⁺ + 3OH⁻ → Fe(OH)₃↓","core"), rx("feoh2-oxidation","Fe",["Fe(OH)₂","O₂","H₂O"],["Fe(OH)₃"],"4Fe(OH)₂ + O₂ + 2H₂O → 4Fe(OH)₃","core",["空気酸化"]), rx("fe3-scn","Fe",["Fe³⁺","SCN⁻"],["[FeSCN]²⁺"],"Fe³⁺ + SCN⁻ ⇄ [FeSCN]²⁺","core",[],undefined,"鉄(III)イオンの確認","血赤色"), rx("fe3-ferrocyanide","Fe",["Fe³⁺","[Fe(CN)₆]⁴⁻","K⁺"],["KFe[Fe(CN)₆]"],"K⁺ + Fe³⁺ + [Fe(CN)₆]⁴⁻ → KFe[Fe(CN)₆]↓","standard",[],undefined,"プルシアンブルー反応","濃青色沈殿"), rx("fe2-ferricyanide","Fe",["Fe²⁺","[Fe(CN)₆]³⁻","K⁺"],["KFe[Fe(CN)₆]"],"K⁺ + Fe²⁺ + [Fe(CN)₆]³⁻ → KFe[Fe(CN)₆]↓","standard",[],undefined,"ターンブルブルー反応","プルシアンブルーと実質同一の濃青色固体"), rx("blast-furnace","Fe",["Fe₂O₃","CO"],["Fe","CO₂"],"Fe₂O₃ + 3CO → 2Fe + 3CO₂","core",["高炉"],undefined,"製鉄"),
   rx("n2-lab","N",["NH₄NO₂"],["N₂","H₂O"],"NH₄NO₂ → N₂↑ + 2H₂O","standard",["加熱"]), rx("nitride","N",["N₂","Mg"],["Mg₃N₂"],"3Mg + N₂ → Mg₃N₂","standard",["高温"]), rx("haber","N",["N₂","H₂"],["NH₃"],"N₂ + 3H₂ ⇄ 2NH₃","core",["400〜500 ℃","高圧"],"Fe（促進剤を併用）","ハーバー・ボッシュ法"), rx("ammonia-lab","N",["NH₄Cl","Ca(OH)₂"],["NH₃","CaCl₂","H₂O"],"2NH₄Cl + Ca(OH)₂ → 2NH₃↑ + CaCl₂ + 2H₂O","core",["加熱"]), rx("urea","N",["NH₃","CO₂"],["(NH₂)₂CO","H₂O"],"2NH₃ + CO₂ → (NH₂)₂CO + H₂O","standard",["高温・高圧"],undefined,"尿素製造"), rx("nitrous-oxide","N",["NH₄NO₃"],["N₂O","H₂O"],"NH₄NO₃ → N₂O↑ + 2H₂O","standard",["穏やかに加熱"]), rx("nitrogen-fixation-no","N",["N₂","O₂"],["NO"],"N₂ + O₂ → 2NO","standard",["高温・火花放電"]), rx("no-oxidation","N",["NO","O₂"],["NO₂"],"2NO + O₂ → 2NO₂","core",["空気中で自動酸化"]), rx("no2-dimer","N",["NO₂"],["N₂O₄"],"2NO₂ ⇄ N₂O₄","core",["冷却で右・加熱で左"]), rx("no2-water","N",["NO₂","H₂O"],["HNO₃","NO"],"3NO₂ + H₂O → 2HNO₃ + NO","core"), rx("ostwald-1","N",["NH₃","O₂"],["NO","H₂O"],"4NH₃ + 5O₂ → 4NO + 6H₂O","core",["約800〜900 ℃"],"Pt-Rh","オストワルト法"), rx("nitrate-lab","N",["NaNO₃","H₂SO₄"],["HNO₃","NaHSO₄"],"NaNO₃ + H₂SO₄ → HNO₃ + NaHSO₄","standard",["加熱","濃硫酸"]), rx("brown-ring-test","N",["NO₃⁻","FeSO₄","濃H₂SO₄"],["[Fe(H₂O)₅NO]²⁺"],"NO₃⁻ → NO → [Fe(H₂O)₅NO]²⁺","standard",["FeSO₄水溶液に濃硫酸を静かに重層"],undefined,"褐輪反応","境界に褐色の環"),
@@ -46,6 +49,19 @@ export const inorganicReactions:InorganicReaction[]=[
   rx("calcium-oxalate","Ca",["Ca²⁺","C₂O₄²⁻"],["CaC₂O₄"],"Ca²⁺ + C₂O₄²⁻ → CaC₂O₄↓","standard",[],undefined,"カルシウムイオンの沈殿","白色沈殿"), rx("bleaching-powder-acid","Ca",["CaCl(ClO)·H₂O","HCl"],["Cl₂","CaCl₂","H₂O"],"CaCl(ClO)·H₂O + 2HCl → CaCl₂ + Cl₂↑ + 2H₂O","standard",["酸を加える"],undefined,"さらし粉の塩素発生"),
   rx("iron-to-pig-iron","Fe",["鉄鉱石","CO","C"],["銑鉄"],"鉄鉱石 → 銑鉄","standard",["高炉"],undefined,"製鉄","炭素を約4%含む"), rx("pig-iron-to-steel","Fe",["銑鉄","O₂"],["鋼"],"銑鉄 → 鋼","standard",["転炉・酸素吹錬"],undefined,"製鋼","炭素などの不純物を酸化除去"), rx("iron-plating","Fe",["Fe","SnまたはZn"],["ブリキまたはトタン"],"Fe → Fe–Sn / Fe–Zn","standard",["めっき"],undefined,"防食","ブリキはSnめっき、トタンはZnめっき"), rx("fecl3-phenol","Fe",["FeCl₃","フェノール類"],["鉄(III)-フェノラート錯体"],"Fe³⁺ + フェノール類 → 呈色錯体","core",[],undefined,"フェノール類の確認","紫〜青紫色（化合物により色調が異なる）",["organic-phenol"])
 ];
+
+Object.assign(inorganicReactions.find(reaction=>reaction.id==="iron-rust")!,{
+  equation:"4Fe + 3O₂ + 2nH₂O → 2Fe₂O₃·nH₂O（模式式）",
+  description:"赤さびは一定組成でない水和酸化物を含むため模式式で示す",
+});
+Object.assign(inorganicReactions.find(reaction=>reaction.id==="fe3-ferrocyanide")!,{
+  reactants:["Fe³⁺","[Fe(CN)₆]⁴⁻"],products:["Fe₄[Fe(CN)₆]₃"],
+  equation:"4Fe³⁺ + 3[Fe(CN)₆]⁴⁻ → Fe₄[Fe(CN)₆]₃↓",description:"濃青色沈殿（代表組成式）",
+});
+Object.assign(inorganicReactions.find(reaction=>reaction.id==="fe2-ferricyanide")!,{
+  reactants:["Fe²⁺","[Fe(CN)₆]³⁻"],products:["Fe₃[Fe(CN)₆]₂"],
+  equation:"3Fe²⁺ + 2[Fe(CN)₆]³⁻ → Fe₃[Fe(CN)₆]₂↓",description:"濃青色沈殿。酸化還元を伴い最終的にはプルシアンブルーと同等の青色顔料となる",
+});
 
 inorganicReactions.push(
   rx("hematite-to-magnetite","Fe",["Fe₂O₃","CO"],["Fe₃O₄","CO₂"],"3Fe₂O₃ + CO → 2Fe₃O₄ + CO₂","standard",["高温"]),
@@ -60,7 +76,7 @@ inorganicReactions.push(
 
 const node=(id:string):ReactionNode=>{const x=inorganicSubstances.find(v=>v.id===id)!;return {name:x.name,formula:x.formula,appearance:x.properties?.find(p=>/色|沈殿/.test(p)),appearanceColor:undefined};};
 const step=(r:InorganicReaction):ReactionStep=>({label:r.processName??r.description??r.id,condition:[...(r.conditions??[]),r.catalyst?`触媒 ${r.catalyst}`:"",r.equation].filter(Boolean).join(" / "),important:r.importance==="core",scope:r.processName?"industrial":r.importance==="advanced"?"advanced":r.importance==="standard"?"supplement":"core",note:r.description});
-const mapPaths=(element:InorganicSubstance["element"],links:Array<[string,string,string]>)=>links.map(([from,to,reactionId])=>({nodes:[node(from),node(to)],steps:[step(inorganicReactions.find(r=>r.id===reactionId)!)]}));
+const mapPaths=(element:InorganicSubstance["element"],links:Array<[string,string,string]>)=>links.map(([from,to,reactionId])=>({nodes:[node(from),node(reactionId==="fe2-ferricyanide"?"turnbull-blue":to)],steps:[step(inorganicReactions.find(r=>r.id===reactionId)!)]}));
 export const expandedInorganicReactionMaps:ReactionMap[]=[
  {id:"calcium",title:"カルシウム",category:"inorganic",paths:mapPaths("Ca",[["ca","caoh2","ca-water"],["cao","caoh2","lime-slaking"],["caoh2","caco3","lime-carbonation"],["caco3","cao","limestone-calcination"],["caco3","cahco3","temporary-hard-water"],["caso4-2h2o","caso4-halfh2o","gypsum-heat"],["caso4-halfh2o","caso4-2h2o","plaster-set"],["cao","cac2","carbide-production"],["caoh2","bleaching-powder","bleaching-powder-production"],["bleaching-powder","cacl2","bleaching-powder-acid"]])},
  {id:"iron",title:"鉄",category:"inorganic",paths:mapPaths("Fe",[["fe","fe3o4","iron-steam"],["fe","fes","iron-sulfur"],["fe","fecl2","fe-acid"],["fe","pig-iron","iron-to-pig-iron"],["pig-iron","steel","pig-iron-to-steel"],["fe","tinplate","iron-plating"],["fe","galvanized-iron","iron-plating"],["fecl2","fecl3","fe2-chlorine"],["fe2","feoh2","feoh2-precip"],["fe3","feoh3","feoh3-precip"],["feoh2","feoh3","feoh2-oxidation"],["fe3","fescn","fe3-scn"],["fe3","prussian-blue","fe3-ferrocyanide"],["fe2","prussian-blue","fe2-ferricyanide"]])},
@@ -68,13 +84,17 @@ export const expandedInorganicReactionMaps:ReactionMap[]=[
  {id:"sodium",title:"ナトリウム",category:"inorganic",paths:mapPaths("Na",[["na","naoh","na-water"],["nacl","na","molten-nacl"],["nacl","naoh","brine-electrolysis"],["naoh","na2co3","sodium-carbonation"],["nahco3","na2co3","bicarbonate-heat"],["nacl","nahco3","solvay-precip"],["na2co3-10h2o","na2co3-h2o","carbonate-efflorescence"],["naoh","hcoona","sodium-formate"]])},
  {id:"phosphorus",title:"リン",category:"inorganic",paths:mapPaths("P",[["p4","red-p","white-to-red-p"],["p4","p4o10","phosphorus-burn"],["p4o10","h3po4","p4o10-water"],["metaphosphoric","h3po4","metaphosphoric-hydration"],["phosphate-rock","p4","phosphorus-production"],["phosphate-rock","superphosphate","superphosphate"]])},
  {id:"silicon",title:"ケイ素",category:"inorganic",paths:mapPaths("Si",[["si","sio2","silicon-oxygen"],["sio2","si","silicon-carbon"],["sio2","sic","carborundum"],["sio2","sif4","silica-hf-gas"],["sio2","h2sif6","silica-hf-aq"],["sio2","na2sio3","sodium-silicate"],["na2sio3","h2sio3","silicic-acid"],["h2sio3","silica-gel","silica-gel"]])},
- {id:"sulfur",title:"硫黄",category:"inorganic",paths:mapPaths("S",[["rhombic-s","monoclinic-s","sulfur-transition"],["rhombic-s","plastic-s","plastic-sulfur"],["fes","h2s","fes-h2s"],["al2s3","h2s","al2s3-hydrolysis"],["rhombic-s","so2","sulfur-burn"],["so2","so3","contact-oxidation"],["na2so3","na2s2o3","thiosulfate-production"],["na2s2o3","na2s4o6","iodometry-thiosulfate"]])}
+ {id:"sulfur",title:"硫黄",category:"inorganic",paths:mapPaths("S",[["rhombic-s","monoclinic-s","sulfur-transition"],["rhombic-s","plastic-s","plastic-sulfur"],["fes","h2s","fes-h2s"],["al2s3","h2s","al2s3-hydrolysis"],["rhombic-s","so2","sulfur-burn"],["so2","so3","contact-oxidation"],["na2so3","na2s2o3","thiosulfate-production"],["na2s2o3","na2s4o6","iodometry-thiosulfate"]])},
+ {id:"tin",title:"スズ",category:"inorganic",paths:mapPaths("Sn",[["sn2","sn4","sn2-oxidation"],["sno2","sncl4","sno2-acid"]])},
+ {id:"chlorine-hypochlorite",title:"塩素・次亜塩素酸",category:"inorganic",paths:mapPaths("Cl",[["cl2","hclo","chlorine-water"],["clo","hclo","hypochlorite-acid"]])},
+ {id:"manganese-redox",title:"マンガンの酸化還元",category:"inorganic",paths:mapPaths("Mn",[["mno4","mn2","permanganate-acid"],["mno4","mno2","permanganate-neutral"],["mno4","mno4-2","permanganate-base"]])},
+ {id:"chromium-redox",title:"クロムの酸化還元・平衡",category:"inorganic",paths:mapPaths("Cr",[["cr2o7","cr3","dichromate-acid"],["cro4","cr2o7","chromate-equilibrium"]])}
 ];
 
 const rowsFor=(element:InorganicSubstance["element"])=>inorganicSubstances.filter(x=>x.element===element&&x.importance!=="advanced").map(x=>[x.name,x.formula,x.aliases?.join("・")||"—",x.properties?.join("・")||"—"]);
 export const inorganicIndustrialSection:StudySection={id:"inorganic-process-links",title:"7元素をつなぐ工業的製法・定性分析",kind:"table",columns:["テーマ","出発物質・試薬","生成物・観察","条件・要点"],rows:inorganicReactions.filter(r=>r.processName&&r.importance!=="advanced").map(r=>[r.processName!,r.reactants.join(" + "),r.products.join(" + "),[...(r.conditions??[]),r.catalyst?`触媒：${r.catalyst}`:"",r.description??""].filter(Boolean).join("・")])};
 export const inorganicKnowledgeSections:StudySection[]=[
- ...(["Ca","Fe","N","Na","P","Si","S"] as const).map(element=>({id:`inorganic-${element.toLowerCase()}-knowledge`,title:`${element}系の主要物質`,description:"画像資料と既存知識を照合し、高校化学で重要な名称・化学式・性質を整理しています。",kind:"table" as const,columns:["物質名","化学式","慣用名・別名","性質・観察"],rows:rowsFor(element)})),
+ ...(["Ca","Fe","N","Na","P","Si","S","Sn","Cl","Mn","Cr","O"] as const).map(element=>({id:`inorganic-${element.toLowerCase()}-knowledge`,title:`${element}系の主要物質`,description:"高校化学で重要な名称・化学式・性質を、反応データと接続して整理しています。",kind:"table" as const,columns:["物質名","化学式","慣用名・別名","性質・観察"],rows:rowsFor(element)})),
  {id:"inorganic-sulfur-advanced",title:"硫黄の状態変化（発展）",description:"通常の暗記対象とは分け、系統図の温度情報を読むための発展資料として整理しています。",kind:"table",columns:["温度・操作","主な状態","要点"],rows:[["95.5 ℃付近","斜方硫黄 ⇄ 単斜硫黄","結晶形の転移"],["119 ℃付近","淡黄色の液体硫黄","S₈環を主とする低粘性液体"],["約160 ℃以上","褐色で高粘性の液体硫黄","環が開いて鎖状Sₓが増え、粘性が上昇"],["約445 ℃","硫黄蒸気","加熱とともにS₈から小さい分子種が増える"],["高温融液を冷水へ急冷","ゴム状硫黄","褐色・弾性、放置すると斜方硫黄へ戻る"]]},
  inorganicIndustrialSection
 ];
@@ -91,7 +111,15 @@ export const inorganicKnowledgeQuestions:QuizQuestion[]=[
  {id:"inorg-net-p-1",prompt:"白リンの保存方法として適切なものはどれですか。",choices:["水中に保存","乾燥空気中に保存","CS₂中に保存","直射日光下に保存"],answerIndex:0,explanation:"白リンは空気中で自然発火しやすいため水中に保存します。",tags:["リン","同素体"]},
  {id:"inorg-net-si-1",prompt:"水ガラスを酸性にして得たケイ酸を乾燥すると得られるものはどれですか。",choices:["シリカゲル","カーボランダム","石英","四フッ化ケイ素"],answerIndex:0,explanation:"Na₂SiO₃ → H₂SiO₃ → SiO₂·nH₂Oの順でシリカゲルを得ます。",tags:["Si","水ガラス"]},
  {id:"inorg-net-s-1",prompt:"接触法でSO₂をSO₃へ酸化するときの触媒はどれですか。",choices:["Fe","Pt-Rh","V₂O₅","Ni"],answerIndex:2,explanation:"約450 ℃でV₂O₅を触媒として用います。",tags:["接触法"]},
- {id:"inorg-net-s-2",prompt:"ヨウ素滴定でI₂を還元する標準溶液として用いられる物質はどれですか。",choices:["Na₂SO₃","Na₂S₂O₃","Na₂S₄O₆","Na₂SO₄"],answerIndex:1,explanation:"I₂ + 2S₂O₃²⁻ → 2I⁻ + S₄O₆²⁻。チオ硫酸ナトリウムを用います。",tags:["チオ硫酸ナトリウム","滴定"]}
+ {id:"inorg-net-s-2",prompt:"ヨウ素滴定でI₂を還元する標準溶液として用いられる物質はどれですか。",choices:["Na₂SO₃","Na₂S₂O₃","Na₂S₄O₆","Na₂SO₄"],answerIndex:1,explanation:"I₂ + 2S₂O₃²⁻ → 2I⁻ + S₄O₆²⁻。チオ硫酸ナトリウムを用います。",tags:["チオ硫酸ナトリウム","滴定"]},
+ {id:"inorg-net-sn-1",prompt:"SnCl₂が還元剤として働いたとき、Sn²⁺は主に何になる？",choices:["Sn","Sn⁴⁺","SnO","Sn²⁻"],answerIndex:1,explanation:"Sn²⁺ → Sn⁴⁺ + 2e⁻。Sn(II)は電子を与える還元性が重要です。",tags:["Sn","酸化還元"]},
+ {id:"inorg-net-cl-1",prompt:"塩素水の漂白・殺菌作用に中心的な物質は？",choices:["HCl","HClO","Cl⁻","H₂"],answerIndex:1,explanation:"Cl₂ + H₂O ⇄ HCl + HClO。HClOの酸化作用によります。",tags:["次亜塩素酸"]},
+ {id:"inorg-net-mn-1",prompt:"中性条件でMnO₄⁻が還元されたときの主生成物は？",choices:["Mn²⁺","MnO₂","MnO₄²⁻","Mn"],answerIndex:1,explanation:"中性では黒褐色のMnO₂になります。酸性のMn²⁺と区別します。",tags:["KMnO₄","液性"]},
+ {id:"inorg-net-cr-1",prompt:"CrO₄²⁻/Cr₂O₇²⁻平衡で、酸性側に多い橙色のイオンは？",choices:["Cr³⁺","CrO₄²⁻","Cr₂O₇²⁻","Cr²⁺"],answerIndex:2,explanation:"酸を加えると二クロム酸イオン側へ移り、黄色から橙色になります。",tags:["クロム","平衡"]},
+ {id:"inorg-net-h2o2-1",prompt:"酸性KMnO₄をH₂O₂で還元するとき、H₂O₂自身の主生成物は？",choices:["H₂O","O₂","H₂","OH⁻"],answerIndex:1,explanation:"この反応でH₂O₂は還元剤として働き、自身はO₂へ酸化されます。",tags:["H₂O₂","酸化還元"]},
+ {id:"inorg-net-fe-3",prompt:"赤さびを高校化学として最も適切に表すものは？",choices:["純粋なFeO","純粋な無水Fe₂O₃","Fe₂O₃·nH₂Oなどの含水酸化物を含むもの","Fe₃O₄だけ"],answerIndex:2,explanation:"赤さびは単一の無水Fe₂O₃ではなく、含水酸化鉄(III)などを含む混合物です。",tags:["鉄","さび"]},
+ {id:"inorg-net-fe-4",prompt:"高炉でCaOが鉱石中のSiO₂と反応して作るものは？",choices:["銑鉄","鋼","CaSiO₃のスラグ","コークス"],answerIndex:2,explanation:"CaCO₃→CaO+CO₂、CaO+SiO₂→CaSiO₃。融けたスラグとして不純物を除きます。",tags:["高炉","スラグ"]},
+ {id:"inorg-net-si-2",prompt:"ソーダ石灰ガラスの主な原料の組合せは？",choices:["ケイ砂・炭酸ナトリウム・石灰石","石英だけ","ケイ砂・ホウ酸だけ","SiとC"],answerIndex:0,explanation:"SiO₂、Na₂CO₃、CaCO₃を高温で融解します。",tags:["ガラス","Si"]}
 ];
 
 const inorganicFlashcardRows:Array<[string,string,string,string|undefined,NonNullable<Flashcard["answerType"]>]>=[

@@ -1,0 +1,26 @@
+import type { InorganicReaction, InorganicSubstance } from "@/data/inorganicKnowledge";
+
+const s=(id:string,element:InorganicSubstance["element"],name:string,formula:string,importance:InorganicSubstance["importance"]="standard",aliases:string[]=[],properties:string[]=[],relatedIds:string[]=[]):InorganicSubstance=>({id,element,name,formula,importance,aliases,properties,relatedIds});
+const r=(id:string,element:InorganicReaction["element"],reactants:string[],products:string[],equation:string,importance:InorganicReaction["importance"]="standard",conditions:string[]=[],catalyst?:string,processName?:string,description?:string,relatedIds:string[]=[]):InorganicReaction=>({id,element,reactants,products,equation,importance,conditions,catalyst,processName,description,relatedIds});
+
+export const frequentInorganicSubstances:InorganicSubstance[]=[
+  s("sn","Sn","スズ","Sn","core",[],["両性元素","金属は塩酸にも強塩基にも反応"]),s("sn2","Sn","スズ(II)イオン","Sn²⁺","core",["Sn2+"],["還元性を示しSn⁴⁺へ酸化されやすい"]),s("sn4","Sn","スズ(IV)イオン","Sn⁴⁺","core",["Sn4+"]),
+  s("sncl2","Sn","塩化スズ(II)","SnCl₂","core",["塩化第一スズ"],["還元剤"]),s("sncl4","Sn","塩化スズ(IV)","SnCl₄","standard",["塩化第二スズ"]),s("sno","Sn","酸化スズ(II)","SnO","standard",[],["両性酸化物"]),s("sno2","Sn","酸化スズ(IV)","SnO₂","core",[],["両性酸化物"]),s("snoh2","Sn","水酸化スズ(II)","Sn(OH)₂","standard",[],["両性水酸化物"]),s("snoh4","Sn","水酸化スズ(IV)","Sn(OH)₄","standard",[],["両性水酸化物"]),
+  s("cl2","Cl","塩素","Cl₂","core",[],["黄緑色","酸化・漂白・殺菌作用"]),s("hclo","Cl","次亜塩素酸","HClO","core",[],["弱酸","強い酸化作用","漂白・殺菌の実体"]),s("clo","Cl","次亜塩素酸イオン","ClO⁻","core",["ClO-"],["次亜塩素酸塩の陰イオン"]),s("hypochlorite","Cl","次亜塩素酸塩","MClO","standard",[],["水溶液中のHClO/ClO⁻平衡が有効性に関係"]),
+  s("kmno4","Mn","過マンガン酸カリウム","KMnO₄","core",[],["暗紫色結晶","強い酸化剤"]),s("mno4","Mn","過マンガン酸イオン","MnO₄⁻","core",["MnO4-"],["赤紫色","還元生成物は液性で変わる"]),s("mno4-2","Mn","マンガン酸イオン","MnO₄²⁻","standard",["MnO4^2-"],["緑色"]),s("mn2","Mn","マンガン(II)イオン","Mn²⁺","core",["Mn2+"],["ほぼ無色〜淡桃色"]),s("mno2","Mn","二酸化マンガン","MnO₂","core",[],["黒褐色固体","H₂O₂分解の触媒"]),
+  s("h2o2","O","過酸化水素","H₂O₂","core",[],["酸化剤にも還元剤にもなる","無色"]),
+  s("k2cr2o7","Cr","二クロム酸カリウム","K₂Cr₂O₇","core",[],["橙色結晶","酸性で酸化剤"]),s("cr2o7","Cr","二クロム酸イオン","Cr₂O₇²⁻","core",["Cr2O7^2-"],["橙色"]),s("cro4","Cr","クロム酸イオン","CrO₄²⁻","core",["CrO4^2-"],["黄色"]),s("cr3","Cr","クロム(III)イオン","Cr³⁺","core",["Cr3+"],["水溶液は緑〜紫色（配位状態による）"]),
+  s("soda-lime-glass","Si","ソーダ石灰ガラス","Na₂O–CaO–SiO₂","core",[],["原料：ケイ砂・炭酸ナトリウム・石灰石","窓ガラス・びん"]),s("borosilicate-glass","Si","ホウケイ酸ガラス","B₂O₃–SiO₂系","standard",[],["耐熱性・耐薬品性","理化学器具"]),s("quartz-glass","Si","石英ガラス","SiO₂","core",["溶融石英"],["熱膨張が小さい","耐熱性が高い"]),
+  s("slag","Fe","スラグ","CaSiO₃","core",["鉱滓"],["高炉でCaOがSiO₂を除く"]),s("cast-iron","Fe","鋳鉄","Fe–C（約2〜4%）","standard",[],["硬くてもろい","銑鉄を鋳造用に調整"]),s("red-rust","Fe","赤さび","Fe₂O₃·nH₂O など","core",[],["含水酸化鉄(III)を含む混合物で、単一の無水Fe₂O₃ではない"]),
+];
+
+export const frequentInorganicReactions:InorganicReaction[]=[
+  r("sn2-oxidation","Sn",["Sn²⁺"],["Sn⁴⁺"],"Sn²⁺ → Sn⁴⁺ + 2e⁻","core",[],undefined,"Sn(II)の酸化","SnCl₂はFe³⁺などを還元する"),r("sn-fe3","Sn",["Sn²⁺","Fe³⁺"],["Sn⁴⁺","Fe²⁺"],"Sn²⁺ + 2Fe³⁺ → Sn⁴⁺ + 2Fe²⁺","core"),r("sno2-acid","Sn",["SnO₂","HCl"],["SnCl₄","H₂O"],"SnO₂ + 4HCl → SnCl₄ + 2H₂O","standard"),r("sno2-base","Sn",["SnO₂","OH⁻","H₂O"],["[Sn(OH)₆]²⁻"],"SnO₂ + 2OH⁻ + 2H₂O → [Sn(OH)₆]²⁻","standard",["強塩基性"]),
+  r("chlorine-water","Cl",["Cl₂","H₂O"],["HCl","HClO"],"Cl₂ + H₂O ⇄ HCl + HClO","core",[],undefined,"塩素水","不均化。HClOが漂白・殺菌作用を示す"),r("hclo-oxidation","Cl",["HClO"],["HCl","[O]"],"HClO → HCl + [O]","core",[],undefined,"次亜塩素酸の酸化作用","教科書的な酸素原子表記。実際は相手から電子を受け取る"),r("hypochlorite-acid","Cl",["ClO⁻","H⁺"],["HClO"],"ClO⁻ + H⁺ ⇄ HClO","core"),
+  r("permanganate-acid","Mn",["MnO₄⁻","H⁺","e⁻"],["Mn²⁺","H₂O"],"MnO₄⁻ + 8H⁺ + 5e⁻ → Mn²⁺ + 4H₂O","core",["酸性"]),r("permanganate-neutral","Mn",["MnO₄⁻","H₂O","e⁻"],["MnO₂","OH⁻"],"MnO₄⁻ + 2H₂O + 3e⁻ → MnO₂ + 4OH⁻","core",["中性〜弱塩基性"]),r("permanganate-base","Mn",["MnO₄⁻","e⁻"],["MnO₄²⁻"],"MnO₄⁻ + e⁻ → MnO₄²⁻","standard",["強塩基性"]),
+  r("h2o2-decomposition","O",["H₂O₂"],["H₂O","O₂"],"2H₂O₂ → 2H₂O + O₂↑","core",[],"MnO₂、Fe³⁺、カタラーゼ","過酸化水素の分解"),r("h2o2-kmno4","O",["MnO₄⁻","H₂O₂","H⁺"],["Mn²⁺","O₂","H₂O"],"2MnO₄⁻ + 5H₂O₂ + 6H⁺ → 2Mn²⁺ + 5O₂ + 8H₂O","core",["酸性"],undefined,"過マンガン酸滴定","H₂O₂は還元剤としてO₂になる"),r("h2o2-dichromate","O",["Cr₂O₇²⁻","H₂O₂","H⁺"],["Cr³⁺","O₂","H₂O"],"Cr₂O₇²⁻ + 3H₂O₂ + 8H⁺ → 2Cr³⁺ + 3O₂ + 7H₂O","standard",["酸性"]),
+  r("dichromate-acid","Cr",["Cr₂O₇²⁻","H⁺","e⁻"],["Cr³⁺","H₂O"],"Cr₂O₇²⁻ + 14H⁺ + 6e⁻ → 2Cr³⁺ + 7H₂O","core",["酸性"]),r("chromate-equilibrium","Cr",["CrO₄²⁻","H⁺"],["Cr₂O₇²⁻","H₂O"],"2CrO₄²⁻ + 2H⁺ ⇄ Cr₂O₇²⁻ + H₂O","core",["酸で右、塩基で左"],undefined,"クロム酸・二クロム酸平衡","黄 ⇄ 橙"),
+  r("bicarbonate-acid","Na",["NaHCO₃","HCl"],["NaCl","CO₂","H₂O"],"NaHCO₃ + HCl → NaCl + CO₂↑ + H₂O","core"),r("solvay-ammonia-recovery","Na",["NH₄Cl","Ca(OH)₂"],["NH₃","CaCl₂","H₂O"],"2NH₄Cl + Ca(OH)₂ → 2NH₃ + CaCl₂ + 2H₂O","core",[],undefined,"ソルベー法・NH₃回収"),
+  r("blast-coke-co","Fe",["C","O₂"],["CO"],"2C + O₂ → 2CO","core",["高炉下部"],undefined,"高炉・還元剤生成"),r("blast-limestone","Fe",["CaCO₃"],["CaO","CO₂"],"CaCO₃ → CaO + CO₂","core",["高炉・加熱"]),r("blast-slag","Fe",["CaO","SiO₂"],["CaSiO₃"],"CaO + SiO₂ → CaSiO₃","core",["高炉"],undefined,"スラグ生成","鉱石中のSiO₂を除去"),
+  r("glass-soda-lime","Si",["SiO₂","Na₂CO₃","CaCO₃"],["ソーダ石灰ガラス","CO₂"],"SiO₂ + Na₂CO₃ + CaCO₃ → ガラス + 2CO₂","standard",["高温融解"],undefined,"ソーダ石灰ガラス製造"),
+];

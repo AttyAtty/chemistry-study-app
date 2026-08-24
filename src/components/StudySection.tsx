@@ -8,6 +8,7 @@ import { ElectrochemistryLab } from "@/components/ElectrochemistryLab";
 import { ElectrochemistrySimulator } from "@/components/ElectrochemistrySimulator";
 import { ElectrochemistryQuizGenerator } from "@/components/ElectrochemistryQuizGenerator";
 import { OrganicKnowledgeBrowser } from "@/components/OrganicKnowledgeBrowser";
+import { RedoxProductTrainer } from "@/components/RedoxProductTrainer";
 
 export function StudySection({ section }: { section: StudySectionType }) {
   return (
@@ -74,6 +75,7 @@ export function StudySection({ section }: { section: StudySectionType }) {
       {section.kind === "electrochemistryLab" && <ElectrochemistryLab />}
       {section.kind === "electrochemistrySimulator" && <ElectrochemistrySimulator />}
       {section.kind === "electrochemistryQuizGenerator" && <ElectrochemistryQuizGenerator />}
+      {section.kind === "redoxProductTrainer" && <RedoxProductTrainer />}
     </section>
   );
 }

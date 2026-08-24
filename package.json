@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "audit:chemistry": "node scripts/audit-chemistry-data.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
