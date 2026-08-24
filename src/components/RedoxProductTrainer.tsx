@@ -23,7 +23,7 @@ export function RedoxProductTrainer() {
         <div className="equation-box"><ColoredChemText>{item.skeleton}</ColoredChemText></div>
         <p>{item.role}として働き、自身は{item.direction}。{item.element}：{item.oxidationStateBefore} → {item.oxidationStateAfter}</p>
         {item.note&&<small>{item.note}</small>}
-        {!showHalf?<button className="button secondary" type="button" onClick={()=>setShowHalf(true)}>半反応式を確認</button>:<div className="redox-half-reaction"><span>H₂O / H⁺ / OH⁻ / e⁻ を補う</span><strong><ColoredChemText>{item.halfReaction}</ColoredChemText></strong><Link href="/units/ionic-equations">イオン反応式の学習へ →</Link></div>}
+        {!showHalf?<button className="button secondary" type="button" onClick={()=>setShowHalf(true)}>半反応式を確認</button>:<div className="redox-half-reaction"><span>H₂O / H⁺ / OH⁻ / e⁻ を補う</span><strong><ColoredChemText>{item.halfReaction}</ColoredChemText></strong><Link href="#redox-ionic">半反応式・イオン反応式の演習へ →</Link></div>}
       </div>}
       <button className="mini-button" type="button" onClick={next}>次の問題</button>
     </article>

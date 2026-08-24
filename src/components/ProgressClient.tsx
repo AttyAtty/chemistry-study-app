@@ -24,7 +24,7 @@ export function ProgressClient() {
   return <main className="page-container progress-page">
     <section className="page-intro compact"><p className="eyebrow">PROGRESS</p><h1>学習記録</h1><p>次に復習する内容と、これまでの成績を確認できます。</p></section>
 
-    {!hasHistory&&<section className="progress-empty-welcome"><h2>まだ学習記録がありません</h2><p>単元を選んで学習するか、10問チャレンジから始めましょう。</p><div><Link className="button primary" href="/home#units">単元を選ぶ</Link><Link className="button secondary" href="/quiz?unit=all&count=10">10問チャレンジ</Link></div></section>}
+    {!hasHistory&&<section className="progress-empty-welcome"><h2>まだ学習記録がありません</h2><p>単元を選んで学習するか、10問チャレンジから始めましょう。</p><div><Link className="button primary" href="/home#fields">単元を選ぶ</Link><Link className="button secondary" href="/quiz?unit=all&count=10">10問チャレンジ</Link></div></section>}
 
     <section className="today-review" aria-labelledby="today-review-title"><div className="section-heading"><div><p className="eyebrow">NEXT STUDY</p><h2 id="today-review-title">今日の復習</h2></div></div><div className="review-action-grid">
       <article><span>間違えた問題</span><strong>{insights.reviewQuestions}<small>問</small></strong>{insights.reviewQuestions>0?<Link className="button primary" href="/quiz?unit=all&mode=review&count=all">間違えた問題を復習</Link>:<p>現在、復習が必要な問題はありません。</p>}</article>

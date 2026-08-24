@@ -28,7 +28,8 @@ export function MobileNavigation() {
   return <div className="mobile-nav-shell" ref={menuRef}>
     {moreOpen && <div className="mobile-more-menu" id="mobile-more-menu">
       <Link href="/feedback">お問い合わせ</Link>
-      <span>バージョン {CHEMICA_VERSION_LABEL}</span>
+      <Link href="/privacy">プライバシーポリシー</Link>
+      <span>{CHEMICA_VERSION_LABEL}</span>
     </div>}
     <nav className="mobile-bottom-nav" aria-label="モバイルメインナビゲーション">
       {items.map(item => {
