@@ -32,6 +32,7 @@ export default async function UnitPage({ params }: { params: Promise<{ slug: str
   const detailSections=unit.sections.filter(section=>!featuredIds.has(section.id));
   const advancedSections=detailSections.filter(section=>/advanced|発展|補足|安全/.test(`${section.id}${section.title}${section.description??""}`));
   const standardDetailSections=detailSections.filter(section=>!advancedSections.includes(section));
+  const extendedQuizCount=unit.questions.length>=30?30:unit.questions.length>=20?20:5;
 
   return (
     <main className={`page-container${isBasic ? " chemistry-basic-print chemistry-basic-unit" : ""}`}>
@@ -48,7 +49,7 @@ export default async function UnitPage({ params }: { params: Promise<{ slug: str
           <p>教材を確認したら、問題数を選んで定着度を確認しましょう。</p>
           <div className="quiz-count-links no-print">
             <Link className="button primary" href={`/quiz?unit=${unit.slug}&count=10`}>10問</Link>
-            <Link className="button secondary" href={`/quiz?unit=${unit.slug}&count=30`}>30問</Link>
+            <Link className="button secondary" href={`/quiz?unit=${unit.slug}&count=${extendedQuizCount}`}>{extendedQuizCount}問</Link>
             {isBasic && <PrintButton />}
           </div>
         </div>
@@ -63,9 +64,9 @@ export default async function UnitPage({ params }: { params: Promise<{ slug: str
       </nav>
 
       <header className="unit-content-heading"><p className="eyebrow">START HERE</p><h2>{architecture.featuredLabel}</h2></header>
-      {featuredSections.map((section) => <StudySection section={section} key={section.id} />)}
+      {featuredSections.map((section) => <div key={section.id}><StudySection section={section}/>{architecture.flashcardAfterSectionId===section.id&&flashcards.length>0&&<FlashcardDeck cards={flashcards} unitId={unit.slug}/>}</div>)}
 
-      {flashcards.length > 0 && <FlashcardDeck cards={flashcards} unitId={unit.slug} />}
+      {!architecture.flashcardAfterSectionId&&flashcards.length > 0 && <FlashcardDeck cards={flashcards} unitId={unit.slug} />}
 
       {standardDetailSections.length>0&&<details className="unit-detail-disclosure" id="unit-details">
         <summary><span><small>DETAILS / ALL CONTENT</small><strong>{architecture.detailLabel}</strong></span><b>{standardDetailSections.length}セクション</b></summary>

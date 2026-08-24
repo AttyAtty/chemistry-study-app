@@ -19,7 +19,7 @@ export function QuizClient({
   initialCount?:QuizCount;
   initialMode?:QuizMode;
 }) {
-  const [count,setCount]=useState<QuizCount>(initialCount);
+  const [count,setCount]=useState<QuizCount>(()=>initialCount==="all"||initialCount<=questionPool.length?initialCount:questionPool.length>=20?20:questionPool.length>=10?10:5);
   const [mode,setMode]=useState<QuizMode>(initialMode);
   const [history,setHistory]=useState(()=>readQuestionHistory());
   const [quizQuestions,setQuizQuestions]=useState<QuizQuestionWithUnit[]>([]);
@@ -50,7 +50,7 @@ export function QuizClient({
   if(!started){
     return <div className="quiz-shell"><section className="quiz-setup" aria-labelledby="quiz-setup-title">
       <p className="eyebrow">QUIZ SETUP</p><h1 id="quiz-setup-title">{unitTitle}</h1>
-      <div className="quiz-option-group"><h2>問題数</h2><div>{([5,10,20,30,"all"] as QuizCount[]).map(value=><button type="button" aria-pressed={count===value} className={count===value?"active":""} onClick={()=>setCount(value)} key={value}>{value==="all"?`全問（最大${eligibleCount}問）`:`${value}問`}</button>)}</div></div>
+      <div className="quiz-option-group"><h2>問題数</h2><div>{([5,10,20,30,"all"] as QuizCount[]).filter(value=>value==="all"||value<=questionPool.length).map(value=><button type="button" aria-pressed={count===value} className={count===value?"active":""} onClick={()=>setCount(value)} key={value}>{value==="all"?`全問（最大${eligibleCount}問）`:`${value}問`}</button>)}</div></div>
       <div className="quiz-option-group"><h2>出題</h2><div>{([['random','ランダム'],['review','間違えた問題'],['unseen','未出題問題']] as Array<[QuizMode,string]>).map(([value,label])=><button type="button" aria-pressed={mode===value} className={mode===value?"active":""} onClick={()=>setMode(value)} key={value}>{label}</button>)}</div></div>
       <p className="quiz-eligible-count">対象は <strong>{eligibleCount}問</strong>{count!=="all"&&eligibleCount<count?`です。選択数より少ないため${eligibleCount}問を出題します。`:""}</p>
       <button className="button primary" type="button" onClick={startQuiz} disabled={eligibleCount===0}>テストを始める</button>

@@ -18,7 +18,8 @@ function duplicateIds(items) {
 
 const organic=loadData("src/data/organicReactionMaps.ts").organicReactions;
 const frequent=loadData("src/data/frequentReactionKnowledge.ts");
-const inorganic=loadData("src/data/inorganicKnowledge.ts",{"@/data/frequentReactionKnowledge":frequent}).inorganicReactions;
+const coverage=loadData("src/data/coverageExpansionQuestions.ts");
+const inorganic=loadData("src/data/inorganicKnowledge.ts",{"@/data/frequentReactionKnowledge":frequent,"@/data/coverageExpansionQuestions":coverage}).inorganicReactions;
 const redox=loadData("src/data/redoxProductPredictions.ts").redoxProductPredictions;
 const gases=loadData("src/data/gases.ts").gases;
 const electrochemistry=loadData("src/data/electrochemistry.ts").electrochemistryCards;

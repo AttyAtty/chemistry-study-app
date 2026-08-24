@@ -192,7 +192,10 @@ export const organicCompounds=[...compoundStore.values()];
 export const organicReactions=[...reactionStore.values()];
 export const expandedOrganicReactionMaps:ReactionMap[]=organicMapDefinitions;
 
-const quizCandidates=organicReactions.filter(reaction=>reaction.importance==="core"||(reaction.importance==="industrial"&&/クメン|Wacker|SOHIO|重合|Kolbe|Dow|発酵/.test(`${reaction.reactionName}${reaction.conditions.join(" ")}`))).slice(0,64);
+const eligibleQuizReactions=organicReactions.filter(reaction=>reaction.importance==="core"||(reaction.importance==="industrial"&&/クメン|Wacker|SOHIO|重合|Kolbe|Dow|発酵/.test(`${reaction.reactionName}${reaction.conditions.join(" ")}`)));
+// Several maps intentionally share the same conversion. Keep one stable question
+// for each source/target pair so map overlap does not create duplicate tests.
+const quizCandidates=[...new Map(eligibleQuizReactions.map(reaction=>[`${reaction.sourceId}|${reaction.targetId}`,reaction])).values()].slice(0,64);
 const allConditions = [...new Set(quizCandidates.map((reaction) => `${reaction.reactionName}${reaction.conditions.length ? `（${reaction.conditions.join("・")}）` : ""}`))];
 export const expandedOrganicQuestions = quizCandidates.map((reaction, reactionIndex) => {
   const correct = `${reaction.reactionName}${reaction.conditions.length ? `（${reaction.conditions.join("・")}）` : ""}`;

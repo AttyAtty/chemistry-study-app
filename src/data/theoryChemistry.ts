@@ -1,4 +1,5 @@
 import type { ChemistryUnit } from "@/data/chemistry";
+import { theoryCoverageQuestions } from "@/data/coverageExpansionQuestions";
 
 export const theoryChemistryUnit: ChemistryUnit = {
   slug:"theory-chemistry",
@@ -62,6 +63,7 @@ export const theoryChemistryUnit: ChemistryUnit = {
     ]},
   ],
   questions:[
+    ...theoryCoverageQuestions,
     {id:"theory-mass-1",prompt:"質量パーセント濃度の分母に用いるものはどれ？",choices:["溶質の質量","溶媒の質量","溶液の質量","溶液の体積"],answerIndex:2,explanation:"溶液質量＝溶質質量＋溶媒質量です。",tags:["濃度"]},
     {id:"theory-mass-2",prompt:"食塩20 gを水180 gに溶かした溶液の質量パーセント濃度は？",choices:["10%","11%","20%","90%"],answerIndex:0,explanation:"溶液は200 g。20/200×100=10%です。",tags:["濃度","計算"]},
     {id:"theory-sol-1",prompt:"高温の飽和溶液を冷却して結晶を得る操作は？",choices:["蒸留","再結晶","抽出","透析"],answerIndex:1,explanation:"温度による溶解度差を利用します。",tags:["溶解度"]},

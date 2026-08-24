@@ -2,6 +2,7 @@ import type { QuizQuestion, StudySection } from "@/data/chemistry";
 import type { Flashcard } from "@/data/flashcards";
 import type { ReactionMap, ReactionNode, ReactionStep } from "@/data/reactionMaps";
 import { frequentInorganicReactions, frequentInorganicSubstances } from "@/data/frequentReactionKnowledge";
+import { inorganicCoverageQuestions } from "@/data/coverageExpansionQuestions";
 
 export type InorganicImportance = "core" | "standard" | "advanced";
 export type InorganicSubstance = {
@@ -100,6 +101,7 @@ export const inorganicKnowledgeSections:StudySection[]=[
 ];
 
 export const inorganicKnowledgeQuestions:QuizQuestion[]=[
+ ...inorganicCoverageQuestions,
  {id:"inorg-net-ca-1",prompt:"焼き石こうの化学式はどれですか。",choices:["CaSO₄·2H₂O","CaSO₄·1/2H₂O","CaSO₄","CaCO₃"],answerIndex:1,explanation:"石こうを加熱して一部脱水すると硫酸カルシウム半水和物（焼き石こう）になります。",tags:["Ca","石こう"]},
  {id:"inorg-net-ca-2",prompt:"カーバイドに水を加えると発生する気体はどれですか。",choices:["CH₄","C₂H₂","CO₂","H₂S"],answerIndex:1,explanation:"CaC₂ + 2H₂O → C₂H₂ + Ca(OH)₂。アセチレンが発生します。",tags:["Ca","アセチレン"]},
  {id:"inorg-net-fe-1",prompt:"Fe³⁺にSCN⁻を加えたときの観察はどれですか。",choices:["血赤色溶液","濃青色沈殿","白色沈殿","無色のまま"],answerIndex:0,explanation:"[FeSCN]²⁺などのチオシアン酸鉄(III)錯体により血赤色を示します。",tags:["Fe³⁺","定性分析"]},

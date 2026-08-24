@@ -1,4 +1,5 @@
 import type { ChemistryUnit } from "@/data/chemistry";
+import { complexCoverageQuestions } from "@/data/coverageExpansionQuestions";
 
 export const inorganicComplexesUnit: ChemistryUnit = {
   slug: "complex-ions-qualitative-analysis",
@@ -214,6 +215,7 @@ export const inorganicComplexesUnit: ChemistryUnit = {
     },
   ],
   questions: [
+    ...complexCoverageQuestions,
     { id:"complex-1", prompt:"NH₃が配位子として錯イオン名に入るとき、何と呼びますか。", choices:["アミノ","アンミン","アンモニウム","アミド"], answerIndex:1, explanation:"配位子NH₃はアンミンと呼びます。", tags:["配位子","命名"] },
     { id:"complex-2", prompt:"[Cu(NH₃)₄]²⁺の代表的な色はどれですか。", choices:["無色","淡緑色","濃青色","黄色"], answerIndex:2, explanation:"テトラアンミン銅(II)イオンは濃青色です。", tags:["錯イオンの色"] },
     { id:"complex-3", prompt:"[Ag(NH₃)₂]⁺の配位数と形の組合せはどれですか。", choices:["2・直線形","4・正四面体形","4・平面四角形","6・正八面体形"], answerIndex:0, explanation:"Ag⁺のジアンミン錯体は2配位で直線形です。", tags:["配位数"] },

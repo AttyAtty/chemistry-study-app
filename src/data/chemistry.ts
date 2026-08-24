@@ -6,6 +6,7 @@ import { chemistryBasicUnits } from "@/data/chemistry-basic";
 import { inorganicIndustrialSection, inorganicKnowledgeQuestions, inorganicKnowledgeSections } from "@/data/inorganicKnowledge";
 import { theoryChemistryUnit } from "@/data/theoryChemistry";
 import { redoxProductQuestions } from "@/data/redoxProductPredictions";
+import { colorCoverageQuestions, industrialCoverageQuestions, ionicCoverageQuestions, organicCoverageQuestions } from "@/data/coverageExpansionQuestions";
 
 export type QuizQuestion = {
   id: string;
@@ -225,6 +226,7 @@ export const chemistryUnits: ChemistryUnit[] = [
     ],
     questions: [
       ...expandedOrganicQuestions,
+      ...organicCoverageQuestions,
       {
         id: "org-1",
         prompt: "エタノールを穏やかに酸化したとき、最初に生じる主生成物はどれですか。",
@@ -928,6 +930,7 @@ export const chemistryUnits: ChemistryUnit[] = [
       },
     ],
     questions: [
+      ...colorCoverageQuestions,
       {
         id: "color-1",
         prompt: "銅(II)イオンを含む水溶液の代表的な色はどれですか。",
@@ -1027,6 +1030,7 @@ export const chemistryUnits: ChemistryUnit[] = [
       },
     ],
     questions: [
+      ...industrialCoverageQuestions,
       {
         id: "ind-1",
         prompt: "ハーバー・ボッシュ法で製造する物質は何ですか。",
@@ -1161,6 +1165,7 @@ export const chemistryUnits: ChemistryUnit[] = [
     ],
     questions: [
       ...redoxProductQuestions,
+      ...ionicCoverageQuestions,
       {
         id: "ion-1",
         prompt: "強酸と強塩基の中和を表す正味イオン反応式はどれですか。",

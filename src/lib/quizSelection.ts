@@ -11,7 +11,7 @@ export const TOTAL_TEST_CATEGORY_WEIGHTS:Record<TestCategory,number>={theory:3,i
 const categoryByUnit:Record<string,TestCategory>={
   "organic-reactions":"organic",
   "inorganic-reactions":"inorganic","laboratory-gases":"inorganic","colors-and-tests":"inorganic","complex-ions-qualitative-analysis":"inorganic",
-  "batteries-electrolysis":"theory","ionic-equations":"theory","chemistry-basic-composition":"theory","chemistry-basic-mole-reactions":"theory","chemistry-basic-acid-base-redox":"theory",
+  "theory-chemistry":"theory","batteries-electrolysis":"theory","ionic-equations":"theory","chemistry-basic-composition":"theory","chemistry-basic-mole-reactions":"theory","chemistry-basic-acid-base-redox":"theory",
   "industrial-processes":"other","chemistry-basic-comprehensive":"other",
 };
 export const getTestCategoryForUnit=(unitSlug:string):TestCategory=>categoryByUnit[unitSlug]??"other";
