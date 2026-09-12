@@ -1,0 +1,1028 @@
+[
+  {
+    "id": "toluene",
+    "mobile": false,
+    "nodes": 29,
+    "edges": 30,
+    "before": {
+      "ee": 15,
+      "nn": 0,
+      "nl": 3,
+      "ll": 4,
+      "el": 67,
+      "en": 15
+    },
+    "after": {
+      "ee": 1,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 3295,
+      "height": 2464
+    },
+    "ms": 1276
+  },
+  {
+    "id": "toluene",
+    "mobile": true,
+    "nodes": 29,
+    "edges": 30,
+    "before": {
+      "ee": 63,
+      "nn": 0,
+      "nl": 9,
+      "ll": 5,
+      "el": 131,
+      "en": 57
+    },
+    "after": {
+      "ee": 9,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1259,
+      "height": 4482
+    },
+    "ms": 887
+  },
+  {
+    "id": "phenol",
+    "mobile": false,
+    "nodes": 20,
+    "edges": 21,
+    "before": {
+      "ee": 15,
+      "nn": 0,
+      "nl": 5,
+      "ll": 1,
+      "el": 31,
+      "en": 4
+    },
+    "after": {
+      "ee": 3,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 2973,
+      "height": 1659
+    },
+    "ms": 629
+  },
+  {
+    "id": "phenol",
+    "mobile": true,
+    "nodes": 20,
+    "edges": 21,
+    "before": {
+      "ee": 61,
+      "nn": 0,
+      "nl": 8,
+      "ll": 6,
+      "el": 93,
+      "en": 23
+    },
+    "after": {
+      "ee": 16,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1305,
+      "height": 3535
+    },
+    "ms": 436
+  },
+  {
+    "id": "formaldehyde",
+    "mobile": false,
+    "nodes": 13,
+    "edges": 14,
+    "before": {
+      "ee": 8,
+      "nn": 0,
+      "nl": 0,
+      "ll": 1,
+      "el": 21,
+      "en": 1
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 2404,
+      "height": 1644
+    },
+    "ms": 152
+  },
+  {
+    "id": "formaldehyde",
+    "mobile": true,
+    "nodes": 13,
+    "edges": 14,
+    "before": {
+      "ee": 17,
+      "nn": 0,
+      "nl": 5,
+      "ll": 5,
+      "el": 35,
+      "en": 16
+    },
+    "after": {
+      "ee": 2,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1197,
+      "height": 2486
+    },
+    "ms": 115
+  },
+  {
+    "id": "ethylene",
+    "mobile": false,
+    "nodes": 22,
+    "edges": 23,
+    "before": {
+      "ee": 29,
+      "nn": 0,
+      "nl": 0,
+      "ll": 4,
+      "el": 55,
+      "en": 3
+    },
+    "after": {
+      "ee": 3,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 3382,
+      "height": 2570
+    },
+    "ms": 787
+  },
+  {
+    "id": "ethylene",
+    "mobile": true,
+    "nodes": 22,
+    "edges": 23,
+    "before": {
+      "ee": 34,
+      "nn": 0,
+      "nl": 6,
+      "ll": 6,
+      "el": 70,
+      "en": 25
+    },
+    "after": {
+      "ee": 10,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1228,
+      "height": 3582
+    },
+    "ms": 351
+  },
+  {
+    "id": "ethanol",
+    "mobile": false,
+    "nodes": 15,
+    "edges": 14,
+    "before": {
+      "ee": 10,
+      "nn": 0,
+      "nl": 3,
+      "ll": 0,
+      "el": 18,
+      "en": 5
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 2126,
+      "height": 2420
+    },
+    "ms": 168
+  },
+  {
+    "id": "ethanol",
+    "mobile": true,
+    "nodes": 15,
+    "edges": 14,
+    "before": {
+      "ee": 7,
+      "nn": 0,
+      "nl": 0,
+      "ll": 3,
+      "el": 29,
+      "en": 5
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1153,
+      "height": 3058
+    },
+    "ms": 117
+  },
+  {
+    "id": "benzene",
+    "mobile": false,
+    "nodes": 22,
+    "edges": 23,
+    "before": {
+      "ee": 10,
+      "nn": 0,
+      "nl": 1,
+      "ll": 4,
+      "el": 46,
+      "en": 5
+    },
+    "after": {
+      "ee": 1,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 2782,
+      "height": 1738
+    },
+    "ms": 729
+  },
+  {
+    "id": "benzene",
+    "mobile": true,
+    "nodes": 22,
+    "edges": 23,
+    "before": {
+      "ee": 46,
+      "nn": 0,
+      "nl": 19,
+      "ll": 4,
+      "el": 155,
+      "en": 29
+    },
+    "after": {
+      "ee": 7,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1199,
+      "height": 3591
+    },
+    "ms": 556
+  },
+  {
+    "id": "acetylene",
+    "mobile": false,
+    "nodes": 34,
+    "edges": 33,
+    "before": {
+      "ee": 23,
+      "nn": 0,
+      "nl": 6,
+      "ll": 2,
+      "el": 68,
+      "en": 24
+    },
+    "after": {
+      "ee": 2,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 3927,
+      "height": 2412
+    },
+    "ms": 2320
+  },
+  {
+    "id": "acetylene",
+    "mobile": true,
+    "nodes": 34,
+    "edges": 33,
+    "before": {
+      "ee": 77,
+      "nn": 0,
+      "nl": 14,
+      "ll": 5,
+      "el": 155,
+      "en": 58
+    },
+    "after": {
+      "ee": 21,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1201,
+      "height": 5656
+    },
+    "ms": 1198
+  },
+  {
+    "id": "aniline",
+    "mobile": false,
+    "nodes": 12,
+    "edges": 14,
+    "before": {
+      "ee": 8,
+      "nn": 0,
+      "nl": 7,
+      "ll": 2,
+      "el": 29,
+      "en": 2
+    },
+    "after": {
+      "ee": 1,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 2136,
+      "height": 1177
+    },
+    "ms": 170
+  },
+  {
+    "id": "aniline",
+    "mobile": true,
+    "nodes": 12,
+    "edges": 14,
+    "before": {
+      "ee": 29,
+      "nn": 0,
+      "nl": 15,
+      "ll": 4,
+      "el": 53,
+      "en": 16
+    },
+    "after": {
+      "ee": 5,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1089,
+      "height": 2144
+    },
+    "ms": 141
+  },
+  {
+    "id": "calcium",
+    "mobile": false,
+    "nodes": 10,
+    "edges": 10,
+    "before": {
+      "ee": 3,
+      "nn": 0,
+      "nl": 4,
+      "ll": 3,
+      "el": 24,
+      "en": 2
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 2404,
+      "height": 1344
+    },
+    "ms": 81
+  },
+  {
+    "id": "calcium",
+    "mobile": true,
+    "nodes": 10,
+    "edges": 10,
+    "before": {
+      "ee": 9,
+      "nn": 0,
+      "nl": 0,
+      "ll": 3,
+      "el": 34,
+      "en": 3
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1252,
+      "height": 1844
+    },
+    "ms": 59
+  },
+  {
+    "id": "iron",
+    "mobile": false,
+    "nodes": 16,
+    "edges": 14,
+    "before": {
+      "ee": 8,
+      "nn": 0,
+      "nl": 3,
+      "ll": 3,
+      "el": 35,
+      "en": 4
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 2404,
+      "height": 2973
+    },
+    "ms": 184
+  },
+  {
+    "id": "iron",
+    "mobile": true,
+    "nodes": 16,
+    "edges": 14,
+    "before": {
+      "ee": 10,
+      "nn": 0,
+      "nl": 2,
+      "ll": 3,
+      "el": 44,
+      "en": 7
+    },
+    "after": {
+      "ee": 1,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1107,
+      "height": 3196
+    },
+    "ms": 142
+  },
+  {
+    "id": "nitrogen",
+    "mobile": false,
+    "nodes": 11,
+    "edges": 9,
+    "before": {
+      "ee": 4,
+      "nn": 0,
+      "nl": 2,
+      "ll": 1,
+      "el": 17,
+      "en": 1
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 2126,
+      "height": 1469
+    },
+    "ms": 74
+  },
+  {
+    "id": "nitrogen",
+    "mobile": true,
+    "nodes": 11,
+    "edges": 9,
+    "before": {
+      "ee": 5,
+      "nn": 0,
+      "nl": 3,
+      "ll": 4,
+      "el": 23,
+      "en": 4
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1248,
+      "height": 2156
+    },
+    "ms": 71
+  },
+  {
+    "id": "sodium",
+    "mobile": false,
+    "nodes": 8,
+    "edges": 8,
+    "before": {
+      "ee": 5,
+      "nn": 0,
+      "nl": 3,
+      "ll": 1,
+      "el": 20,
+      "en": 1
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1584,
+      "height": 1446
+    },
+    "ms": 45
+  },
+  {
+    "id": "sodium",
+    "mobile": true,
+    "nodes": 8,
+    "edges": 8,
+    "before": {
+      "ee": 2,
+      "nn": 0,
+      "nl": 2,
+      "ll": 2,
+      "el": 24,
+      "en": 4
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1092,
+      "height": 1596
+    },
+    "ms": 37
+  },
+  {
+    "id": "phosphorus",
+    "mobile": false,
+    "nodes": 7,
+    "edges": 6,
+    "before": {
+      "ee": 1,
+      "nn": 0,
+      "nl": 1,
+      "ll": 1,
+      "el": 9,
+      "en": 1
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1387,
+      "height": 1608
+    },
+    "ms": 19
+  },
+  {
+    "id": "phosphorus",
+    "mobile": true,
+    "nodes": 7,
+    "edges": 6,
+    "before": {
+      "ee": 1,
+      "nn": 0,
+      "nl": 2,
+      "ll": 1,
+      "el": 14,
+      "en": 0
+    },
+    "after": {
+      "ee": 1,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 945,
+      "height": 1632
+    },
+    "ms": 22
+  },
+  {
+    "id": "silicon",
+    "mobile": false,
+    "nodes": 8,
+    "edges": 8,
+    "before": {
+      "ee": 4,
+      "nn": 0,
+      "nl": 2,
+      "ll": 1,
+      "el": 21,
+      "en": 0
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1294,
+      "height": 1302
+    },
+    "ms": 43
+  },
+  {
+    "id": "silicon",
+    "mobile": true,
+    "nodes": 8,
+    "edges": 8,
+    "before": {
+      "ee": 7,
+      "nn": 0,
+      "nl": 2,
+      "ll": 3,
+      "el": 25,
+      "en": 4
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1108,
+      "height": 2002
+    },
+    "ms": 39
+  },
+  {
+    "id": "sulfur",
+    "mobile": false,
+    "nodes": 11,
+    "edges": 8,
+    "before": {
+      "ee": 2,
+      "nn": 0,
+      "nl": 2,
+      "ll": 0,
+      "el": 14,
+      "en": 2
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 2176,
+      "height": 1871
+    },
+    "ms": 53
+  },
+  {
+    "id": "sulfur",
+    "mobile": true,
+    "nodes": 11,
+    "edges": 8,
+    "before": {
+      "ee": 1,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 19,
+      "en": 4
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1083,
+      "height": 2023
+    },
+    "ms": 44
+  },
+  {
+    "id": "tin",
+    "mobile": false,
+    "nodes": 4,
+    "edges": 2,
+    "before": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 3,
+      "en": 1
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 811,
+      "height": 1059
+    },
+    "ms": 3
+  },
+  {
+    "id": "tin",
+    "mobile": true,
+    "nodes": 4,
+    "edges": 2,
+    "before": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 2,
+      "en": 0
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 644,
+      "height": 916
+    },
+    "ms": 3
+  },
+  {
+    "id": "chlorine-hypochlorite",
+    "mobile": false,
+    "nodes": 3,
+    "edges": 2,
+    "before": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 1,
+      "ll": 0,
+      "el": 4,
+      "en": 0
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1044,
+      "height": 458
+    },
+    "ms": 4
+  },
+  {
+    "id": "chlorine-hypochlorite",
+    "mobile": true,
+    "nodes": 3,
+    "edges": 2,
+    "before": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 6,
+      "en": 0
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 480,
+      "height": 726
+    },
+    "ms": 2
+  },
+  {
+    "id": "manganese-redox",
+    "mobile": false,
+    "nodes": 4,
+    "edges": 3,
+    "before": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 1,
+      "ll": 0,
+      "el": 4,
+      "en": 0
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1207,
+      "height": 688
+    },
+    "ms": 4
+  },
+  {
+    "id": "manganese-redox",
+    "mobile": true,
+    "nodes": 4,
+    "edges": 3,
+    "before": {
+      "ee": 1,
+      "nn": 0,
+      "nl": 0,
+      "ll": 1,
+      "el": 8,
+      "en": 1
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 856,
+      "height": 824
+    },
+    "ms": 5
+  },
+  {
+    "id": "chromium-redox",
+    "mobile": false,
+    "nodes": 3,
+    "edges": 2,
+    "before": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 1,
+      "ll": 0,
+      "el": 4,
+      "en": 0
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 1044,
+      "height": 598
+    },
+    "ms": 2
+  },
+  {
+    "id": "chromium-redox",
+    "mobile": true,
+    "nodes": 3,
+    "edges": 2,
+    "before": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 6,
+      "en": 0
+    },
+    "after": {
+      "ee": 0,
+      "nn": 0,
+      "nl": 0,
+      "ll": 0,
+      "el": 0,
+      "en": 0
+    },
+    "canvas": {
+      "width": 606,
+      "height": 737
+    },
+    "ms": 2
+  }
+]

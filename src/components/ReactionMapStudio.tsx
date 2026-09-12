@@ -24,12 +24,22 @@ function buildGraph(map:ReactionMap) {
   return {nodes:[...nodeMap.entries()].map(([id,node])=>({id,node})),edges};
 }
 
+// UI dimensions live here, separately from the shared chemical records.
+const labelLines=(step:ReactionStep)=>[step.label,step.scope&&step.scope!=="core"?scopeLabels[step.scope]:"",step.condition,step.note].filter((line):line is string=>Boolean(line));
+function nodeDimensions(node:ReactionNode) {
+  const aromatic=isAromaticCompound(node.name);
+  const width=Math.max(aromatic?216:196,Math.min(320,node.name.length*14+28),node.formula.length*8+28);
+  const nameRows=Math.ceil(node.name.length*14/(width-26));
+  const appearanceRows=node.appearance?Math.ceil((node.appearance.length+2)*11/(width-42)):0;
+  return {width,height:Math.max(96,52+nameRows*21+(aromatic?86:0)+(appearanceRows?appearanceRows*17+10:0))};
+}
+
 function layoutGraph(map:ReactionMap,graph:ReturnType<typeof buildGraph>,mobile=false) {
   const degree=new Map(graph.nodes.map(item=>[item.id,0]));
   graph.edges.forEach(edge=>{degree.set(edge.from,(degree.get(edge.from)??0)+1);degree.set(edge.to,(degree.get(edge.to)??0)+1);});
   const centerId=graph.nodes.find(item=>item.node.name===map.centerNode)?.id??[...graph.nodes].sort((a,b)=>(degree.get(b.id)??0)-(degree.get(a.id)??0))[0]?.id;
-  const layoutNodes:LayoutNode[]=graph.nodes.map(item=>({id:item.id,width:isAromaticCompound(item.node.name)?196:176,height:isAromaticCompound(item.node.name)?164:90,zone:item.id===centerId?"center":map.zones?.[item.node.name]}));
-  return computeReactionGraphLayout(layoutNodes,graph.edges.map(edge=>({id:edge.id,from:edge.from,to:edge.to,label:stepText(edge.step)})),centerId??graph.nodes[0]?.id??"",mobile);
+  const layoutNodes:LayoutNode[]=graph.nodes.map(item=>({id:item.id,...nodeDimensions(item.node),zone:item.id===centerId?"center":map.zones?.[item.node.name]}));
+  return computeReactionGraphLayout(layoutNodes,graph.edges.map(edge=>({id:edge.id,from:edge.from,to:edge.to,label:stepText(edge.step),labelLines:labelLines(edge.step)})),centerId??graph.nodes[0]?.id??"",mobile);
 }
 
 type PrintConfig = { orientation:"portrait"|"landscape"; scale:number; rotate:boolean; offsetX:number; offsetY:number };
@@ -43,7 +53,7 @@ function Diagram({ map, variant, layout, randomSeed = 0, editable = false, print
   const [activeBlank, setActiveBlank] = useState<{ id:string; kind:"node"|"step"; correct:string } | null>(null);
   const [blankResults, setBlankResults] = useState<Record<string,{ correct:boolean; chosen:string }>>({});
   const boardRef = useRef<HTMLDivElement>(null);
-  const liveRoutes=useMemo(()=>editable?computeReactionRoutes(graph.nodes.map(item=>({id:item.id,width:isAromaticCompound(item.node.name)?196:176,height:isAromaticCompound(item.node.name)?164:90})),graph.edges.map(edge=>({id:edge.id,from:edge.from,to:edge.to,label:stepText(edge.step)})),positions):layout.routes,[editable,graph,layout.routes,positions]);
+  const liveRoutes=useMemo(()=>editable?computeReactionRoutes(graph.nodes.map(item=>({id:item.id,...nodeDimensions(item.node)})),graph.edges.map(edge=>({id:edge.id,from:edge.from,to:edge.to,label:stepText(edge.step),labelLines:labelLines(edge.step)})),positions):layout.routes,[editable,graph,layout.routes,positions]);
   const hidden = (key: string) => variant === "random" && hash(`${key}-${randomSeed}`) % 3 === 0;
   const choices = activeBlank ? [...new Set([
     activeBlank.correct,
@@ -53,15 +63,15 @@ function Diagram({ map, variant, layout, randomSeed = 0, editable = false, print
   const moveNode = (id: string, clientX: number, clientY: number) => {
     if (!editable || !boardRef.current) return;
     const rect = boardRef.current.getBoundingClientRect();
-    setPositions(current => ({ ...current, [id]: { x: Math.max(105,Math.min(canvas.width-105,clientX-rect.left)), y: Math.max(85,Math.min(canvas.height-85,clientY-rect.top)) } }));
+    setPositions(current => ({ ...current, [id]: { x: Math.max(105,Math.min(canvas.width-105,(clientX-rect.left)*canvas.width/rect.width)), y: Math.max(85,Math.min(canvas.height-85,(clientY-rect.top)*canvas.height/rect.height)) } }));
   };
   return <div className={`reaction-network ${editable ? "editing" : ""}`} style={canvasStyle} ref={boardRef}>
     <svg className="reaction-edge-layer" viewBox={`0 0 ${canvas.width} ${canvas.height}`} preserveAspectRatio="none" aria-hidden="true">
       <defs><marker id={`arrow-${map.id}`} markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" /></marker></defs>
       {graph.edges.map(edge => {const route=liveRoutes[edge.id];return route?<path key={edge.id} d={routeToSvgPath(route.points)} markerEnd={`url(#arrow-${map.id})`}/>:null;})}
     </svg>
-    {graph.edges.map(edge => {const route=liveRoutes[edge.id];if(!route)return null;const blank=variant==="no-reactions"||variant==="names"||hidden(edge.id);const solved=blankResults[edge.id]?.correct;const hide=blank&&!solved; return <div role={hide&&variant==="random"?"button":undefined} tabIndex={hide&&variant==="random"?0:undefined} onClick={()=>hide&&variant==="random"&&setActiveBlank({id:edge.id,kind:"step",correct:stepText(edge.step)})} className={`network-edge-label scope-${edge.step.scope??"core"} ${edge.step.important?"important":""} ${hide?"blank-label clickable-blank":""} ${blankResults[edge.id]?(blankResults[edge.id].correct?"blank-correct":"blank-wrong"):""}`} style={{left:route.label.x,top:route.label.y,width:route.labelWidth}} key={edge.id}>{hide ? "反応・条件" : <><b>{edge.step.label}</b>{edge.step.scope&&edge.step.scope!=="core"&&<em>{scopeLabels[edge.step.scope]}</em>}{edge.step.condition&&<small>{edge.step.condition}</small>}{edge.step.note&&<span className="reaction-note">{edge.step.note}</span>}</>}</div>; })}
-    {graph.nodes.map(({id,node}) => { const point=positions[id];const resultKey=`node-${id}`;const blank=variant==="no-substances"||hidden(resultKey);const solved=blankResults[resultKey]?.correct;const hide=blank&&!solved; const aromatic=isAromaticCompound(node.name); return <div role={hide&&variant==="random"?"button":undefined} tabIndex={hide&&variant==="random"?0:undefined} onClick={()=>hide&&variant==="random"&&setActiveBlank({id:resultKey,kind:"node",correct:nodeText(node)})} draggable={editable} onDragEnd={e=>moveNode(id,e.clientX,e.clientY)} className={`network-node substance-box ${aromatic?"aromatic-node":""} ${hide?"blank clickable-blank":""} ${blankResults[resultKey]?(blankResults[resultKey].correct?"blank-correct":"blank-wrong"):""}`} style={{left:point.x,top:point.y}} key={id}>{!hide&&<><b>{node.name}</b>{variant!=="names"&&<><span>{node.formula}</span><AromaticStructure name={node.name}/>{node.appearance&&<em className="appearance-badge" style={{color:node.appearanceColor,borderColor:node.appearanceColor}}>● {node.appearance}</em>}</>}</>}</div>; })}
+    {graph.edges.map(edge => {const route=liveRoutes[edge.id];if(!route)return null;const blank=variant==="no-reactions"||variant==="names"||hidden(edge.id);const solved=blankResults[edge.id]?.correct;const hide=blank&&!solved; return <div role={hide&&variant==="random"?"button":undefined} tabIndex={hide&&variant==="random"?0:undefined} onClick={()=>hide&&variant==="random"&&setActiveBlank({id:edge.id,kind:"step",correct:stepText(edge.step)})} className={`network-edge-label scope-${edge.step.scope??"core"} ${edge.step.important?"important":""} ${hide?"blank-label clickable-blank":""} ${blankResults[edge.id]?(blankResults[edge.id].correct?"blank-correct":"blank-wrong"):""}`} style={{left:route.label.x,top:route.label.y,width:route.labelWidth,minHeight:route.labelHeight}} key={edge.id}>{hide ? "反応・条件" : <><b>{edge.step.label}</b>{edge.step.scope&&edge.step.scope!=="core"&&<em>{scopeLabels[edge.step.scope]}</em>}{edge.step.condition&&<small>{edge.step.condition}</small>}{edge.step.note&&<span className="reaction-note">{edge.step.note}</span>}</>}</div>; })}
+    {graph.nodes.map(({id,node}) => { const point=positions[id];const resultKey=`node-${id}`;const blank=variant==="no-substances"||hidden(resultKey);const solved=blankResults[resultKey]?.correct;const hide=blank&&!solved; const aromatic=isAromaticCompound(node.name); return <div role={hide&&variant==="random"?"button":undefined} tabIndex={hide&&variant==="random"?0:undefined} onClick={()=>hide&&variant==="random"&&setActiveBlank({id:resultKey,kind:"node",correct:nodeText(node)})} draggable={editable} onDragEnd={e=>moveNode(id,e.clientX,e.clientY)} className={`network-node substance-box ${aromatic?"aromatic-node":""} ${hide?"blank clickable-blank":""} ${blankResults[resultKey]?(blankResults[resultKey].correct?"blank-correct":"blank-wrong"):""}`} style={{left:point.x,top:point.y,...nodeDimensions(node)}} key={id}>{!hide&&<><b>{node.name}</b>{variant!=="names"&&<><span>{node.formula}</span><AromaticStructure name={node.name}/>{node.appearance&&<em className="appearance-badge" style={{color:node.appearanceColor,borderColor:node.appearanceColor}}>● {node.appearance}</em>}</>}</>}</div>; })}
     {activeBlank && <div className="blank-choice-panel no-print"><b>空欄に入るものを選択</b><div>{choices.map(choice=><button onClick={()=>{const correct=choice===activeBlank.correct;setBlankResults(current=>({...current,[activeBlank.id]:{correct,chosen:choice}}));if(correct)setActiveBlank(null);}} key={choice}>{choice}</button>)}</div>{blankResults[activeBlank.id]&&!blankResults[activeBlank.id].correct&&<p><strong>不正解</strong>　正答：{activeBlank.correct}<br/><small>{activeBlank.kind==="node"?"物質名と化学式を、つながる反応から確認しましょう。":"反応名だけでなく、試薬・触媒・温度条件までセットで確認しましょう。"}</small></p>}<button className="close-panel" onClick={()=>setActiveBlank(null)}>閉じる</button></div>}
     {editable && <button className="reset-layout no-print" onClick={()=>setPositions(initial)}>配置を元に戻す</button>}
   </div>;
@@ -115,8 +125,8 @@ function Puzzle({ map, layout, printConfig }: { map: ReactionMap; layout:Reactio
     <p className="puzzle-help">下のカードを、薄い黒枠または矢印の上へドラッグしてください。カードを選んでから枠を押す方法でも置けます。</p>
     <div className="puzzle-network" style={canvasStyle}>
       <svg className="reaction-edge-layer" viewBox={`0 0 ${canvas.width} ${canvas.height}`} preserveAspectRatio="none"><defs><marker id={`puzzle-arrow-${map.id}`} markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z"/></marker></defs>{graph.edges.map(edge=>{const route=layout.routes[edge.id];return route?<path key={edge.id} d={routeToSvgPath(route.points)} markerEnd={`url(#puzzle-arrow-${map.id})`}/>:null;})}</svg>
-      {graph.nodes.map(item=>{const slot=`node:${item.id}`,point=positions[item.id];return <button style={{left:point.x,top:point.y}} className={`puzzle-slot network-node substance-box ${checked?(placed[slot]===slot?"correct":"wrong"):""}`} onDragOver={e=>e.preventDefault()} onDrop={e=>dragged&&put(slot,dragged,e.timeStamp)} onClick={e=>dragged&&put(slot,dragged,e.timeStamp)} key={slot}>{placed[slot]?byId.get(placed[slot])?.text.split("\n").map(x=><span key={x}>{x}</span>):<span>物質名・化学式</span>}</button>;})}
-      {graph.edges.map(edge=>{const slot=`step:${edge.id}`,route=layout.routes[edge.id];if(!route)return null;return <button style={{left:route.label.x,top:route.label.y,width:route.labelWidth}} className={`puzzle-slot network-edge-label ${checked?(placed[slot]===slot?"correct":"wrong"):""}`} onDragOver={e=>e.preventDefault()} onDrop={e=>dragged&&put(slot,dragged,e.timeStamp)} onClick={e=>dragged&&put(slot,dragged,e.timeStamp)} key={slot}>{placed[slot]?byId.get(placed[slot])?.text:"反応・条件"}</button>;})}
+      {graph.nodes.map(item=>{const slot=`node:${item.id}`,point=positions[item.id];return <button style={{left:point.x,top:point.y,...nodeDimensions(item.node)}} className={`puzzle-slot network-node substance-box ${checked?(placed[slot]===slot?"correct":"wrong"):""}`} onDragOver={e=>e.preventDefault()} onDrop={e=>dragged&&put(slot,dragged,e.timeStamp)} onClick={e=>dragged&&put(slot,dragged,e.timeStamp)} key={slot}>{placed[slot]?byId.get(placed[slot])?.text.split("\n").map(x=><span key={x}>{x}</span>):<span>物質名・化学式</span>}</button>;})}
+      {graph.edges.map(edge=>{const slot=`step:${edge.id}`,route=layout.routes[edge.id];if(!route)return null;return <button style={{left:route.label.x,top:route.label.y,width:route.labelWidth,minHeight:route.labelHeight}} className={`puzzle-slot network-edge-label ${checked?(placed[slot]===slot?"correct":"wrong"):""}`} onDragOver={e=>e.preventDefault()} onDrop={e=>dragged&&put(slot,dragged,e.timeStamp)} onClick={e=>dragged&&put(slot,dragged,e.timeStamp)} key={slot}>{placed[slot]?byId.get(placed[slot])?.text:"反応・条件"}</button>;})}
     </div>
     <div className="token-bank">
       {tokens.filter(token=>!used.has(token.id)).map(token=><button draggable onDragStart={()=>setDragged(token.id)} onClick={()=>setDragged(token.id)} className={`${token.kind} ${dragged===token.id?"selected":""}`} key={token.id}>{token.text}</button>)}
@@ -127,7 +137,7 @@ function Puzzle({ map, layout, printConfig }: { map: ReactionMap; layout:Reactio
 }
 
 export function ReactionMapStudio({ category }: { category: "organic" | "inorganic" }) {
-  const maps = reactionMaps.filter(map => map.category === category);
+  const maps = useMemo(()=>reactionMaps.filter(map => map.category === category),[category]);
   const [mapId, setMapId] = useState(maps[0].id);
   const [variant, setVariant] = useState<Variant>("full");
   const [puzzle, setPuzzle] = useState(false);
@@ -136,22 +146,33 @@ export function ReactionMapStudio({ category }: { category: "organic" | "inorgan
   const [printDirection, setPrintDirection] = useState<"auto"|"portrait"|"landscape"|"rotate">("auto");
   const [printSizing, setPrintSizing] = useState<"fit"|"actual">("fit");
   const [screenZoom,setScreenZoom]=useState(1);
+  const [overview,setOverview]=useState(false);
   const [viewportSize,setViewportSize]=useState({width:1000,height:620});
   const [mobileLayout,setMobileLayout]=useState(false);
   const viewportRef=useRef<HTMLDivElement>(null);
-  const map = maps.find(item => item.id === mapId) ?? maps[0];
-  const graph=buildGraph(map);
-  const printLayout = layoutGraph(map,graph);
-  const screenLayout=layoutGraph(map,graph,mobileLayout);
+  const map = useMemo(()=>maps.find(item => item.id === mapId) ?? maps[0],[maps,mapId]);
+  const graph=useMemo(()=>buildGraph(map),[map]);
+  const printLayout = useMemo(()=>layoutGraph(map,graph),[map,graph]);
+  const screenLayout=useMemo(()=>mobileLayout?layoutGraph(map,graph,true):printLayout,[map,graph,mobileLayout,printLayout]);
   useEffect(()=>{
     const element=viewportRef.current;if(!element)return;
     const update=()=>{const width=element.clientWidth,height=width<700?Math.min(680,Math.max(430,width*1.28)):Math.min(760,Math.max(480,width*.58));setViewportSize({width,height});setMobileLayout(width<640);};
     update();const observer=new ResizeObserver(update);observer.observe(element);return()=>observer.disconnect();
   },[]);
-  const fitScale=Math.min(1.12,Math.max(.08,(viewportSize.width-28)/screenLayout.canvas.width),Math.max(.08,(viewportSize.height-28)/screenLayout.canvas.height));
-  const actualScale=fitScale*screenZoom;
+  const fitScale=Math.min(1.12,Math.max(1,viewportSize.width-28)/screenLayout.canvas.width,Math.max(1,viewportSize.height-28)/screenLayout.canvas.height);
+  // Keep initial text usable on large maps; full overview remains one click away.
+  const baseScale=overview?fitScale:Math.max(.8,fitScale);
+  const actualScale=baseScale*screenZoom;
+  useEffect(()=>{
+    if(overview)return;
+    const degree=new Map(graph.nodes.map(item=>[item.id,0]));
+    graph.edges.forEach(edge=>{degree.set(edge.from,(degree.get(edge.from)??0)+1);degree.set(edge.to,(degree.get(edge.to)??0)+1);});
+    const centerId=graph.nodes.find(item=>item.node.name===map.centerNode)?.id??[...graph.nodes].sort((a,b)=>(degree.get(b.id)??0)-(degree.get(a.id)??0))[0]?.id;
+    const center=screenLayout.positions[centerId];
+    if(center)viewportRef.current?.scrollTo({left:center.x*baseScale-viewportSize.width/2,top:center.y*baseScale-viewportSize.height/2});
+  },[screenLayout,graph,map.centerNode,baseScale,overview,viewportSize]);
   const centerGraph=(behavior:ScrollBehavior="smooth")=>{const element=viewportRef.current;if(!element)return;const center=screenLayout.positions[graph.nodes.find(item=>item.node.name===map.centerNode)?.id??graph.nodes[0]?.id]??{x:screenLayout.canvas.width/2,y:screenLayout.canvas.height/2};element.scrollTo({left:center.x*actualScale-element.clientWidth/2,top:center.y*actualScale-element.clientHeight/2,behavior});};
-  const fitView=()=>{setScreenZoom(1);requestAnimationFrame(()=>viewportRef.current?.scrollTo({left:0,top:0,behavior:"smooth"}));};
+  const fitView=()=>{setOverview(true);setScreenZoom(1);requestAnimationFrame(()=>viewportRef.current?.scrollTo({left:0,top:0,behavior:"smooth"}));};
   const bestOrientation=getBestPageOrientation(printLayout.bbox),rotate=printDirection==="rotate";
   const orientation=printDirection==="auto"?bestOrientation:printDirection==="landscape"?"landscape":"portrait";
   const scaleBox=rotate?{width:printLayout.bbox.height,height:printLayout.bbox.width}:printLayout.bbox;
@@ -162,7 +183,7 @@ export function ReactionMapStudio({ category }: { category: "organic" | "inorgan
   const printOrientation = orientation==="landscape" ? "map-landscape" : "map-portrait";
   return <div className="reaction-map-studio">
     <div className="map-toolbar no-print">
-      <label>系統図<select value={map.id} onChange={e=>{setMapId(e.target.value);setPuzzle(false);setEditable(false);setScreenZoom(1);}}>{maps.map(item=><option value={item.id} key={item.id}>{item.title}</option>)}</select></label>
+      <label>系統図<select value={map.id} onChange={e=>{setMapId(e.target.value);setPuzzle(false);setEditable(false);setScreenZoom(1);setOverview(false);viewportRef.current?.scrollTo({left:0,top:0});}}>{maps.map(item=><option value={item.id} key={item.id}>{item.title}</option>)}</select></label>
       <div className="variant-buttons">{variants.map(([value,label])=><button className={!puzzle&&variant===value?"active":""} onClick={()=>{setVariant(value);setPuzzle(false);if(value==="random")setRandomSeed(x=>x+1);}} key={value}>{label}</button>)}</div>
       <button className={puzzle?"puzzle-button active":"puzzle-button"} onClick={()=>setPuzzle(true)}>パズルモード</button>
       <button className={editable&&!puzzle?"layout-button active":"layout-button"} onClick={()=>{setPuzzle(false);setEditable(value=>!value);}}>配置編集</button>
@@ -173,7 +194,7 @@ export function ReactionMapStudio({ category }: { category: "organic" | "inorgan
     <div className={`reaction-map-print-area ${printOrientation} ${rotate?"print-rotate":""}`}>
       <header className="map-title"><p>{category === "organic" ? "有機化学" : "無機化学"} 反応系統図</p><h3>{map.title}</h3><span>{puzzle ? "パズル" : variants.find(([v])=>v===variant)?.[1]}</span></header>
       {category==="organic"&&<div className="reaction-scope-legend no-print"><span className="core">基本</span><span className="advanced">発展</span><span className="supplement">補足</span><span className="industrial">工業的反応</span></div>}
-      <div className="map-screen-controls no-print"><button aria-label="系統図を縮小" onClick={()=>setScreenZoom(value=>Math.max(.65,value-.1))}>−</button><output aria-label="表示倍率">{screenZoom===1?"全体":`${Math.round(screenZoom*100)}%`}</output><button aria-label="系統図を拡大" onClick={()=>setScreenZoom(value=>Math.min(2,value+.1))}>＋</button><button onClick={fitView}>全体表示</button><button onClick={()=>centerGraph()}>中心物質へ戻る</button></div>
+      <div className="map-screen-controls no-print"><button aria-label="系統図を縮小" onClick={()=>setScreenZoom(value=>Math.max(.65,value-.1))}>−</button><output aria-label="表示倍率">{overview&&screenZoom===1?"全体":`${Math.round(actualScale*100)}%`}</output><button aria-label="系統図を拡大" onClick={()=>setScreenZoom(value=>Math.min(Math.max(2,1/baseScale),value+.25))}>＋</button><button onClick={fitView}>全体表示</button><button onClick={()=>{setOverview(false);setScreenZoom(1);}}>読みやすい倍率</button><button onClick={()=>centerGraph()}>中心物質へ戻る</button></div>
       <div className="reaction-map-viewport" ref={viewportRef} style={{height:viewportSize.height}}><div className="reaction-map-screen-scale" style={{width:screenLayout.canvas.width*actualScale,height:screenLayout.canvas.height*actualScale}}><div className="reaction-map-canvas-transform" style={{width:screenLayout.canvas.width,height:screenLayout.canvas.height,transform:`scale(${actualScale})`}}>
         {puzzle ? <Puzzle key={`${map.id}-${mobileLayout}`} map={map} layout={screenLayout} printConfig={printConfig}/> : <Diagram key={`${map.id}-${mobileLayout}`} map={map} layout={screenLayout} variant={variant} randomSeed={randomSeed} editable={editable} printConfig={printConfig}/>}
       </div></div></div>
