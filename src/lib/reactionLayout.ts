@@ -9,10 +9,10 @@ export type ReactionGraphLayout = { canvas:{width:number;height:number}; positio
 
 type Rect={left:number;right:number;top:number;bottom:number};
 export const REACTION_SPACING = {
-  desktop: { nodeGap: 88, ringX: 520, ringY: 280, column: 360, row: 270 },
-  mobile: { nodeGap: 64, column: 320, row: 250 },
-  padding: 64, nodeClearance: 24, labelClearance: 16, edgeClearance: 12,
-  portGap: 14, laneGap: 20, labelWidth: 248,
+  desktop: { nodeGap: 100, ringX: 560, ringY: 300, column: 390, row: 290 },
+  mobile: { nodeGap: 72, column: 336, row: 266 },
+  padding: 64, nodeClearance: 28, labelClearance: 20, edgeClearance: 16,
+  portGap: 18, laneGap: 24, labelWidth: 248, groupGap: 96,
 } as const;
 const PAD=REACTION_SPACING.padding;
 const distribute = (count:number,start:number,end:number) => Array.from({length:count},(_,i)=>count===1?(start+end)/2:start+(end-start)*i/(count-1));
@@ -100,7 +100,7 @@ function initialGraphPositions(nodes:LayoutNode[],edges:GraphEdge[],centerId:str
     [...groups.entries()].sort(([a],[b])=>a-b).forEach(([,items])=>{
       const columns=items.length===1?1:2,rowCount=Math.ceil(items.length/columns);
       items.forEach((node,index)=>positions[node.id]={x:columns===1?spacing.column/2:(index%2)*spacing.column,y:y+Math.floor(index/2)*spacing.row});
-      y+=rowCount*spacing.row+96;
+      y+=rowCount*spacing.row+REACTION_SPACING.groupGap;
     });
     return positions;
   }
@@ -137,12 +137,15 @@ const inflate=(r:Rect,gap:number):Rect=>({left:r.left-gap,right:r.right+gap,top:
 const segments=(points:LayoutPoint[])=>points.slice(1).map((p,i)=>({a:points[i],b:p}));
 const segmentRect=(a:LayoutPoint,b:LayoutPoint,gap:number):Rect=>({left:Math.min(a.x,b.x)-gap,right:Math.max(a.x,b.x)+gap,top:Math.min(a.y,b.y)-gap,bottom:Math.max(a.y,b.y)+gap});
 
-function routeEdge(edge:GraphEdge,index:number,positions:Record<string,LayoutPoint>,nodeById:Map<string,LayoutNode>,allRects:Map<string,Rect>,previous:LayoutPoint[][]){
+function routeEdge(edge:GraphEdge,index:number,positions:Record<string,LayoutPoint>,nodeById:Map<string,LayoutNode>,allRects:Map<string,Rect>,previous:LayoutPoint[][],incident:Map<string,string[]>){
   const ports=(id:string)=>{
     const p=positions[id],n=nodeById.get(id)!,gap=REACTION_SPACING.portGap;
-    const offset=((index%3)-1)*REACTION_SPACING.laneGap/2;
-    return [{x:p.x-n.width/2-gap,y:p.y+offset},{x:p.x+n.width/2+gap,y:p.y+offset},
-      {x:p.x+offset,y:p.y-n.height/2-gap},{x:p.x+offset,y:p.y+n.height/2+gap}];
+    // Allocate a distinct port for each incident reaction, including parallel
+    // reactions. Global edge-index modulo reused ports at busy central nodes.
+    const ids=incident.get(id)??[],slot=ids.indexOf(edge.id)-(ids.length-1)/2;
+    const offset=(size:number)=>slot*Math.min(REACTION_SPACING.laneGap,(size-32)/Math.max(1,ids.length-1));
+    return [{x:p.x-n.width/2-gap,y:p.y+offset(n.height)},{x:p.x+n.width/2+gap,y:p.y+offset(n.height)},
+      {x:p.x+offset(n.width),y:p.y-n.height/2-gap},{x:p.x+offset(n.width),y:p.y+n.height/2+gap}];
   };
   const obstacles=[...allRects.entries()].map(([id,r])=>id===edge.from||id===edge.to?rectFor(nodeById.get(id)!,positions[id],6):r);
   const lane=((index%5)-2)*REACTION_SPACING.laneGap;
@@ -192,10 +195,11 @@ export function computeReactionGraphLayout(nodes:LayoutNode[],edges:GraphEdge[],
 export function computeReactionRoutes(nodes:LayoutNode[],edges:GraphEdge[],positions:Record<string,LayoutPoint>):Record<string,GraphRoute>{
   const nodeById=new Map(nodes.map(node=>[node.id,node])),nodeRects=new Map(nodes.map(node=>[node.id,rectFor(node,positions[node.id],REACTION_SPACING.nodeClearance)]));
   const routes:Record<string,GraphRoute>={},previous:LayoutPoint[][]=[];
+  const incident=new Map(nodes.map(node=>[node.id,edges.filter(edge=>edge.from===node.id||edge.to===node.id).map(edge=>edge.id)]));
   // Route all arrows first, then reserve labels against ALL arrows, including
   // those belonging to later reactions. Never hide a collision behind a label.
   edges.forEach((edge,index)=>{
-    const points=routeEdge(edge,index,positions,nodeById,nodeRects,previous),size=estimateLabel(edge);
+    const points=routeEdge(edge,index,positions,nodeById,nodeRects,previous,incident),size=estimateLabel(edge);
     previous.push(points);routes[edge.id]={points,label:{x:0,y:0},labelWidth:size.width,labelHeight:size.height};
   });
   const edgeRects=previous.flatMap(points=>segments(points).map(({a,b})=>segmentRect(a,b,REACTION_SPACING.edgeClearance)));
@@ -204,7 +208,14 @@ export function computeReactionRoutes(nodes:LayoutNode[],edges:GraphEdge[],posit
   // are occupied; segment anchors keep the reaction association local.
   [...edges].sort((a,b)=>routes[b.id].labelHeight-routes[a.id].labelHeight).forEach(edge=>{
     const route=routes[edge.id],w=route.labelWidth,h=route.labelHeight;
-    const anchors=segments(route.points).flatMap(({a,b})=>[.5,.25,.75].map(t=>({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,horizontal:a.y===b.y})));
+    const parts=segments(route.points),totalLength=parts.reduce((sum,{a,b})=>sum+Math.abs(a.x-b.x)+Math.abs(a.y-b.y),0);
+    let traveled=0;
+    const anchors=parts.flatMap(({a,b})=>{
+      const length=Math.abs(a.x-b.x)+Math.abs(a.y-b.y),start=traveled;traveled+=length;
+      return [.5,.25,.75].map(t=>({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,horizontal:a.y===b.y,
+        // Prefer the middle of a long segment, away from nodes and elbows.
+        score:Math.abs(start+length*t-totalLength/2)*.15+Math.max(0,(a.y===b.y?w:h)-length)*2}));
+    }).sort((a,b)=>a.score-b.score);
     const rect=(p:LayoutPoint):Rect=>({left:p.x-w/2,right:p.x+w/2,top:p.y-h/2,bottom:p.y+h/2});
     let label:LayoutPoint|undefined;
     for(let ring=0;!label;ring++){

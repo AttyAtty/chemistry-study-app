@@ -7,7 +7,7 @@ const require=createRequire(import.meta.url),cache=new Map();
 function load(file,baseline=false){
   const key=file+baseline;if(cache.has(key))return cache.get(key);
   let source=baseline?execFileSync('git',['show',`HEAD:${file}`],{encoding:'utf8'}):fs.readFileSync(file,'utf8');
-  if(file.endsWith('ReactionMapStudio.tsx'))source+=`\nexport { buildGraph, layoutGraph${baseline?'':', nodeDimensions'} };`;
+  if(file.endsWith('ReactionMapStudio.tsx'))source+=`\nexport { buildGraph, layoutGraph, nodeDimensions };`;
   const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText;
   const exports={};cache.set(key,exports);
   vm.runInNewContext(code,{exports,module:{exports},require:(id)=>{
@@ -22,8 +22,7 @@ const overlap=(a,b)=>Math.min(a.r,b.r)-Math.max(a.l,b.l)>0.1&&Math.min(a.b,b.b)-
 function inspect(layout,graph,baseline=false){
   const rect=(x,y,w,h)=>({l:x-w/2,r:x+w/2,t:y-h/2,b:y+h/2});
   const nodes=graph.nodes.map(({id,node})=>{
-    const aromatic=load('src/components/AromaticStructure.tsx').isAromaticCompound(node.name);
-    const {width,height}=baseline?{width:aromatic?196:176,height:aromatic?164:90}:current.nodeDimensions(node);
+    const {width,height}=(baseline?before:current).nodeDimensions(node);
     return {id,...rect(layout.positions[id].x,layout.positions[id].y,width,height)};
   });
   const labels=Object.values(layout.routes).map(r=>rect(r.label.x,r.label.y,r.labelWidth,r.labelHeight));
