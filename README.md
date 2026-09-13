@@ -145,6 +145,10 @@ npm run start
 
 公開後は、GitHubへ変更をpushするたびにVercel側も自動更新できます。
 
+お問い合わせフォームの受信先は `chemica1chemica1chemica@gmail.com` です。
+受信先は `src/app/api/feedback/route.ts` で管理しており、従来の環境変数 `CHEMICA_FEEDBACK_TO_EMAIL` は使用しません。
+送信には引き続き `RESEND_API_KEY` と `CHEMICA_FEEDBACK_FROM_EMAIL`（Resendで認証済みの送信元）が必要です。変更はデプロイ後に反映されます。
+
 ## 7. 現在の保存方式
 
 学習記録は `localStorage` に保存しています。そのため、同じブラウザ・同じ端末では残りますが、別の端末には共有されません。

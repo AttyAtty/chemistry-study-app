@@ -48,9 +48,9 @@ export async function POST(request: NextRequest) {
   if (email && !isValidEmail(email)) return jsonError("メールアドレスの形式を確認してください。", 400);
 
   const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CHEMICA_FEEDBACK_TO_EMAIL;
+  const to = "chemica1chemica1chemica@gmail.com";
   const from = process.env.CHEMICA_FEEDBACK_FROM_EMAIL;
-  if (!apiKey || !to || !from) return jsonError("送信できませんでした。時間をおいて再度お試しください。", 503);
+  if (!apiKey || !from) return jsonError("送信できませんでした。時間をおいて再度お試しください。", 503);
 
   const sentAt = new Date().toISOString();
   const text = ["Chemica フィードバック", "", `種類：\n${type}`, "", `内容：\n${content}`, "", `返信先：\n${email || "なし"}`, "", `対象ページ：\n${sourceUrl || "不明"}`, "", `Chemica version：\n${CHEMICA_VERSION_LABEL}`, "", `送信日時：\n${sentAt}`].join("\n");
