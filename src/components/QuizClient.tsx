@@ -86,16 +86,18 @@ export function QuizClient({
 
   const selectChoice = (index: number) => {
     if (answered) return;
+    const correct=index===current.answerIndex;
+    const saved=recordQuestionAnswer(current.unitSlug??unitSlug,current.id,correct);
+    if (!saved.ok) return;
     setSelectedIndex(index);
     setAnswered(true);
-    const correct=index===current.answerIndex;
     if (correct) setCorrectCount((value) => value + 1);
-    recordQuestionAnswer(current.unitSlug??unitSlug,current.id,correct);
   };
 
   const nextQuestion = () => {
     if (currentIndex >= quizQuestions.length - 1) {
-      saveQuizResult(unitSlug, correctCount, quizQuestions.length);
+      const saved=saveQuizResult(unitSlug, correctCount, quizQuestions.length);
+      if (!saved.ok) return;
       setCompleted(true);
       return;
     }

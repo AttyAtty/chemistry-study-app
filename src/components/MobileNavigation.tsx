@@ -27,6 +27,7 @@ export function MobileNavigation() {
 
   return <div className="mobile-nav-shell" ref={menuRef}>
     {moreOpen && <div className="mobile-more-menu" id="mobile-more-menu">
+      <Link href="/settings/data" onClick={() => setMoreOpen(false)}>学習データ設定</Link>
       <Link href="/feedback">お問い合わせ</Link>
       <Link href="/privacy">プライバシーポリシー</Link>
       <span>{CHEMICA_VERSION_LABEL}</span>
@@ -38,7 +39,7 @@ export function MobileNavigation() {
           <span aria-hidden="true">{item.icon}</span><small>{item.label}</small>
         </Link>;
       })}
-      <button type="button" className={moreOpen || pathname === "/feedback" ? "is-current" : ""} aria-expanded={moreOpen} aria-controls="mobile-more-menu" onClick={() => setMoreOpen(value => !value)}>
+      <button type="button" className={moreOpen || pathname === "/feedback" || pathname.startsWith("/settings/") ? "is-current" : ""} aria-expanded={moreOpen} aria-controls="mobile-more-menu" onClick={() => setMoreOpen(value => !value)}>
         <span aria-hidden="true">•••</span><small>その他</small>
       </button>
     </nav>

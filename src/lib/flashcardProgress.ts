@@ -1,4 +1,5 @@
-export const FLASHCARD_PROGRESS_KEY = "chemica-flashcard-progress-v1";
+import { LEARNING_KEYS, readLearningData, updateLearningData } from "./learningStorage";
+export const FLASHCARD_PROGRESS_KEY = LEARNING_KEYS[0];
 export const FLASHCARD_REVIEW_INTERVAL_DAYS = [1,3,7,14] as const;
 export const FLASHCARD_SESSION_RETRY_LIMIT = 2;
 
@@ -15,15 +16,7 @@ export type FlashcardProgressEntry = {
 };
 export type FlashcardProgressData = Record<string, FlashcardProgressEntry>;
 
-const validDate=(value:unknown)=>typeof value==="string"&&!Number.isNaN(new Date(value).getTime());
-export function readFlashcardProgress(): FlashcardProgressData {
-  if (typeof window === "undefined") return {};
-  try {
-    const parsed=JSON.parse(window.localStorage.getItem(FLASHCARD_PROGRESS_KEY)??"{}");
-    if(!parsed||typeof parsed!=="object"||Array.isArray(parsed))return {};
-    return Object.fromEntries(Object.entries(parsed).filter(([,value])=>value&&typeof value==="object").map(([id,value])=>{const item=value as Partial<FlashcardProgressEntry>;return[id,{status:item.status==="review"?"review":"known",lastReviewedAt:validDate(item.lastReviewedAt)?item.lastReviewedAt!:"",reviewStep:Number.isInteger(item.reviewStep)?item.reviewStep:undefined,nextReviewAt:validDate(item.nextReviewAt)?item.nextReviewAt:undefined,lastResult:item.lastResult==="forgot"?"forgot":item.lastResult==="remembered"?"remembered":undefined,rememberedCount:Number.isFinite(item.rememberedCount)?Math.max(0,item.rememberedCount!):0,forgotCount:Number.isFinite(item.forgotCount)?Math.max(0,item.forgotCount!):0}];}));
-  } catch { return {}; }
-}
+export function readFlashcardProgress(): FlashcardProgressData { return readLearningData<FlashcardProgressData>(FLASHCARD_PROGRESS_KEY); }
 
 export function addLocalDaysAtMidnight(now:Date,days:number){const result=new Date(now.getFullYear(),now.getMonth(),now.getDate()+days,0,0,0,0);return result;}
 export function isFlashcardDue(entry:FlashcardProgressEntry|undefined,now=new Date()){
@@ -43,9 +36,10 @@ export function scheduleFlashcardReview(previous:FlashcardProgressEntry|undefine
   return{...previous,status:"known",reviewStep,lastReviewedAt:now.toISOString(),nextReviewAt:addLocalDaysAtMidnight(now,FLASHCARD_REVIEW_INTERVAL_DAYS[reviewStep]).toISOString(),lastResult:result,rememberedCount,forgotCount};
 }
 
-export function saveFlashcardStatus(cardId:string,status:FlashcardStatus,now=new Date()):FlashcardProgressData{
-  const progress=readFlashcardProgress();
-  progress[cardId]=scheduleFlashcardReview(progress[cardId],status==="known"?"remembered":"forgot",now);
-  window.localStorage.setItem(FLASHCARD_PROGRESS_KEY,JSON.stringify(progress));
-  return progress;
+export function saveFlashcardStatus(cardId:string,status:FlashcardStatus,now=new Date()) {
+  return updateLearningData<FlashcardProgressData>(FLASHCARD_PROGRESS_KEY, progress => {
+    if (!cardId || (status !== "known" && status !== "review") || Number.isNaN(now.getTime())) throw new Error("Invalid card result");
+    const previous = Object.prototype.hasOwnProperty.call(progress, cardId) ? progress[cardId] : undefined;
+    return { ...progress, [cardId]: scheduleFlashcardReview(previous, status === "known" ? "remembered" : "forgot", now) };
+  });
 }

@@ -73,7 +73,9 @@ export function FlashcardDeck({ cards, unitId, title = "暗記カードで復習
   const changeCategory = (next: string) => { setCategory(next); restartSession(); };
   const mark = (status: FlashcardStatus) => {
     if (!card) return;
-    setProgress(saveFlashcardStatus(card.id, status));
+    const saved = saveFlashcardStatus(card.id, status);
+    if (!saved.ok) return;
+    setProgress(saved.value);
     if(status==="review"&&(retryCounts[card.id]??0)<FLASHCARD_SESSION_RETRY_LIMIT){setRetryIds(current=>[...current,card.id]);setRetryCounts(current=>({...current,[card.id]:(current[card.id]??0)+1}));}
     setSessionResult(current=>({...current,[status==="known"?"remembered":"forgot"]:current[status==="known"?"remembered":"forgot"]+1}));
     setIndex(current=>current+1);setFlipped(false);
