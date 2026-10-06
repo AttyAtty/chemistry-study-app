@@ -1,9 +1,11 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- QR生成サービスの動的URLをそのまま表示するため */
 
+import { useNetworkStatus } from "@/lib/useNetworkStatus";
 import { useState } from "react";
 
 export function SharePanel() {
+  const online = useNetworkStatus();
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState("");
   const [copied, setCopied] = useState(false);
@@ -44,7 +46,8 @@ export function SharePanel() {
         <span className="share-kicker">SHARE CHEMICA</span>
         <h2 id="share-title">このページを共有</h2>
         <p>QRコードを読み取るか、リンクをコピーして送れます。</p>
-        {qrUrl && <img className="share-qr" src={qrUrl} alt="このページを開くQRコード" width="220" height="220" />}
+        {qrUrl && online && <img className="share-qr" src={qrUrl} alt="このページを開くQRコード" width="220" height="220" />}
+        {!online && <small>QRコードの取得にはインターネット接続が必要です。リンクのコピーは利用できます。</small>}
         <label className="share-url"><span>ページのリンク</span><input value={url} readOnly onFocus={event => event.currentTarget.select()} /></label>
         <div className="share-actions">
           <button type="button" onClick={copyLink}>{copied ? "コピーしました ✓" : "リンクをコピー"}</button>

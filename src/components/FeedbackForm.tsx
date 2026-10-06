@@ -1,11 +1,13 @@
 "use client";
 
+import { useNetworkStatus } from "@/lib/useNetworkStatus";
 import { useRef, useState, type FormEvent } from "react";
 import { FEEDBACK_CONTENT_MAX, FEEDBACK_CONTENT_MIN, FEEDBACK_TYPES, isValidEmail, type FeedbackType } from "@/lib/feedback";
 
 type Status = { type: "idle" | "success" | "error"; message: string };
 
 export function FeedbackForm({ initialType = "質問", source = "" }: { initialType?: FeedbackType; source?: string }) {
+  const online = useNetworkStatus();
   const [type, setType] = useState<FeedbackType>(initialType);
   const [content, setContent] = useState("");
   const [email, setEmail] = useState("");
@@ -17,6 +19,7 @@ export function FeedbackForm({ initialType = "質問", source = "" }: { initialT
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (pending) return;
+    if (!navigator.onLine) return setStatus({type:"error",message:"オフラインでは送信できません。入力内容はこの画面に残ります。オンラインに戻ってから送信してください。"});
     const trimmed = content.trim();
     if (trimmed.length < FEEDBACK_CONTENT_MIN || trimmed.length > FEEDBACK_CONTENT_MAX) return setStatus({ type:"error", message:`内容は${FEEDBACK_CONTENT_MIN}～${FEEDBACK_CONTENT_MAX}文字で入力してください。` });
     if (email.trim() && !isValidEmail(email.trim())) return setStatus({ type:"error", message:"メールアドレスの形式を確認してください。" });
@@ -25,14 +28,16 @@ export function FeedbackForm({ initialType = "質問", source = "" }: { initialT
     const website = new FormData(form).get("website")?.toString() ?? "";
     let sourceUrl = "";
     try { sourceUrl = source ? new URL(source, window.location.origin).toString() : document.referrer || ""; } catch { sourceUrl = ""; }
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 10000);
     try {
-      const response = await fetch("/api/feedback", { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ type, content:trimmed, email:email.trim(), sourceUrl, website, startedAt:startedAt.current }) });
+      const response = await fetch("/api/feedback", { method:"POST", signal:controller.signal, headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ type, content:trimmed, email:email.trim(), sourceUrl, website, startedAt:startedAt.current }) });
       const result = await response.json().catch(() => ({})) as { message?: string };
       if (!response.ok) throw new Error(result.message || "送信できませんでした。時間をおいて再度お試しください。");
       setContent(""); setEmail(""); startedAt.current=0; setStatus({ type:"success", message:"送信しました。ありがとうございます。" });
     } catch (error) {
-      setStatus({ type:"error", message:error instanceof Error ? error.message : "送信できませんでした。時間をおいて再度お試しください。" });
-    } finally { setPending(false); }
+      setStatus({ type:"error", message:error instanceof Error && error.name === "AbortError" ? "送信を確認できませんでした。入力内容は残っています。接続を確認してください。" : error instanceof Error ? error.message : "送信できませんでした。時間をおいて再度お試しください。" });
+    } finally { window.clearTimeout(timer); setPending(false); }
   };
 
   return <form className="feedback-form" onSubmit={submit} noValidate>
@@ -41,7 +46,8 @@ export function FeedbackForm({ initialType = "質問", source = "" }: { initialT
     <div className="feedback-field"><label htmlFor="feedback-email">メールアドレス <span>任意・返信を希望する場合のみ</span></label><input id="feedback-email" type="email" value={email} onChange={(event) => {beginInput();setEmail(event.target.value);}} inputMode="email" autoComplete="email" maxLength={254}/></div>
     {source && <div className="feedback-source"><span>対象ページ</span><code>{source}</code></div>}
     <div className="feedback-honeypot" aria-hidden="true"><label htmlFor="feedback-website">Webサイト</label><input id="feedback-website" name="website" type="text" tabIndex={-1} autoComplete="off"/></div>
-    <button className="button primary feedback-submit" type="submit" disabled={pending}>{pending ? "送信中…" : "送信する"}</button>
+    <button className="button primary feedback-submit" type="submit" disabled={pending || !online}>{pending ? "送信中…" : "送信する"}</button>
+    {!online && <p role="status">オフラインでは送信できません。入力内容はこの画面に残ります。オンラインに戻ってから送信してください。</p>}
     <div className={`feedback-status ${status.type}`} role={status.type === "error" ? "alert" : "status"} aria-live="polite">{status.message}</div>
   </form>;
 }

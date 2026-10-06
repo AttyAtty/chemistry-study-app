@@ -10,7 +10,13 @@
     "audit:chemistry": "node scripts/audit-chemistry-data.mjs",
     "test:storage": "node --test scripts/test-learning-storage.mjs",
     "audit:learning-ids": "node scripts/snapshot-learning-ids.mjs",
-    "test:storage:phase2": "node --test scripts/test-phase2-storage.mjs"
+    "test:storage:phase2": "node --test scripts/test-phase2-storage.mjs",
+    "prebuild": "node scripts/prepare-pwa.mjs",
+    "postbuild": "node scripts/generate-service-worker.mjs",
+    "predev": "node scripts/prepare-pwa.mjs --dev",
+    "typecheck": "node scripts/prepare-pwa.mjs --check && tsc --noEmit --incremental false",
+    "test:pwa": "node --test scripts/test-service-worker.mjs",
+    "test:pwa:browser": "playwright test"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
@@ -19,6 +25,7 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

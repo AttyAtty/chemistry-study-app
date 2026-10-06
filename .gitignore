@@ -41,3 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 /node_modules_incomplete_*/
+# Generated production PWA artifacts
+/public/sw.js
+/src/lib/pwaBuild.ts
+/test-results/
+/playwright-report/
+/.phase3-browser-profile/

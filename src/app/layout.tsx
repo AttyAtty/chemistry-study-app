@@ -1,3 +1,5 @@
+import { PwaStatus } from "@/components/PwaStatus";
+import { PWA_BUILD_ID } from "@/lib/pwaBuild";
 import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/Header";
@@ -34,11 +36,12 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="ja"><body>
+  return <html lang="ja"><head><meta name="chemica-build" content={PWA_BUILD_ID} /></head><body>
     <ChemicaAnimatedBackground />
     <Header />
     <StorageNotice />
     <LearningStorageRuntime />
+    <PwaStatus />
     {children}
     <MobileNavigation />
     <SharePanel />

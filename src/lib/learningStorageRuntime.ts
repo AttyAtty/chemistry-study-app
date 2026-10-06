@@ -47,6 +47,7 @@ export function startLearningStorage(version:string){
     if(event.key===null || LEARNING_KEYS.some(key=>key===event.key) || event.key==="chemica-storage-restore-journal-v1")onChange();
   };
   window.addEventListener("storage",onStorage);
+  window.addEventListener("online",onChange);
   void refreshIndexedDb();
-  return()=>{if(--active===0){unsubscribe();window.removeEventListener("storage",onStorage);}};
+  return()=>{if(--active===0){unsubscribe();window.removeEventListener("storage",onStorage);window.removeEventListener("online",onChange);}};
 }
