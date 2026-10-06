@@ -16,55 +16,97 @@ export function PwaStatus(){
   const [failed,setFailed]=useState(false);
   const [updating,setUpdating]=useState(false);
   const [newVersion,setNewVersion]=useState(false);
+  const [versionMismatch,setVersionMismatch]=useState(false);
+  const [checking,setChecking]=useState(false);
+  const [checkResult,setCheckResult]=useState("");
   const registration=useRef<ServiceWorkerRegistration|null>(null);
-  const reloadRequested=useRef(false);
+  const reloadRequested=useRef<ServiceWorker|null>(null);
+  const checkForUpdate=useRef<(()=>Promise<void>)|null>(null);
   useEffect(()=>{
     if(process.env.NODE_ENV!=="production" || !("serviceWorker" in navigator) || !window.isSecureContext)return;
     let alive=true;
-    const watched=new Set<ServiceWorker>();
+    let lastUpdateCheck=0;
+    let pending:Promise<void>|null=null;
+    const watched=new Map<ServiceWorker,()=>void>();
+    const detectWaiting=()=>{
+      const reg=registration.current;
+      if(alive&&reg?.waiting&&(navigator.serviceWorker.controller||reg.active))setNewVersion(true);
+    };
     const check=async()=>{
+      detectWaiting();
       const worker=navigator.serviceWorker.controller??registration.current?.active;
       if(!worker)return;
       try{
         const state=await ask(worker,"CHEMICA_STATUS");
-        if(alive){setReady(state.ready);setFailed(!state.ready);if(state.version!==PWA_BUILD_ID)setNewVersion(true);}
+        if(alive){setReady(state.ready);setFailed(!state.ready);setVersionMismatch(state.version!==PWA_BUILD_ID);detectWaiting();}
       }catch{if(alive)setFailed(true);}
     };
     const watch=(worker:ServiceWorker|null)=>{
       if(!worker||watched.has(worker))return;
-      watched.add(worker);
-      worker.addEventListener("statechange",()=>{
+      const onState=()=>{
         if(!alive)return;
-        if(worker.state==="installed"&&registration.current?.waiting&&navigator.serviceWorker.controller)setNewVersion(true);
+        if(worker.state==="installed")detectWaiting();
         if(worker.state==="activated")void check();
         if(worker.state==="redundant"&&!registration.current?.active)setFailed(true);
-      });
+      };
+      watched.set(worker,onState);
+      worker.addEventListener("statechange",onState);
+      onState();
     };
+    const requestUpdate=async(manual=false)=>{
+      const reg=registration.current;
+      detectWaiting();
+      if(!reg||!navigator.onLine)return;
+      if(pending)return pending;
+      if(!manual&&Date.now()-lastUpdateCheck<60000)return;
+      lastUpdateCheck=Date.now();
+      pending=(async()=>{
+        try{
+          await reg.update();
+          if(alive){detectWaiting();setCheckResult(reg.waiting?"新版の準備ができました":reg.installing?"新版の保存を準備中です":"更新確認が完了しました");}
+        }catch{if(alive)setCheckResult("更新を確認できませんでした。オンラインで再確認してください");}
+        finally{pending=null;}
+      })();
+      return pending;
+    };
+    checkForUpdate.current=()=>requestUpdate(true);
     const onMessage=(event:MessageEvent)=>{
       if(event.data?.type==="CHEMICA_CLIENT_VERSION")event.ports[0]?.postMessage({version:PWA_BUILD_ID});
     };
     const onController=()=>{
-      if(reloadRequested.current){reloadRequested.current=false;window.location.reload();return;}
+      if(reloadRequested.current&&navigator.serviceWorker.controller===reloadRequested.current){
+        reloadRequested.current=null;window.location.reload();return;
+      }
       void check();
     };
     const onOnline=()=>{
-      const reg=registration.current;
-      if(navigator.onLine&&reg?.active&&!reg.installing)void reg.update().catch(()=>{});
+      detectWaiting();void requestUpdate();
       navigator.serviceWorker.controller?.postMessage({type:"CHEMICA_CLEANUP"});
       void check();
     };
+    const onVisible=()=>{if(document.visibilityState==="visible")onOnline();};
+    const onUpdateFound=()=>watch(registration.current?.installing??null);
     navigator.serviceWorker.addEventListener("message",onMessage);
     navigator.serviceWorker.addEventListener("controllerchange",onController);
     window.addEventListener("online",onOnline);window.addEventListener("focus",onOnline);
+    document.addEventListener("visibilitychange",onVisible);
+    const interval=window.setInterval(()=>{if(document.visibilityState==="visible")onOnline();},60000);
     void navigator.serviceWorker.register("/sw.js",{scope:"/",updateViaCache:"none"}).then(reg=>{
       if(!alive)return;
-      registration.current=reg;watch(reg.installing);
-      reg.addEventListener("updatefound",()=>watch(reg.installing));
-      if(reg.waiting)setNewVersion(true);
-      void check();
+      registration.current=reg;
+      reg.addEventListener("updatefound",onUpdateFound);
+      watch(reg.installing);detectWaiting();void check();void requestUpdate();
       reg.active?.postMessage({type:"CHEMICA_CLEANUP"});
     }).catch(()=>{if(alive)setFailed(true);});
-    return()=>{alive=false;navigator.serviceWorker.removeEventListener("message",onMessage);navigator.serviceWorker.removeEventListener("controllerchange",onController);window.removeEventListener("online",onOnline);window.removeEventListener("focus",onOnline);};
+    return()=>{
+      alive=false;checkForUpdate.current=null;window.clearInterval(interval);
+      registration.current?.removeEventListener("updatefound",onUpdateFound);
+      for(const [worker,listener] of watched)worker.removeEventListener("statechange",listener);
+      navigator.serviceWorker.removeEventListener("message",onMessage);
+      navigator.serviceWorker.removeEventListener("controllerchange",onController);
+      window.removeEventListener("online",onOnline);window.removeEventListener("focus",onOnline);
+      document.removeEventListener("visibilitychange",onVisible);
+    };
   },[]);
   const repair=async()=>{
     setUpdating(true);
@@ -76,13 +118,26 @@ export function PwaStatus(){
     }catch{setFailed(true);}finally{setUpdating(false);}
   };
   const update=()=>{
-    if(registration.current?.waiting){reloadRequested.current=true;registration.current.waiting.postMessage({type:"CHEMICA_SKIP_WAITING"});}
-    else window.location.reload();
+    if(registration.current?.waiting){
+      reloadRequested.current=registration.current.waiting;
+      registration.current.waiting.postMessage({type:"CHEMICA_SKIP_WAITING"});
+    }else window.location.reload();
+  };
+  const manuallyCheck=async()=>{
+    setChecking(true);setCheckResult("");
+    try{await checkForUpdate.current?.();}finally{setChecking(false);}
   };
   if(process.env.NODE_ENV!=="production")return online?null:<div className="pwa-status">オフライン・端末内に保存</div>;
-  return <div className="pwa-status no-print" aria-live="polite">
+  return <><div className="pwa-status no-print" aria-live="polite">
     <span>{!online?"オフライン・端末内に保存":ready?"オフライン利用可能":failed?"オフライン保存を準備できませんでした":"オフライン保存を準備中…"}</span>
     {failed&&online&&"serviceWorker" in navigator&&<button type="button" onClick={()=>{void repair();}} disabled={updating}>{updating?"保存確認中…":"保存を再確認"}</button>}
-    {newVersion&&<><span>新しい版があります。学習を区切ってから</span><button type="button" onClick={update}>再読み込み</button></>}
-  </div>;
+    {"serviceWorker" in navigator&&<button type="button" onClick={()=>{void manuallyCheck();}} disabled={!online||checking}>{checking?"更新を確認中…":"更新を確認"}</button>}
+    {checkResult&&<span>{checkResult}</span>}
+    {versionMismatch&&!newVersion&&<span>表示中のアプリとオフライン保存の版が異なります。更新を確認してください。</span>}
+  </div>
+    {newVersion&&<div className="pwa-update-notice no-print" role="status" aria-live="polite">
+      <span>新しい版があります。学習を区切ってから再読み込みしてください。</span>
+      <button type="button" onClick={update}>再読み込み</button>
+    </div>}
+  </>;
 }

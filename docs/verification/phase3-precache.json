@@ -1,5 +1,5 @@
 {
-  "version": "1fe5c3b3-ed6c-4ecf-976d-f51bc7579355",
+  "version": "21c789cf-83cd-4c77-85b3-d5a953f1984e",
   "routes": [
     "/",
     "/courses/chemistry-basic",
@@ -26,19 +26,19 @@
     "/units/theory-chemistry"
   ],
   "assets": [
-    "/_next/static/1fe5c3b3-ed6c-4ecf-976d-f51bc7579355/_buildManifest.js",
-    "/_next/static/1fe5c3b3-ed6c-4ecf-976d-f51bc7579355/_clientMiddlewareManifest.js",
-    "/_next/static/1fe5c3b3-ed6c-4ecf-976d-f51bc7579355/_ssgManifest.js",
+    "/_next/static/21c789cf-83cd-4c77-85b3-d5a953f1984e/_buildManifest.js",
+    "/_next/static/21c789cf-83cd-4c77-85b3-d5a953f1984e/_clientMiddlewareManifest.js",
+    "/_next/static/21c789cf-83cd-4c77-85b3-d5a953f1984e/_ssgManifest.js",
+    "/_next/static/chunks/015krwwt3t3_p.css",
     "/_next/static/chunks/05-c3ty_6dwfk.js",
     "/_next/static/chunks/0cz1d0mv5g_q7.js",
     "/_next/static/chunks/0h4avlpefbr-z.js",
-    "/_next/static/chunks/0m05sl2cqwn4e.js",
-    "/_next/static/chunks/1-ddm5oeosa4-.css",
     "/_next/static/chunks/10vu40b-t-gop.js",
     "/_next/static/chunks/11hebcahyxftf.js",
     "/_next/static/chunks/11oof8oxnxiv9.js",
     "/_next/static/chunks/14mrh2-p_w84d.js",
     "/_next/static/chunks/1v9wkc-6q7hdu.js",
+    "/_next/static/chunks/1vs74dy75xojp.js",
     "/_next/static/chunks/24bk2qbqo6crn.js",
     "/_next/static/chunks/27jktro2p5rq9.js",
     "/_next/static/chunks/2b8q2lahvdo8m.js",

@@ -1016,3 +1016,7 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
 .pwa-status{max-width:1180px;margin:4px auto;padding:2px 20px;display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
 .pwa-status button{font:inherit;padding:2px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--text)}
 @media(max-width:640px){.pwa-status{padding:2px 16px;justify-content:flex-start}}
+
+.pwa-update-notice{position:sticky;top:8px;z-index:100;max-width:1180px;margin:8px auto;padding:12px 20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);color:var(--text);border:2px solid var(--line);border-radius:10px;box-shadow:0 4px 16px #0002}
+.pwa-update-notice button{font:inherit;padding:8px 14px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--text);cursor:pointer}
+@media(max-width:640px){.pwa-update-notice{margin:8px 12px;padding:10px 12px;top:8px}}
