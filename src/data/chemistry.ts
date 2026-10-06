@@ -1,3 +1,4 @@
+import { learningRow } from "@/data/learningContentIds";
 import { inorganicComplexesUnit } from "@/data/inorganicComplexes";
 import { expandedOrganicQuestions } from "@/data/organicReactionMaps";
 import { gasUnit } from "@/data/gasUnit";
@@ -18,6 +19,7 @@ export type QuizQuestion = {
 };
 
 export type CardEntry = {
+  learningId?: string;
   title: string;
   body: string;
   equation?: string;
@@ -25,6 +27,7 @@ export type CardEntry = {
 };
 
 export type FlowEntry = {
+  learningId?: string;
   title: string;
   nodes: string[];
   note?: string;
@@ -151,7 +154,7 @@ export const chemistryUnits: ChemistryUnit[] = [
         description: "物質名を単独で覚えるより、何を酸化・還元・加水分解したかでつなげます。",
         kind: "flow",
         flows: [
-          {
+          { learningId: "エチレンから酢酸エチルまで",
             title: "エチレンから酢酸エチルまで",
             nodes: [
               "エチレン CH₂=CH₂",
@@ -162,7 +165,7 @@ export const chemistryUnits: ChemistryUnit[] = [
             ],
             note: "順に、水和、穏やかな酸化、酸化、エステル化。逆向きの代表は加水分解や還元です。",
           },
-          {
+          { learningId: "アセチレンの付加反応",
             title: "アセチレンの付加反応",
             nodes: ["アセチレン HC≡CH", "アセトアルデヒド CH₃CHO", "酢酸 CH₃COOH"],
             note: "アセチレンに水を付加すると、途中の不安定なエノール形を経てアセトアルデヒドになります。",
@@ -187,22 +190,22 @@ export const chemistryUnits: ChemistryUnit[] = [
         title: "代表的な官能基反応",
         kind: "cards",
         entries: [
-          {
+          { learningId: "アルコールの酸化",
             title: "アルコールの酸化",
             body: "第一級アルコールはアルデヒドを経てカルボン酸へ、第二級アルコールはケトンへ酸化されます。第三級アルコールは通常の条件では酸化されにくいです。",
             equation: "R-CH₂OH → R-CHO → R-COOH",
           },
-          {
+          { learningId: "エステル化",
             title: "エステル化",
             body: "カルボン酸とアルコールを濃硫酸存在下で加熱すると、エステルと水が生じます。反応は可逆です。",
             equation: "R-COOH + R'-OH ⇄ R-COOR' + H₂O",
           },
-          {
+          { learningId: "けん化",
             title: "けん化",
             body: "エステルを水酸化ナトリウム水溶液と加熱すると、カルボン酸塩とアルコールが生じます。油脂のけん化では高級脂肪酸塩が石けんになります。",
             equation: "R-COOR' + NaOH → R-COONa + R'-OH",
           },
-          {
+          { learningId: "銀鏡反応",
             title: "銀鏡反応",
             body: "アルデヒド基をもつ物質はアンモニア性硝酸銀水溶液を還元し、銀を析出させます。ギ酸や還元糖も陽性です。",
             note: "ケトンは原則として陰性です。",
@@ -215,12 +218,12 @@ export const chemistryUnits: ChemistryUnit[] = [
         kind: "table",
         columns: ["出発物質", "反応・試薬", "主生成物", "重要事項"],
         rows: [
-          ["ベンゼン", "濃硝酸＋濃硫酸", "ニトロベンゼン", "ニトロ化"],
-          ["ベンゼン", "濃硫酸・加熱", "ベンゼンスルホン酸", "スルホン化"],
-          ["ベンゼン", "Cl₂、FeCl₃", "クロロベンゼン", "置換反応"],
-          ["トルエン", "強い酸化", "安息香酸", "側鎖がカルボキシ基へ"],
-          ["フェノール", "臭素水", "2,4,6-トリブロモフェノール", "白色沈殿"],
-          ["アニリン", "塩酸", "アニリン塩酸塩", "弱塩基として反応"],
+          learningRow("ベンゼン", ["ベンゼン", "濃硝酸＋濃硫酸", "ニトロベンゼン", "ニトロ化"]),
+          learningRow("ベンゼン-2", ["ベンゼン", "濃硫酸・加熱", "ベンゼンスルホン酸", "スルホン化"]),
+          learningRow("ベンゼン-3", ["ベンゼン", "Cl₂、FeCl₃", "クロロベンゼン", "置換反応"]),
+          learningRow("トルエン", ["トルエン", "強い酸化", "安息香酸", "側鎖がカルボキシ基へ"]),
+          learningRow("フェノール", ["フェノール", "臭素水", "2,4,6-トリブロモフェノール", "白色沈殿"]),
+          learningRow("アニリン", ["アニリン", "塩酸", "アニリン塩酸塩", "弱塩基として反応"]),
         ],
       },
     ],
@@ -300,12 +303,12 @@ export const chemistryUnits: ChemistryUnit[] = [
         kind: "table",
         columns: ["気体", "実験室での代表的製法", "捕集法", "確認・性質"],
         rows: [
-          ["H₂", "Zn + 希H₂SO₄", "水上置換", "点火すると音を立てて燃える"],
-          ["O₂", "H₂O₂をMnO₂で分解", "水上置換", "線香の火が激しくなる"],
-          ["CO₂", "CaCO₃ + 希HCl", "下方置換", "石灰水を白濁"],
-          ["NH₃", "NH₄Cl + Ca(OH)₂を加熱", "上方置換", "湿らせた赤リトマス紙を青変"],
-          ["Cl₂", "MnO₂ + 濃HClを加熱", "下方置換", "黄緑色、漂白・酸化作用"],
-          ["H₂S", "FeS + 希HCl", "下方置換", "腐卵臭、重金属イオンと硫化物沈殿"],
+          learningRow("H2", ["H₂", "Zn + 希H₂SO₄", "水上置換", "点火すると音を立てて燃える"]),
+          learningRow("O2", ["O₂", "H₂O₂をMnO₂で分解", "水上置換", "線香の火が激しくなる"]),
+          learningRow("CO2", ["CO₂", "CaCO₃ + 希HCl", "下方置換", "石灰水を白濁"]),
+          learningRow("NH3", ["NH₃", "NH₄Cl + Ca(OH)₂を加熱", "上方置換", "湿らせた赤リトマス紙を青変"]),
+          learningRow("Cl2", ["Cl₂", "MnO₂ + 濃HClを加熱", "下方置換", "黄緑色、漂白・酸化作用"]),
+          learningRow("H2S", ["H₂S", "FeS + 希HCl", "下方置換", "腐卵臭、重金属イオンと硫化物沈殿"]),
         ],
       },
       {
@@ -313,17 +316,17 @@ export const chemistryUnits: ChemistryUnit[] = [
         title: "両性元素と両性水酸化物",
         kind: "cards",
         entries: [
-          {
+          { learningId: "アルミニウム",
             title: "アルミニウム",
             body: "Al、Al₂O₃、Al(OH)₃は酸にも強塩基にも反応します。Al(OH)₃は白色ゲル状沈殿です。",
             equation: "Al(OH)₃ + OH⁻ → [Al(OH)₄]⁻",
           },
-          {
+          { learningId: "亜鉛",
             title: "亜鉛",
             body: "Zn、ZnO、Zn(OH)₂は両性を示します。Zn(OH)₂は過剰のNaOHに溶け、錯イオンを作ります。",
             equation: "Zn(OH)₂ + 2OH⁻ → [Zn(OH)₄]²⁻",
           },
-          {
+          { learningId: "スズ-鉛",
             title: "スズ・鉛",
             body: "SnやPbの酸化物・水酸化物にも両性を示すものがあります。高校範囲では Al、Zn、Sn、Pb をまとめて覚えます。",
             note: "両性元素の語呂だけで終わらず、酸・強塩基の両方に反応する意味を確認します。",
@@ -335,12 +338,12 @@ export const chemistryUnits: ChemistryUnit[] = [
         title: "無機反応で頻出の酸化還元",
         kind: "flow",
         flows: [
-          {
+          { learningId: "ハロゲンの酸化力",
             title: "ハロゲンの酸化力",
             nodes: ["F₂", "Cl₂", "Br₂", "I₂"],
             note: "左ほど酸化力が強いです。Cl₂はBr⁻やI⁻を酸化できます。",
           },
-          {
+          { learningId: "硫黄の酸化数変化",
             title: "硫黄の酸化数変化",
             nodes: ["H₂S：−2", "S：0", "SO₂：+4", "H₂SO₄：+6"],
             note: "反応式を丸暗記する前に、硫黄の酸化数を追うと酸化剤・還元剤を判定できます。",
@@ -416,8 +419,8 @@ export const chemistryUnits: ChemistryUnit[] = [
         kind: "table",
         columns: ["種類", "陽極", "陰極", "酸化", "還元", "電子"],
         rows: [
-          ["電池（放電）", "負極", "正極", "負極・陽極", "正極・陰極", "負極から正極へ外部回路を流れる"],
-          ["電気分解", "正極", "負極", "正極・陽極", "負極・陰極", "電源負極から陰極へ供給"],
+          learningRow("電池-放電", ["電池（放電）", "負極", "正極", "負極・陽極", "正極・陰極", "負極から正極へ外部回路を流れる"]),
+          learningRow("電気分解", ["電気分解", "正極", "負極", "正極・陽極", "負極・陰極", "電源負極から陰極へ供給"]),
         ],
       },
       {
@@ -444,9 +447,9 @@ export const chemistryUnits: ChemistryUnit[] = [
         kind: "table",
         columns: ["電池", "負極（酸化）", "正極（還元）", "入試ポイント"],
         rows: [
-          ["ボルタ電池", "Zn → Zn²⁺ + 2e⁻", "2H⁺ + 2e⁻ → H₂", "希硫酸中のZn板とCu板。Cu極のH₂による分極で起電力が低下"],
-          ["ダニエル電池", "Zn → Zn²⁺ + 2e⁻", "Cu²⁺ + 2e⁻ → Cu", "電子はZn極からCu極へ"],
-          ["ダニエル電池の塩橋", "陰イオンが負極槽へ", "陽イオンが正極槽へ", "電気的中性を保ち、溶液を直接混合せず回路を閉じる"],
+          learningRow("ボルタ電池", ["ボルタ電池", "Zn → Zn²⁺ + 2e⁻", "2H⁺ + 2e⁻ → H₂", "希硫酸中のZn板とCu板。Cu極のH₂による分極で起電力が低下"]),
+          learningRow("ダニエル電池", ["ダニエル電池", "Zn → Zn²⁺ + 2e⁻", "Cu²⁺ + 2e⁻ → Cu", "電子はZn極からCu極へ"]),
+          learningRow("ダニエル電池の塩橋", ["ダニエル電池の塩橋", "陰イオンが負極槽へ", "陽イオンが正極槽へ", "電気的中性を保ち、溶液を直接混合せず回路を閉じる"]),
         ],
       },
       {
@@ -455,10 +458,10 @@ export const chemistryUnits: ChemistryUnit[] = [
         kind: "table",
         columns: ["電池", "負極／正極活物質", "電解質", "特徴"],
         rows: [
-          ["マンガン乾電池", "Zn ／ MnO₂", "NH₄Cl・ZnCl₂（ペースト）", "炭素棒は集電体。正極合剤のMnO₂が減極剤として働く"],
-          ["アルカリマンガン乾電池", "Zn ／ MnO₂", "KOH", "強塩基性。マンガン乾電池より大電流・長時間使用に向く"],
-          ["酸化銀電池", "Zn ／ Ag₂O", "KOHなど", "Zn + Ag₂O → ZnO + 2Ag。電圧が安定し、ボタン型に利用"],
-          ["空気亜鉛電池", "Zn ／ 空気中のO₂", "KOHなど", "正極活物質を外部から取り込むため高容量。補聴器などに利用"],
+          learningRow("マンガン乾電池", ["マンガン乾電池", "Zn ／ MnO₂", "NH₄Cl・ZnCl₂（ペースト）", "炭素棒は集電体。正極合剤のMnO₂が減極剤として働く"]),
+          learningRow("アルカリマンガン乾電池", ["アルカリマンガン乾電池", "Zn ／ MnO₂", "KOH", "強塩基性。マンガン乾電池より大電流・長時間使用に向く"]),
+          learningRow("酸化銀電池", ["酸化銀電池", "Zn ／ Ag₂O", "KOHなど", "Zn + Ag₂O → ZnO + 2Ag。電圧が安定し、ボタン型に利用"]),
+          learningRow("空気亜鉛電池", ["空気亜鉛電池", "Zn ／ 空気中のO₂", "KOHなど", "正極活物質を外部から取り込むため高容量。補聴器などに利用"]),
         ],
       },
       {
@@ -467,10 +470,10 @@ export const chemistryUnits: ChemistryUnit[] = [
         kind: "table",
         columns: ["電池", "放電時の負極／正極", "電解質", "必須ポイント"],
         rows: [
-          ["鉛蓄電池", "Pb ／ PbO₂", "H₂SO₄水溶液", "放電で両極にPbSO₄が生成し、H₂SO₄濃度と密度が低下。充電は逆反応"],
-          ["ニッケル・カドミウム電池", "Cd ／ NiO(OH)", "KOH", "アルカリ蓄電池。Cdの環境負荷が大きい"],
-          ["ニッケル水素電池", "水素吸蔵合金MH ／ NiO(OH)", "KOH", "全体として水素が負極から正極側へ移動。乾電池型充電池に利用"],
-          ["リチウムイオン電池", "黒鉛（Liを吸蔵）／ Li含有金属酸化物", "有機電解液", "Li⁺が両極間を移動。高電圧・高エネルギー密度。金属Li電極ではない"],
+          learningRow("鉛蓄電池", ["鉛蓄電池", "Pb ／ PbO₂", "H₂SO₄水溶液", "放電で両極にPbSO₄が生成し、H₂SO₄濃度と密度が低下。充電は逆反応"]),
+          learningRow("ニッケル-カドミウム電池", ["ニッケル・カドミウム電池", "Cd ／ NiO(OH)", "KOH", "アルカリ蓄電池。Cdの環境負荷が大きい"]),
+          learningRow("ニッケル水素電池", ["ニッケル水素電池", "水素吸蔵合金MH ／ NiO(OH)", "KOH", "全体として水素が負極から正極側へ移動。乾電池型充電池に利用"]),
+          learningRow("リチウムイオン電池", ["リチウムイオン電池", "黒鉛（Liを吸蔵）／ Li含有金属酸化物", "有機電解液", "Li⁺が両極間を移動。高電圧・高エネルギー密度。金属Li電極ではない"]),
         ],
       },
       {
@@ -478,17 +481,17 @@ export const chemistryUnits: ChemistryUnit[] = [
         title: "鉛蓄電池の反応式",
         kind: "cards",
         entries: [
-          {
+          { learningId: "負極-放電時",
             title: "負極（放電時）",
             body: "Pbが酸化されます。負極・正極の両方で硫酸イオンが消費されます。",
             equation: "Pb + SO₄²⁻ → PbSO₄ + 2e⁻",
           },
-          {
+          { learningId: "正極-放電時",
             title: "正極（放電時）",
             body: "PbO₂がH⁺と電子を受け取り、PbSO₄になります。",
             equation: "PbO₂ + 4H⁺ + SO₄²⁻ + 2e⁻ → PbSO₄ + 2H₂O",
           },
-          {
+          { learningId: "全体反応",
             title: "全体反応",
             body: "放電では右向き、充電では外部電源によって左向きに進みます。放電時には水が増え、硫酸濃度が下がります。",
             equation: "Pb + PbO₂ + 2H₂SO₄ ⇄ 2PbSO₄ + 2H₂O",
@@ -501,8 +504,8 @@ export const chemistryUnits: ChemistryUnit[] = [
         kind: "table",
         columns: ["型・条件", "負極", "正極", "全体・特徴"],
         rows: [
-          ["酸性電解質型", "2H₂ → 4H⁺ + 4e⁻", "O₂ + 4H⁺ + 4e⁻ → 2H₂O", "2H₂ + O₂ → 2H₂O。燃料を外部から連続供給"],
-          ["アルカリ電解質型", "2H₂ + 4OH⁻ → 4H₂O + 4e⁻", "O₂ + 2H₂O + 4e⁻ → 4OH⁻", "全体反応は同じ。反応式は電解質に合わせて書く"],
+          learningRow("酸性電解質型", ["酸性電解質型", "2H₂ → 4H⁺ + 4e⁻", "O₂ + 4H⁺ + 4e⁻ → 2H₂O", "2H₂ + O₂ → 2H₂O。燃料を外部から連続供給"]),
+          learningRow("アルカリ電解質型", ["アルカリ電解質型", "2H₂ + 4OH⁻ → 4H₂O + 4e⁻", "O₂ + 2H₂O + 4e⁻ → 4OH⁻", "全体反応は同じ。反応式は電解質に合わせて書く"]),
         ],
       },
       {
@@ -510,20 +513,20 @@ export const chemistryUnits: ChemistryUnit[] = [
         title: "入試で差がつく電池の原理",
         kind: "cards",
         entries: [
-          {
+          { learningId: "正極-負極と酸化還元",
             title: "正極・負極と酸化還元",
             body: "放電する電池では、負極で酸化、正極で還元。電子は外部回路を負極→正極へ流れ、慣用電流は逆向きです。電気分解の陽極・陰極と符号を混同しないこと。",
           },
-          {
+          { learningId: "起電力",
             title: "起電力",
             body: "標準状態では、電池の起電力 E° = 正極の標準電極電位 − 負極の標準電極電位。より還元されやすい半反応を正極にします。起電力を大きくしても、直列でない限り電子の物質量比は反応式で決まります。",
           },
-          {
+          { learningId: "電気量と物質量",
             title: "電気量と物質量",
             body: "電気量 Q = It。電子の物質量 n(e⁻) = Q/F（F ≈ 9.65×10⁴ C/mol）。半反応式の電子係数から、電極の質量変化や気体量へ換算します。",
             equation: "Q = It = n(e⁻)F",
           },
-          {
+          { learningId: "直列-並列",
             title: "直列・並列",
             body: "同じ電池を直列につなぐと電圧は加算され、並列につなぐと電圧は基本的に同じで取り出せる電気量が増えます。異なる起電力の電池の並列接続は扱いに注意します。",
           },
@@ -632,14 +635,14 @@ export const chemistryUnits: ChemistryUnit[] = [
         kind: "table",
         columns: ["場所", "存在粒子・条件", "優先する代表反応", "生成物"],
         rows: [
-          ["陰極（還元）", "Ag⁺・Cu²⁺など還元されやすい金属イオン", "Mⁿ⁺ + ne⁻ → M", "金属が析出"],
-          ["陰極（還元）", "H⁺を含む酸性水溶液", "2H⁺ + 2e⁻ → H₂", "水素"],
-          ["陰極（還元）", "Na⁺・K⁺・Ca²⁺などを含む水溶液", "2H₂O + 2e⁻ → H₂ + 2OH⁻", "水素、陰極付近は塩基性"],
-          ["陰極（還元）", "Na⁺などを含む融解塩（無水）", "Mⁿ⁺ + ne⁻ → M", "金属が析出"],
-          ["陽極（酸化）", "Cu・Agなど反応する電極", "M → Mⁿ⁺ + ne⁻", "陽極が溶解"],
-          ["陽極（酸化）", "濃いCl⁻・Br⁻・I⁻、不活性電極", "2X⁻ → X₂ + 2e⁻", "ハロゲン"],
-          ["陽極（酸化）", "SO₄²⁻・NO₃⁻など、または希薄なCl⁻", "2H₂O → O₂ + 4H⁺ + 4e⁻", "酸素、陽極付近は酸性"],
-          ["陽極（酸化）", "O²⁻を含む融解塩", "2O²⁻ → O₂ + 4e⁻", "酸素（炭素極ならCO₂等になり得る）"],
+          learningRow("陰極-還元", ["陰極（還元）", "Ag⁺・Cu²⁺など還元されやすい金属イオン", "Mⁿ⁺ + ne⁻ → M", "金属が析出"]),
+          learningRow("陰極-還元-2", ["陰極（還元）", "H⁺を含む酸性水溶液", "2H⁺ + 2e⁻ → H₂", "水素"]),
+          learningRow("陰極-還元-3", ["陰極（還元）", "Na⁺・K⁺・Ca²⁺などを含む水溶液", "2H₂O + 2e⁻ → H₂ + 2OH⁻", "水素、陰極付近は塩基性"]),
+          learningRow("陰極-還元-4", ["陰極（還元）", "Na⁺などを含む融解塩（無水）", "Mⁿ⁺ + ne⁻ → M", "金属が析出"]),
+          learningRow("陽極-酸化", ["陽極（酸化）", "Cu・Agなど反応する電極", "M → Mⁿ⁺ + ne⁻", "陽極が溶解"]),
+          learningRow("陽極-酸化-2", ["陽極（酸化）", "濃いCl⁻・Br⁻・I⁻、不活性電極", "2X⁻ → X₂ + 2e⁻", "ハロゲン"]),
+          learningRow("陽極-酸化-3", ["陽極（酸化）", "SO₄²⁻・NO₃⁻など、または希薄なCl⁻", "2H₂O → O₂ + 4H⁺ + 4e⁻", "酸素、陽極付近は酸性"]),
+          learningRow("陽極-酸化-4", ["陽極（酸化）", "O²⁻を含む融解塩", "2O²⁻ → O₂ + 4e⁻", "酸素（炭素極ならCO₂等になり得る）"]),
         ],
       },
       {
@@ -647,12 +650,12 @@ export const chemistryUnits: ChemistryUnit[] = [
         title: "電気分解の判断手順",
         kind: "flow",
         flows: [
-          {
+          { learningId: "陰極で何が生じるか",
             title: "陰極で何が生じるか",
             nodes: ["陽イオンを確認", "金属イオンかH⁺・水かを比較", "還元されやすい粒子が電子を受け取る"],
             note: "水溶液では、イオン化傾向が大きい金属のイオンより水やH⁺が還元されやすい場合があります。",
           },
-          {
+          { learningId: "陽極で何が生じるか",
             title: "陽極で何が生じるか",
             nodes: ["陰イオンと電極材料を確認", "ハロゲン化物イオンまたは水・OH⁻を比較", "酸化されやすい粒子が電子を放出"],
             note: "銅などの活性電極では、電極自身が溶ける反応も候補になります。",
@@ -664,17 +667,17 @@ export const chemistryUnits: ChemistryUnit[] = [
         title: "代表的な電気分解",
         kind: "cards",
         entries: [
-          {
+          { learningId: "CuSO4水溶液-白金電極",
             title: "CuSO₄水溶液・白金電極",
             body: "陰極ではCu²⁺が還元されCuが析出し、陽極では水が酸化されO₂が発生します。",
             equation: "陰極：Cu²⁺ + 2e⁻ → Cu",
           },
-          {
+          { learningId: "NaCl水溶液-不活性電極",
             title: "NaCl水溶液・不活性電極",
             body: "陰極では水が還元されH₂、陽極ではCl⁻が酸化されCl₂が生じます。溶液中にはNaOHが残ります。",
             equation: "2NaCl + 2H₂O → 2NaOH + H₂ + Cl₂",
           },
-          {
+          { learningId: "CuSO4水溶液-銅電極",
             title: "CuSO₄水溶液・銅電極",
             body: "陰極で銅が析出し、陽極では銅がCu²⁺として溶けます。銅の電解精錬や電解めっきの基本です。",
             equation: "陽極：Cu → Cu²⁺ + 2e⁻",
@@ -819,13 +822,13 @@ export const chemistryUnits: ChemistryUnit[] = [
         kind: "table",
         columns: ["イオン", "代表的な色", "覚える際の注意"],
         rows: [
-          ["Cu²⁺", "青色", "水和銅(II)イオン"],
-          ["Fe²⁺", "淡緑色", "空気酸化でFe³⁺へ変化しやすい"],
-          ["Fe³⁺", "黄褐色", "SCN⁻で血赤色の錯体"],
-          ["Ni²⁺", "緑色", "錯体形成で色が変わる場合あり"],
-          ["CrO₄²⁻", "黄色", "酸性でCr₂O₇²⁻側へ"],
-          ["Cr₂O₇²⁻", "橙色", "強い酸化剤"],
-          ["MnO₄⁻", "赤紫色", "過マンガン酸イオン"],
+          learningRow("Cu2", ["Cu²⁺", "青色", "水和銅(II)イオン"]),
+          learningRow("Fe2", ["Fe²⁺", "淡緑色", "空気酸化でFe³⁺へ変化しやすい"]),
+          learningRow("Fe3", ["Fe³⁺", "黄褐色", "SCN⁻で血赤色の錯体"]),
+          learningRow("Ni2", ["Ni²⁺", "緑色", "錯体形成で色が変わる場合あり"]),
+          learningRow("CrO42", ["CrO₄²⁻", "黄色", "酸性でCr₂O₇²⁻側へ"]),
+          learningRow("Cr2O72", ["Cr₂O₇²⁻", "橙色", "強い酸化剤"]),
+          learningRow("MnO4", ["MnO₄⁻", "赤紫色", "過マンガン酸イオン"]),
         ],
       },
       {
@@ -834,15 +837,15 @@ export const chemistryUnits: ChemistryUnit[] = [
         kind: "table",
         columns: ["沈殿", "色", "生成例"],
         rows: [
-          ["AgCl", "白色", "Ag⁺ + Cl⁻ → AgCl↓"],
-          ["AgBr", "淡黄色", "Ag⁺ + Br⁻ → AgBr↓"],
-          ["AgI", "黄色", "Ag⁺ + I⁻ → AgI↓"],
-          ["Cu(OH)₂", "青白色", "Cu²⁺ + 2OH⁻ → Cu(OH)₂↓"],
-          ["Fe(OH)₂", "緑白色", "空気中で酸化され褐色へ"],
-          ["Fe(OH)₃", "赤褐色", "Fe³⁺ + 3OH⁻ → Fe(OH)₃↓"],
-          ["ZnS", "白色", "Zn²⁺ + S²⁻ → ZnS↓"],
-          ["CuS", "黒色", "Cu²⁺ + S²⁻ → CuS↓"],
-          ["CdS", "黄色", "Cd²⁺ + S²⁻ → CdS↓"],
+          learningRow("AgCl", ["AgCl", "白色", "Ag⁺ + Cl⁻ → AgCl↓"]),
+          learningRow("AgBr", ["AgBr", "淡黄色", "Ag⁺ + Br⁻ → AgBr↓"]),
+          learningRow("AgI", ["AgI", "黄色", "Ag⁺ + I⁻ → AgI↓"]),
+          learningRow("Cu-OH-2", ["Cu(OH)₂", "青白色", "Cu²⁺ + 2OH⁻ → Cu(OH)₂↓"]),
+          learningRow("Fe-OH-2", ["Fe(OH)₂", "緑白色", "空気中で酸化され褐色へ"]),
+          learningRow("Fe-OH-3", ["Fe(OH)₃", "赤褐色", "Fe³⁺ + 3OH⁻ → Fe(OH)₃↓"]),
+          learningRow("ZnS", ["ZnS", "白色", "Zn²⁺ + S²⁻ → ZnS↓"]),
+          learningRow("CuS", ["CuS", "黒色", "Cu²⁺ + S²⁻ → CuS↓"]),
+          learningRow("CdS", ["CdS", "黄色", "Cd²⁺ + S²⁻ → CdS↓"]),
         ],
       },
       {
@@ -851,12 +854,12 @@ export const chemistryUnits: ChemistryUnit[] = [
         kind: "table",
         columns: ["出発物質", "加える試薬", "観察・錯イオン", "代表的なイオン反応式"],
         rows: [
-          ["Cu²⁺（青色）", "NH₃水を少量", "Cu(OH)₂（青白色沈殿）", "Cu²⁺ + 2OH⁻ → Cu(OH)₂↓"],
-          ["Cu(OH)₂", "NH₃水を過剰", "[Cu(NH₃)₄]²⁺（深青色溶液）", "Cu(OH)₂ + 4NH₃ → [Cu(NH₃)₄]²⁺ + 2OH⁻"],
-          ["AgCl（白色沈殿）", "NH₃水を過剰", "[Ag(NH₃)₂]⁺（無色、沈殿が溶解）", "AgCl + 2NH₃ → [Ag(NH₃)₂]⁺ + Cl⁻"],
-          ["Zn(OH)₂（白色沈殿）", "NaOH水溶液を過剰", "[Zn(OH)₄]²⁻（無色、沈殿が溶解）", "Zn(OH)₂ + 2OH⁻ → [Zn(OH)₄]²⁻"],
-          ["Al(OH)₃（白色沈殿）", "NaOH水溶液を過剰", "[Al(OH)₄]⁻（無色、沈殿が溶解）", "Al(OH)₃ + OH⁻ → [Al(OH)₄]⁻"],
-          ["Fe³⁺（黄褐色）", "SCN⁻", "[FeSCN]²⁺（血赤色）", "Fe³⁺ + SCN⁻ ⇄ [FeSCN]²⁺"],
+          learningRow("Cu2-青色", ["Cu²⁺（青色）", "NH₃水を少量", "Cu(OH)₂（青白色沈殿）", "Cu²⁺ + 2OH⁻ → Cu(OH)₂↓"]),
+          learningRow("Cu-OH-2", ["Cu(OH)₂", "NH₃水を過剰", "[Cu(NH₃)₄]²⁺（深青色溶液）", "Cu(OH)₂ + 4NH₃ → [Cu(NH₃)₄]²⁺ + 2OH⁻"]),
+          learningRow("AgCl-白色沈殿", ["AgCl（白色沈殿）", "NH₃水を過剰", "[Ag(NH₃)₂]⁺（無色、沈殿が溶解）", "AgCl + 2NH₃ → [Ag(NH₃)₂]⁺ + Cl⁻"]),
+          learningRow("Zn-OH-2-白色沈殿", ["Zn(OH)₂（白色沈殿）", "NaOH水溶液を過剰", "[Zn(OH)₄]²⁻（無色、沈殿が溶解）", "Zn(OH)₂ + 2OH⁻ → [Zn(OH)₄]²⁻"]),
+          learningRow("Al-OH-3-白色沈殿", ["Al(OH)₃（白色沈殿）", "NaOH水溶液を過剰", "[Al(OH)₄]⁻（無色、沈殿が溶解）", "Al(OH)₃ + OH⁻ → [Al(OH)₄]⁻"]),
+          learningRow("Fe3-黄褐色", ["Fe³⁺（黄褐色）", "SCN⁻", "[FeSCN]²⁺（血赤色）", "Fe³⁺ + SCN⁻ ⇄ [FeSCN]²⁺"]),
         ],
       },
       {
@@ -865,22 +868,22 @@ export const chemistryUnits: ChemistryUnit[] = [
         description: "混合水溶液に試薬を順に加え、沈殿する組と溶液に残る組を分けます。",
         kind: "flow",
         flows: [
-          {
+          { learningId: "1-希塩酸を加える",
             title: "① 希塩酸を加える",
             nodes: ["混合溶液", "AgCl・PbCl₂（白色沈殿）", "Cu²⁺・Cd²⁺・Fe³⁺・Al³⁺・Zn²⁺などはろ液へ"],
             note: "Ag⁺ + Cl⁻ → AgCl↓。PbCl₂は熱水に溶けやすく、AgClはNH₃水に溶けるので区別できます。",
           },
-          {
+          { learningId: "2-酸性でH2Sを通す",
             title: "② 酸性でH₂Sを通す",
             nodes: ["①のろ液", "CuS（黒色）・CdS（黄色）", "Fe³⁺・Al³⁺・Zn²⁺などはろ液へ"],
             note: "酸性ではS²⁻濃度が低くても沈殿する、溶解度の非常に小さい硫化物を分離します。",
           },
-          {
+          { learningId: "3-NH4Cl共存下でNH3水を加える",
             title: "③ NH₄Cl共存下でNH₃水を加える",
             nodes: ["②のろ液", "Fe(OH)₃（赤褐色）・Al(OH)₃（白色）", "Zn²⁺などはろ液へ"],
             note: "NH₄⁺によりOH⁻濃度を抑え、選択的に水酸化物を沈殿させます。Al(OH)₃は過剰NaOHに溶解します。",
           },
-          {
+          { learningId: "4-塩基性でH2Sを通す",
             title: "④ 塩基性でH₂Sを通す",
             nodes: ["③のろ液", "ZnS（白色）・NiS（黒色）など", "アルカリ・アルカリ土類金属イオンはろ液へ"],
             note: "塩基性ではH₂Sの電離が進みS²⁻濃度が上がるため、酸性では沈殿しなかった硫化物も沈殿します。",
@@ -892,22 +895,22 @@ export const chemistryUnits: ChemistryUnit[] = [
         title: "頻出イオンの反応系統図",
         kind: "flow",
         flows: [
-          {
+          { learningId: "Cu2-の反応",
             title: "Cu²⁺の反応",
             nodes: ["Cu²⁺（青色）", "Cu(OH)₂（青白色）", "[Cu(NH₃)₄]²⁺（深青色）"],
             note: "NH₃水を少量加えると沈殿、さらに過剰に加えると錯イオンとなって溶けます。H₂SではCuS（黒色）。",
           },
-          {
+          { learningId: "Fe2-Fe3-の反応",
             title: "Fe²⁺・Fe³⁺の反応",
             nodes: ["Fe²⁺（淡緑色）", "Fe(OH)₂（緑白色）", "空気酸化", "Fe(OH)₃（赤褐色）"],
             note: "Fe²⁺は酸化されFe³⁺へ。Fe³⁺はSCN⁻により[FeSCN]²⁺（血赤色）を生じます。",
           },
-          {
+          { learningId: "Ag-の反応",
             title: "Ag⁺の反応",
             nodes: ["Ag⁺（無色）", "AgCl（白色）", "[Ag(NH₃)₂]⁺（無色）", "AgCl再沈殿"],
             note: "Cl⁻で沈殿、NH₃水で錯イオンとして溶解し、酸を加えてNH₃をNH₄⁺にすると再沈殿します。",
           },
-          {
+          { learningId: "Cr-VI-の平衡",
             title: "Cr(VI)の平衡",
             nodes: ["CrO₄²⁻（黄色）", "酸性にする", "Cr₂O₇²⁻（橙色）", "塩基性にする", "CrO₄²⁻（黄色）"],
             note: "2CrO₄²⁻ + 2H⁺ ⇄ Cr₂O₇²⁻ + H₂O。酸性で右、塩基性で左へ移動します。",
@@ -919,13 +922,13 @@ export const chemistryUnits: ChemistryUnit[] = [
         title: "炎色反応",
         kind: "cards",
         entries: [
-          { title: "Li", body: "赤色" },
-          { title: "Na", body: "黄色" },
-          { title: "K", body: "紫色", note: "Naの黄色を避けるためコバルトガラスを使うことがあります。" },
-          { title: "Ca", body: "橙赤色" },
-          { title: "Sr", body: "紅色" },
-          { title: "Ba", body: "黄緑色" },
-          { title: "Cu", body: "青緑色" },
+          { learningId: "Li",  title: "Li", body: "赤色" },
+          { learningId: "Na",  title: "Na", body: "黄色" },
+          { learningId: "K",  title: "K", body: "紫色", note: "Naの黄色を避けるためコバルトガラスを使うことがあります。" },
+          { learningId: "Ca",  title: "Ca", body: "橙赤色" },
+          { learningId: "Sr",  title: "Sr", body: "紅色" },
+          { learningId: "Ba",  title: "Ba", body: "黄緑色" },
+          { learningId: "Cu",  title: "Cu", body: "青緑色" },
         ],
       },
     ],
@@ -997,13 +1000,13 @@ export const chemistryUnits: ChemistryUnit[] = [
         kind: "table",
         columns: ["製法", "目的物", "主反応・原料", "条件・触媒"],
         rows: [
-          ["ハーバー・ボッシュ法", "NH₃", "N₂ + 3H₂ ⇄ 2NH₃", "鉄系触媒、高温・高圧"],
-          ["オストワルト法", "HNO₃", "NH₃をNOへ酸化し、NO₂を経て吸収", "Pt-Rh触媒"],
-          ["接触法", "H₂SO₄", "2SO₂ + O₂ ⇄ 2SO₃", "V₂O₅触媒"],
-          ["アンモニアソーダ法", "Na₂CO₃", "飽和食塩水、NH₃、CO₂", "NaHCO₃を沈殿・熱分解"],
-          ["溶融塩電解", "Al", "溶融Al₂O₃を電解", "氷晶石に溶かして融点低下"],
-          ["高炉法", "Fe", "鉄鉱石をCOで還元", "コークス・石灰石を使用"],
-          ["食塩水電解", "Cl₂、H₂、NaOH", "濃いNaCl水溶液を電解", "イオン交換膜法など"],
+          learningRow("ハーバー-ボッシュ法", ["ハーバー・ボッシュ法", "NH₃", "N₂ + 3H₂ ⇄ 2NH₃", "鉄系触媒、高温・高圧"]),
+          learningRow("オストワルト法", ["オストワルト法", "HNO₃", "NH₃をNOへ酸化し、NO₂を経て吸収", "Pt-Rh触媒"]),
+          learningRow("接触法", ["接触法", "H₂SO₄", "2SO₂ + O₂ ⇄ 2SO₃", "V₂O₅触媒"]),
+          learningRow("アンモニアソーダ法", ["アンモニアソーダ法", "Na₂CO₃", "飽和食塩水、NH₃、CO₂", "NaHCO₃を沈殿・熱分解"]),
+          learningRow("溶融塩電解", ["溶融塩電解", "Al", "溶融Al₂O₃を電解", "氷晶石に溶かして融点低下"]),
+          learningRow("高炉法", ["高炉法", "Fe", "鉄鉱石をCOで還元", "コークス・石灰石を使用"]),
+          learningRow("食塩水電解", ["食塩水電解", "Cl₂、H₂、NaOH", "濃いNaCl水溶液を電解", "イオン交換膜法など"]),
         ],
       },
       {
@@ -1011,17 +1014,17 @@ export const chemistryUnits: ChemistryUnit[] = [
         title: "工程の流れ",
         kind: "flow",
         flows: [
-          {
+          { learningId: "硝酸製造-オストワルト法",
             title: "硝酸製造（オストワルト法）",
             nodes: ["NH₃", "NO", "NO₂", "HNO₃"],
             note: "アンモニアの接触酸化、NOの酸化、NO₂の水への吸収という順です。",
           },
-          {
+          { learningId: "硫酸製造-接触法",
             title: "硫酸製造（接触法）",
             nodes: ["Sまたは硫化鉱", "SO₂", "SO₃", "発煙硫酸", "H₂SO₄"],
             note: "SO₃を直接水に吸収させると硫酸ミストが生じやすいため、濃硫酸に吸収させます。",
           },
-          {
+          { learningId: "炭酸ナトリウム製造",
             title: "炭酸ナトリウム製造",
             nodes: ["飽和食塩水＋NH₃", "CO₂導入", "NaHCO₃沈殿", "加熱", "Na₂CO₃"],
             note: "NH₃は工程内で再利用されます。",
@@ -1095,32 +1098,32 @@ export const chemistryUnits: ChemistryUnit[] = [
         title: "頻出の正味イオン反応式",
         kind: "cards",
         entries: [
-          {
+          { learningId: "中和",
             title: "中和",
             body: "強酸と強塩基の本質的な反応です。",
             equation: "H⁺ + OH⁻ → H₂O",
           },
-          {
+          { learningId: "塩化銀の沈殿",
             title: "塩化銀の沈殿",
             body: "硝酸銀水溶液と塩化物イオンを含む水溶液の反応です。",
             equation: "Ag⁺ + Cl⁻ → AgCl↓",
           },
-          {
+          { learningId: "硫酸バリウムの沈殿",
             title: "硫酸バリウムの沈殿",
             body: "Ba²⁺とSO₄²⁻から白色沈殿が生じます。",
             equation: "Ba²⁺ + SO₄²⁻ → BaSO₄↓",
           },
-          {
+          { learningId: "炭酸塩と酸",
             title: "炭酸塩と酸",
             body: "炭酸イオンに酸を加えると二酸化炭素と水が生じます。",
             equation: "CO₃²⁻ + 2H⁺ → CO₂ + H₂O",
           },
-          {
+          { learningId: "アンモニウム塩と強塩基",
             title: "アンモニウム塩と強塩基",
             body: "アンモニウムイオンからアンモニアが遊離します。",
             equation: "NH₄⁺ + OH⁻ → NH₃ + H₂O",
           },
-          {
+          { learningId: "鉄-III-イオンとチオシアン酸イオン",
             title: "鉄(III)イオンとチオシアン酸イオン",
             body: "血赤色の錯イオンを形成します。",
             equation: "Fe³⁺ + SCN⁻ ⇄ [FeSCN]²⁺",
@@ -1132,7 +1135,7 @@ export const chemistryUnits: ChemistryUnit[] = [
         title: "イオン反応式の作り方",
         kind: "flow",
         flows: [
-          {
+          { learningId: "基本手順",
             title: "基本手順",
             nodes: [
               "分子式の反応式を書く",
@@ -1156,10 +1159,10 @@ export const chemistryUnits: ChemistryUnit[] = [
         kind: "table",
         columns: ["反応", "イオン反応式", "見方"],
         rows: [
-          ["Fe²⁺とCe⁴⁺", "Fe²⁺ + Ce⁴⁺ → Fe³⁺ + Ce³⁺", "1電子の受け渡し"],
-          ["ZnとCu²⁺", "Zn + Cu²⁺ → Zn²⁺ + Cu", "Znが酸化、Cu²⁺が還元"],
-          ["Cl₂とI⁻", "Cl₂ + 2I⁻ → 2Cl⁻ + I₂", "Cl₂が酸化剤"],
-          ["酸性条件のMnO₄⁻", "MnO₄⁻ + 8H⁺ + 5e⁻ → Mn²⁺ + 4H₂O", "半反応式"],
+          learningRow("Fe2-とCe4", ["Fe²⁺とCe⁴⁺", "Fe²⁺ + Ce⁴⁺ → Fe³⁺ + Ce³⁺", "1電子の受け渡し"]),
+          learningRow("ZnとCu2", ["ZnとCu²⁺", "Zn + Cu²⁺ → Zn²⁺ + Cu", "Znが酸化、Cu²⁺が還元"]),
+          learningRow("Cl2とI", ["Cl₂とI⁻", "Cl₂ + 2I⁻ → 2Cl⁻ + I₂", "Cl₂が酸化剤"]),
+          learningRow("酸性条件のMnO4", ["酸性条件のMnO₄⁻", "MnO₄⁻ + 8H⁺ + 5e⁻ → Mn²⁺ + 4H₂O", "半反応式"]),
         ],
       },
     ],

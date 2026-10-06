@@ -1,9 +1,11 @@
-import { LEARNING_KEYS, readLearningData, updateLearningData } from "./learningStorage";
+import { LEARNING_KEYS } from "./learningStorage";
+import { readRepositoryData as readLearningData, updateRepositoryData as updateLearningData } from "./learningRepository";
+import { canonicalId } from "./learningIds";
 export const QUESTION_HISTORY_KEY = LEARNING_KEYS[1];
 export type QuestionHistoryItem = { attemptCount: number; correctCount: number; incorrectCount: number; lastAnsweredAt: string; needsReview: boolean };
 export type QuestionHistory = Record<string, QuestionHistoryItem>;
 const emptyItem = (): QuestionHistoryItem => ({ attemptCount: 0, correctCount: 0, incorrectCount: 0, lastAnsweredAt: "", needsReview: false });
-export const questionHistoryKey = (unitSlug: string, questionId: string) => `${unitSlug}::${questionId}`;
+export const questionHistoryKey = (unitSlug: string, questionId: string) => canonicalId(QUESTION_HISTORY_KEY, `${unitSlug}::${questionId}`);
 export function readQuestionHistory(): QuestionHistory { return readLearningData<QuestionHistory>(QUESTION_HISTORY_KEY); }
 export function recordQuestionAnswer(unitSlug: string, questionId: string, correct: boolean) {
   return updateLearningData<QuestionHistory>(QUESTION_HISTORY_KEY, history => {

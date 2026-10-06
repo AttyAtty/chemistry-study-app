@@ -6,6 +6,7 @@ import type {
 } from "@/data/chemistry";
 
 export type BasicFact = {
+  learningId: string;
   term: string;
   definition: string;
   distractors: string[];
@@ -36,6 +37,7 @@ function rotate<T>(items: T[], offset: number): T[] {
 
 export function factQuestions(prefix: string, facts: BasicFact[]): QuizQuestion[] {
   return facts.flatMap((fact, index) => {
+    if (!fact.learningId) throw new Error("Basic facts require a fixed learningId");
     const explanation = fact.explanation ?? `${fact.term}：${fact.definition}`;
     const tags = fact.tags ?? [fact.term];
     const definitionChoices = rotate(
@@ -49,7 +51,7 @@ export function factQuestions(prefix: string, facts: BasicFact[]): QuizQuestion[
 
     return [
       {
-        id: `${prefix}-${index}-a`,
+        id: `${prefix}-${fact.learningId}-definition`,
         prompt: `「${fact.term}」の説明として最も適切なものはどれですか。`,
         choices: definitionChoices,
         answerIndex: definitionChoices.indexOf(fact.definition),
@@ -57,7 +59,7 @@ export function factQuestions(prefix: string, facts: BasicFact[]): QuizQuestion[
         tags,
       },
       {
-        id: `${prefix}-${index}-b`,
+        id: `${prefix}-${fact.learningId}-term`,
         prompt: `「${fact.definition}」に当てはまる用語・物質はどれですか。`,
         choices: termChoices,
         answerIndex: termChoices.indexOf(fact.term),
@@ -65,7 +67,7 @@ export function factQuestions(prefix: string, facts: BasicFact[]): QuizQuestion[
         tags,
       },
       {
-        id: `${prefix}-${index}-c`,
+        id: `${prefix}-${fact.learningId}-truth`,
         prompt: `次の記述は正しいですか。「${fact.term}は、${fact.definition}」`,
         choices: index % 2 === 0 ? ["正しい", "誤り"] : ["誤り", "正しい"],
         answerIndex: index % 2 === 0 ? 0 : 1,

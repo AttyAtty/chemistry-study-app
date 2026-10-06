@@ -1,3 +1,4 @@
+import type { LearningRow } from "@/data/learningContentIds";
 import type { ChemistryUnit } from "@/data/chemistry";
 import { electrochemistryCards } from "@/data/electrochemistry";
 import { densityLabels, gases, solubilityLabels } from "@/data/gases";
@@ -47,7 +48,7 @@ function cardsFromSections(unit: ChemistryUnit): Flashcard[] {
   unit.sections.forEach((section) => {
     if (section.kind === "cards") {
       section.entries.forEach((entry, index) => result.push({
-        id: `${unit.slug}-${section.id}-card-${index}`,
+        id: entry.learningId ? `flash-${unit.slug}-${section.id}-${entry.learningId}` : `${unit.slug}-${section.id}-card-${index}`,
         unitId: unit.slug,
         category: section.title,
         front: entry.title,
@@ -61,17 +62,19 @@ function cardsFromSections(unit: ChemistryUnit): Flashcard[] {
       section.rows.forEach((row, index) => {
         if (row.length < 2) return;
         const label = row[0];
+        const rowId = (row as LearningRow).learningId;
+        const cardId = rowId ? `flash-${unit.slug}-${section.id}-${rowId}` : `${unit.slug}-${section.id}-row-${index}`;
         const answer = row.slice(1).map((cell, cellIndex) => `${section.columns[cellIndex + 1] ?? "要点"}：${cell}`).join("\n");
         const asksForColor = section.columns.slice(1).some((column) => /色|炎色/.test(column));
-        result.push({ id: `${unit.slug}-${section.id}-row-${index}`, unitId: unit.slug, category: section.title, front: label, back: answer, tags: [section.title], answerType: asksForColor ? "color" : "text" });
+        result.push({ id: cardId, unitId: unit.slug, category: section.title, front: label, back: answer, tags: [section.title], answerType: asksForColor ? "color" : "text" });
         if (row.length === 2 && label.length <= 30 && row[1].length <= 45) {
-          result.push({ id: `${unit.slug}-${section.id}-row-${index}-reverse`, unitId: unit.slug, category: section.title, front: row[1], back: label, tags: [section.title, "双方向"] });
+          result.push({ id: `${cardId}-reverse`, unitId: unit.slug, category: section.title, front: row[1], back: label, tags: [section.title, "双方向"] });
         }
       });
     }
     if (section.kind === "flow") {
       section.flows.forEach((flow, index) => result.push({
-        id: `${unit.slug}-${section.id}-flow-${index}`,
+        id: flow.learningId ? `flash-${unit.slug}-${section.id}-${flow.learningId}` : `${unit.slug}-${section.id}-flow-${index}`,
         unitId: unit.slug,
         category: section.title,
         front: flow.title,

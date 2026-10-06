@@ -1,4 +1,5 @@
-import { LEARNING_KEYS, readLearningData, updateLearningData } from "./learningStorage";
+import { LEARNING_KEYS } from "./learningStorage";
+import { readRepositoryData as readLearningData, updateRepositoryData as updateLearningData } from "./learningRepository";
 export const PROGRESS_KEY = LEARNING_KEYS[2];
 export type UnitProgress = { attempts: number; correct: number; total: number; bestPercent: number; lastStudied: string };
 export type ProgressData = Record<string, UnitProgress>;

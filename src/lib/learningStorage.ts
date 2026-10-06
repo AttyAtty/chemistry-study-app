@@ -29,6 +29,10 @@ type RestoreJournal = {
 };
 export type PreparedRestore = { backup: LearningBackup; before: LearningBackup; backupKey: string };
 
+const changeListeners = new Set<() => void>();
+export function subscribeLearningChanges(listener: () => void) { changeListeners.add(listener); return () => { changeListeners.delete(listener); }; }
+function notifyLearningChanged() { queueMicrotask(() => { for (const listener of changeListeners) listener(); }); }
+
 const issues = new Map<string, string>();
 let issueSnapshot: readonly string[] = [];
 const listeners = new Set<() => void>();
@@ -193,14 +197,13 @@ export function updateLearningData<T>(key: LearningKey, update: (current: T) => 
     if (store.getItem(key) !== before) throw new Error("Data changed while saving");
     store.setItem(key, raw); // A failed native setItem does not replace the previous value.
     issue(key);
+    notifyLearningChanged();
     return { ok: true, value: next as T };
   } catch {
     return failure(key, `${key} を保存できませんでした。既存データは初期化していません。破損・容量不足・ブラウザの保存制限を確認してください。`);
   }
 }
-export function prepareRestore(text: string, appVersion: string, port?: StoragePort): StorageResult<PreparedRestore> {
-  const validated = validateBackup(text);
-  if (!validated.ok) return validated;
+export function archiveLearningSnapshot(appVersion: string, port?: StoragePort): StorageResult<{ before: LearningBackup; backupKey: string }> {
   try {
     const store = storage(port);
     assertNoPendingRestore(store);
@@ -210,7 +213,20 @@ export function prepareRestore(text: string, appVersion: string, port?: StorageP
     if (store.getItem(backupKey) !== null) throw new Error("Archive collision");
     store.setItem(backupKey, raw);
     if (store.getItem(backupKey) !== raw) throw new Error("Archive verification failed");
-    return { ok: true, value: { backup: validated.value, before, backupKey } };
+    issue("archive");
+    return { ok: true, value: { before, backupKey } };
+  } catch { return failure("archive", "原文の自動バックアップを保存できません。既存データは変更していません。"); }
+}
+
+export function prepareRestore(text: string, appVersion: string, port?: StoragePort): StorageResult<PreparedRestore> {
+  const validated = validateBackup(text);
+  if (!validated.ok) return validated;
+  try {
+    const store = storage(port);
+    assertNoPendingRestore(store);
+    const archived = archiveLearningSnapshot(appVersion, store);
+    if (!archived.ok) return archived;
+    return { ok: true, value: { backup: validated.value, ...archived.value } };
   } catch { return failure("restore", "復元前の自動バックアップを保存できません。学習データには変更せず、復元を中止しました。"); }
 }
 function targetSnapshot(prepared: PreparedRestore): RawSnapshot {
@@ -245,6 +261,7 @@ function rollback(journal: RestoreJournal, port: StoragePort): boolean {
     if (!equal(snapshot(port), before)) throw new Error("Rollback verification failed");
     writeJournal({ ...journal, status: "rolled-back" }, port);
     issue("restore");
+    notifyLearningChanged();
     return true;
   } catch { return false; }
 }
@@ -273,6 +290,7 @@ export function applyRestore(prepared: PreparedRestore, port?: StoragePort): Sto
     writeJournal({ ...journal, status: "committed" }, store);
     for (const key of LEARNING_KEYS) issue(key);
     issue("restore");
+    notifyLearningChanged();
     return { ok: true, value: undefined };
   } catch (error) {
     const recovered = started && journal && store ? rollback(journal, store) : false;
@@ -291,6 +309,7 @@ export function recoverPendingRestore(port?: StoragePort): StorageResult<void> {
     if (!rollback(journal, store)) throw new Error("Recovery failed");
     for (const key of LEARNING_KEYS) issue(key);
     issue("restore");
+    notifyLearningChanged();
     return { ok: true, value: undefined };
   } catch { return failure("restore", "元データへの復旧を完了できません。自動バックアップは保持しています。別タブを閉じ、空き容量・保存制限を確認して再試行してください。"); }
 }

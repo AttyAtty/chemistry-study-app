@@ -1,4 +1,6 @@
-import { LEARNING_KEYS, readLearningData, updateLearningData } from "./learningStorage";
+import { LEARNING_KEYS } from "./learningStorage";
+import { readRepositoryData as readLearningData, updateRepositoryData as updateLearningData } from "./learningRepository";
+import { canonicalId } from "./learningIds";
 export const FLASHCARD_PROGRESS_KEY = LEARNING_KEYS[0];
 export const FLASHCARD_REVIEW_INTERVAL_DAYS = [1,3,7,14] as const;
 export const FLASHCARD_SESSION_RETRY_LIMIT = 2;
@@ -37,6 +39,7 @@ export function scheduleFlashcardReview(previous:FlashcardProgressEntry|undefine
 }
 
 export function saveFlashcardStatus(cardId:string,status:FlashcardStatus,now=new Date()) {
+  cardId = canonicalId(FLASHCARD_PROGRESS_KEY, cardId);
   return updateLearningData<FlashcardProgressData>(FLASHCARD_PROGRESS_KEY, progress => {
     if (!cardId || (status !== "known" && status !== "review") || Number.isNaN(now.getTime())) throw new Error("Invalid card result");
     const previous = Object.prototype.hasOwnProperty.call(progress, cardId) ? progress[cardId] : undefined;

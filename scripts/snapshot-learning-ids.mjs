@@ -41,6 +41,53 @@ const mapIds = [
 const ids = units.flatMap(u => u.flashcards.map(c => c.id));
 const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
 const output = { schemaVersion: 1, purpose: "Phase 1 ID/content baseline; NOT user data", units, reactions, inorganicReactions, inorganicSubstances, compounds, mapIds, duplicateFlashcardIds: [...new Set(duplicates)] };
+
+const baseline=JSON.parse(fs.readFileSync("docs/verification/phase1-id-baseline.json","utf8"));
+const migration=load("src/data/learningIdMigrationMap.ts").learningIdMigrationMap;
+if(units.length!==baseline.units.length)throw new Error("Unit count changed");
+for(const before of baseline.units){
+ const after=units.find(unit=>unit.slug===before.slug);
+ if(!after||after.questions.length!==before.questions.length||after.flashcards.length!==before.flashcards.length)throw new Error("Curriculum count changed: "+before.slug);
+ for(const collection of ["questions","flashcards"]){
+  const current=new Map(after[collection].map(item=>[item.id,item]));
+  if(current.size!==after[collection].length)throw new Error("Duplicate ID");
+  for(const item of before[collection]){
+   const newId=(collection==="questions"?migration.questionIds:migration.flashcards)[item.id]??item.id;
+   if(current.get(newId)?.fingerprint!==item.fingerprint)throw new Error("Unexpected ID/content change: "+item.id);
+  }
+ }
+}
+for(const collection of ["reactions","inorganicReactions","inorganicSubstances","compounds","mapIds"])
+ if(JSON.stringify(output[collection])!==JSON.stringify(baseline[collection]))throw new Error("Display/source identities changed: "+collection);
+output.schemaVersion=2;output.purpose="Phase 2 ID comparison; Phase 1 baseline preserved";
+
 fs.mkdirSync("docs/verification", { recursive: true });
-fs.writeFileSync("docs/verification/phase1-id-baseline.json", JSON.stringify(output, null, 2) + "\n", "utf8");
+fs.writeFileSync("docs/verification/phase2-id-baseline.json", JSON.stringify(output, null, 2) + "\n", "utf8");
 console.log(JSON.stringify({ units: units.length, questions: units.reduce((n,u) => n + u.questions.length, 0), flashcards: ids.length, reactions: reactions.length, inorganicReactions: inorganicReactions.length, mapReferences: mapIds.length, duplicateFlashcardIds: output.duplicateFlashcardIds }));
+
+const oldQuestions=baseline.units.flatMap(unit=>unit.questions.map(item=>item.historyKey));
+const oldCards=baseline.units.flatMap(unit=>unit.flashcards.map(item=>item.id));
+const classification={
+ schemaVersion:1,purpose:"Phase 2 ID audit; categories overlap; not user data",
+ A:{description:"Explicit source IDs retained; generated semantic IDs are literal learningId fields after this change",
+ questions:oldQuestions.filter(id=>!Object.hasOwn(migration.questionHistory,id)&&!id.includes("organic-reaction-")),
+ flashcards:oldCards.filter(id=>!Object.hasOwn(migration.flashcards,id)&&!id.startsWith("organic-reaction-")),
+ },
+ B:{description:"Baseline order-derived IDs replaced in the canonical view; original aliases are retained",
+ questions:Object.keys(migration.questionHistory),flashcards:Object.keys(migration.flashcards)},
+ C:{description:"Text-sensitive organic hashes retained this phase; fix graph source identities together in a later migration",
+ reactions:baseline.reactions.map(item=>item.id),
+ compounds:baseline.compounds.filter(item=>item.id.startsWith("organic-")).map(item=>item.id),
+ questions:oldQuestions.filter(id=>id.includes("organic-reaction-")),
+ flashcards:oldCards.filter(id=>id.startsWith("organic-reaction-"))},
+ D:{description:"Slug/prefix/section names are frozen; any future rename needs aliases",
+ units:baseline.units.map(unit=>unit.slug),questionHistoryFormat:"unitSlug::questionId",
+ flashcardFormat:"unitSlug/section.id or unitSlug/question.id; explicit learningId suffix"},
+ E:{description:"ID migration implemented as verified IndexedDB copy; localStorage IDs are preserved",migrationId:migration.migrationId,
+ questionAliases:Object.keys(migration.questionHistory).length,flashcardAliases:Object.keys(migration.flashcards).length},
+ F:{description:"No renaming of explicit IDs, organic graph hashes, display-only Reaction Map IDs or unsaved memory quiz IDs",
+ mapIds:baseline.mapIds.map(item=>item.id),unsavedMemoryQuiz:"flash-card.id-field-index; no current persistent history"}
+};
+fs.writeFileSync("docs/verification/phase2-id-classification.json",JSON.stringify(classification,null,2)+"\n","utf8");
+if(ids.some(id=>/-(card|row|flow)-[0-9]+(-reverse)?$/.test(id)))throw new Error("Order-derived flashcard ID remains");
+console.log(JSON.stringify({questionAliases:classification.E.questionAliases,flashcardAliases:classification.E.flashcardAliases,unchangedHashQuestions:classification.C.questions.length}));

@@ -1,3 +1,4 @@
+import { learningRow } from "@/data/learningContentIds";
 import type { QuizQuestion, StudySection } from "@/data/chemistry";
 import type { Flashcard } from "@/data/flashcards";
 import type { ReactionMap, ReactionNode, ReactionStep } from "@/data/reactionMaps";
@@ -92,11 +93,11 @@ export const expandedInorganicReactionMaps:ReactionMap[]=[
  {id:"chromium-redox",title:"クロムの酸化還元・平衡",category:"inorganic",paths:mapPaths("Cr",[["cr2o7","cr3","dichromate-acid"],["cro4","cr2o7","chromate-equilibrium"]])}
 ];
 
-const rowsFor=(element:InorganicSubstance["element"])=>inorganicSubstances.filter(x=>x.element===element&&x.importance!=="advanced").map(x=>[x.name,x.formula,x.aliases?.join("・")||"—",x.properties?.join("・")||"—"]);
-export const inorganicIndustrialSection:StudySection={id:"inorganic-process-links",title:"7元素をつなぐ工業的製法・定性分析",kind:"table",columns:["テーマ","出発物質・試薬","生成物・観察","条件・要点"],rows:inorganicReactions.filter(r=>r.processName&&r.importance!=="advanced").map(r=>[r.processName!,r.reactants.join(" + "),r.products.join(" + "),[...(r.conditions??[]),r.catalyst?`触媒：${r.catalyst}`:"",r.description??""].filter(Boolean).join("・")])};
+const rowsFor=(element:InorganicSubstance["element"])=>inorganicSubstances.filter(x=>x.element===element&&x.importance!=="advanced").map(x=>learningRow(x.id,[x.name,x.formula,x.aliases?.join("・")||"—",x.properties?.join("・")||"—"]));
+export const inorganicIndustrialSection:StudySection={id:"inorganic-process-links",title:"7元素をつなぐ工業的製法・定性分析",kind:"table",columns:["テーマ","出発物質・試薬","生成物・観察","条件・要点"],rows:inorganicReactions.filter(r=>r.processName&&r.importance!=="advanced").map(r=>learningRow(r.id,[r.processName!,r.reactants.join(" + "),r.products.join(" + "),[...(r.conditions??[]),r.catalyst?`触媒：${r.catalyst}`:"",r.description??""].filter(Boolean).join("・")]))};
 export const inorganicKnowledgeSections:StudySection[]=[
  ...(["Ca","Fe","N","Na","P","Si","S","Sn","Cl","Mn","Cr","O"] as const).map(element=>({id:`inorganic-${element.toLowerCase()}-knowledge`,title:`${element}系の主要物質`,description:"高校化学で重要な名称・化学式・性質を、反応データと接続して整理しています。",kind:"table" as const,columns:["物質名","化学式","慣用名・別名","性質・観察"],rows:rowsFor(element)})),
- {id:"inorganic-sulfur-advanced",title:"硫黄の状態変化（発展）",description:"通常の暗記対象とは分け、系統図の温度情報を読むための発展資料として整理しています。",kind:"table",columns:["温度・操作","主な状態","要点"],rows:[["95.5 ℃付近","斜方硫黄 ⇄ 単斜硫黄","結晶形の転移"],["119 ℃付近","淡黄色の液体硫黄","S₈環を主とする低粘性液体"],["約160 ℃以上","褐色で高粘性の液体硫黄","環が開いて鎖状Sₓが増え、粘性が上昇"],["約445 ℃","硫黄蒸気","加熱とともにS₈から小さい分子種が増える"],["高温融液を冷水へ急冷","ゴム状硫黄","褐色・弾性、放置すると斜方硫黄へ戻る"]]},
+ {id:"inorganic-sulfur-advanced",title:"硫黄の状態変化（発展）",description:"通常の暗記対象とは分け、系統図の温度情報を読むための発展資料として整理しています。",kind:"table",columns:["温度・操作","主な状態","要点"],rows:[learningRow("sulfur-crystal-transition",["95.5 ℃付近","斜方硫黄 ⇄ 単斜硫黄","結晶形の転移"]),learningRow("sulfur-melting",["119 ℃付近","淡黄色の液体硫黄","S₈環を主とする低粘性液体"]),learningRow("sulfur-polymerization",["約160 ℃以上","褐色で高粘性の液体硫黄","環が開いて鎖状Sₓが増え、粘性が上昇"]),learningRow("sulfur-boiling",["約445 ℃","硫黄蒸気","加熱とともにS₈から小さい分子種が増える"]),learningRow("sulfur-quench",["高温融液を冷水へ急冷","ゴム状硫黄","褐色・弾性、放置すると斜方硫黄へ戻る"])]},
  inorganicIndustrialSection
 ];
 

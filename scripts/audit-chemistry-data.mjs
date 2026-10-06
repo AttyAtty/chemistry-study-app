@@ -6,7 +6,7 @@ function loadData(file, modules={}) {
   const source=fs.readFileSync(file,"utf8");
   const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
   const exports={};
-  const context={exports,module:{exports},require:(id)=>modules[id]??{},console};
+  const context={exports,module:{exports},require:(id)=>id==="@/data/learningContentIds"?loadData("src/data/learningContentIds.ts"):modules[id]??{},console};
   vm.runInNewContext(code,context,{filename:file});
   return context.module.exports;
 }

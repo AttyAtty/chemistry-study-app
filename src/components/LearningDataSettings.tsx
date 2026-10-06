@@ -1,4 +1,5 @@
 "use client";
+import { StorageBackendStatus } from "./StorageBackendStatus";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { CHEMICA_VERSION } from "@/lib/appVersion";
@@ -67,6 +68,7 @@ export function LearningDataSettings() {
       </div>}
     </section>
     {archive && <section className="data-panel"><h2>復元前の自動バックアップ</h2><p>直近の復元前データは端末内に保持されています。以前の退避データも自動削除しません。端末内の退避データはサイトデータ消去で失われるため、ファイルにも保存してください。</p><div className="data-actions"><button className="button secondary" type="button" onClick={() => { try { download(archive.backup, "before-restore"); } catch { setError(true); setMessage("ダウンロードを開始できませんでした。"); } }}>直近の復元前データを保存</button>{archive.pending && <button className="button primary" type="button" onClick={recover}>中断した復元を元に戻す</button>}</div></section>}
+    <StorageBackendStatus />
     {message && <p className={`data-message ${error ? "is-error" : ""}`} role={error ? "alert" : "status"}>{message}</p>}
     <Link className="text-link" href="/progress">学習記録へ戻る →</Link>
   </main>;

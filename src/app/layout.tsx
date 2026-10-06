@@ -5,6 +5,7 @@ import { SharePanel } from "@/components/SharePanel";
 import { ChemicaAnimatedBackground } from "@/components/ChemicaAnimatedBackground";
 import { FeedbackLink } from "@/components/FeedbackLink";
 import { CHEMICA_VERSION_LABEL } from "@/lib/appVersion";
+import { LearningStorageRuntime } from "@/components/LearningStorageRuntime";
 import { StorageNotice } from "@/components/StorageNotice";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { Analytics } from "@vercel/analytics/next";
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <ChemicaAnimatedBackground />
     <Header />
     <StorageNotice />
+    <LearningStorageRuntime />
     {children}
     <MobileNavigation />
     <SharePanel />

@@ -9,7 +9,8 @@
     "lint": "eslint",
     "audit:chemistry": "node scripts/audit-chemistry-data.mjs",
     "test:storage": "node --test scripts/test-learning-storage.mjs",
-    "audit:learning-ids": "node scripts/snapshot-learning-ids.mjs"
+    "audit:learning-ids": "node scripts/snapshot-learning-ids.mjs",
+    "test:storage:phase2": "node --test scripts/test-phase2-storage.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
@@ -23,6 +24,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "fake-indexeddb": "^6.2.5",
     "typescript": "^5"
   },
   "overrides": {
