@@ -1020,3 +1020,8 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
 .pwa-update-notice{position:sticky;top:8px;z-index:100;max-width:1180px;margin:8px auto;padding:12px 20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--surface);color:var(--text);border:2px solid var(--line);border-radius:10px;box-shadow:0 4px 16px #0002}
 .pwa-update-notice button{font:inherit;padding:8px 14px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--text);cursor:pointer}
 @media(max-width:640px){.pwa-update-notice{margin:8px 12px;padding:10px 12px;top:8px}}
+
+.pwa-offline{position:fixed;top:8px;right:12px;z-index:101;margin:0;padding:3px 8px;max-width:none;border-radius:12px;background:var(--surface);font-size:11px;pointer-events:none;box-shadow:0 1px 5px #0001}
+.pwa-transient{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:101;padding:7px 12px;border-radius:8px;background:var(--surface);color:var(--text);font-size:12px;box-shadow:0 2px 10px #0002;pointer-events:none}
+.pwa-settings .button{margin-right:8px;margin-bottom:6px}
+@media(max-width:640px){.pwa-transient{bottom:calc(88px + env(safe-area-inset-bottom));max-width:calc(100% - 32px)}}

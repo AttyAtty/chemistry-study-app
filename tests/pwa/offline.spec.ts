@@ -24,11 +24,21 @@ async function launch(info:TestInfo){
  if(!profiles.has(info.testId))profiles.set(info.testId,path.resolve(".next/pwa-tests",info.project.name+"-"+randomUUID().slice(0,8)));
  return chromium.launchPersistentContext(profiles.get(info.testId)!,{channel:info.project.metadata.channel as string,headless:true,viewport:{width:1280,height:900}});
 }
+async function waitReady(page:Page){
+ await expect.poll(()=>page.evaluate(()=>new Promise<boolean>(resolve=>{
+  const worker=navigator.serviceWorker.controller;
+  if(!worker){resolve(false);return;}
+  const channel=new MessageChannel();
+  const timer=setTimeout(()=>{channel.port1.close();resolve(false);},5000);
+  channel.port1.onmessage=event=>{clearTimeout(timer);channel.port1.close();resolve(event.data.ready===true);};
+  worker.postMessage({type:"CHEMICA_STATUS"},[channel.port2]);
+ })),{timeout:90000}).toBe(true);
+}
 async function prepare(context:BrowserContext){
  const page=context.pages()[0]??await context.newPage();
  await page.goto(base+"/home");
- await expect(page.getByText("オフライン利用可能",{exact:true})).toBeVisible({timeout:90000});
- await expect(page.getByText("新しい版があります。学習を区切ってから")).toHaveCount(0);
+ await waitReady(page);
+ await expect(page.locator(".pwa-update-notice")).toHaveCount(0);
  await expect.poll(()=>page.evaluate(()=>Boolean(navigator.serviceWorker.controller))).toBe(true);
  return page;
 }
@@ -78,7 +88,7 @@ test("precache, direct offline routes, soft navigation, search, mobile and fallb
   for(const icon of manifest.icons){expect(await page.evaluate(async(url:string)=>(await fetch(url)).status,icon.src)).toBe(200);}
   await page.goto(base+"/not-cached-test");await expect(page.getByRole("heading",{name:"このページはオフラインでは開けません"})).toBeVisible();
   await page.goto(base+"/feedback");await expect(page.getByRole("heading",{name:"このページはオフラインでは開けません"})).toBeVisible();
-  await context.setOffline(false);await page.goto(base+"/home");await expect(page.getByText("オフライン利用可能",{exact:true})).toBeVisible();
+  await context.setOffline(false);await page.goto(base+"/home");await waitReady(page);await expect(page.locator(".pwa-status")).toHaveCount(0);
  }finally{await context.close();}
 });
 test("offline card/quiz/history/dirty/backup/restore and persistent browser restart",async({},info)=>{
@@ -115,7 +125,7 @@ test("offline card/quiz/history/dirty/backup/restore and persistent browser rest
   await context.close();
   context=await launch(info);await context.setOffline(true);page=context.pages()[0]??await context.newPage();
   await page.goto(base+"/home");await expect(page.locator("main")).toBeVisible();expect(await raw(page)).toEqual(before);
-  await context.setOffline(false);await expect(page.locator(".pwa-status")).not.toContainText("オフライン・端末内に保存");
+  await context.setOffline(false);await expect(page.locator(".pwa-status")).toHaveCount(0);
   expect(await raw(page)).toEqual(before);
  }finally{await context.close();}
 });
@@ -136,9 +146,9 @@ test("cache cleanup/repair leaves learning data untouched",async({},info)=>{
   expect(await raw(page)).toEqual(before);expect((await database(page)).flashcardProgress).toEqual(dbBefore.flashcardProgress);
   await context.setOffline(true);await page.goto(base+"/home");
   await expect(page.getByRole("heading",{name:"このページはまだオフライン保存されていません"})).toBeVisible();
-  await context.setOffline(false);await page.goto(base+"/home");
+  await context.setOffline(false);await page.goto(base+"/settings/data");
   await expect(page.getByRole("button",{name:"保存を再確認"})).toBeVisible();await page.getByRole("button",{name:"保存を再確認"}).click();
-  await expect(page.getByText("オフライン利用可能",{exact:true})).toBeVisible({timeout:90000});
+  await waitReady(page);
   expect(await raw(page)).toEqual(before);expect((await database(page)).flashcardProgress).toEqual(dbBefore.flashcardProgress);
  }finally{await context.close();}
 });

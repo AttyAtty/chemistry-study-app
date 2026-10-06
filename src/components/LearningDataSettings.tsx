@@ -59,6 +59,7 @@ export function LearningDataSettings() {
   };
   return <main className="page-container data-settings">
     <header className="page-intro compact"><p className="eyebrow">LEARNING DATA</p><h1>学習データのバックアップ</h1><p>学習データはログインなしで、この端末のブラウザ内に保存されます。</p></header>
+    <section className="data-panel"><h2>アプリの更新</h2><div id="pwa-settings-controls" /></section>
     <section className="data-panel"><h2>学習データをバックアップ</h2><p>暗記カードの進捗・復習予定・問題別の回答履歴・テスト集計をJSONファイルに保存します。ブラウザのサイトデータを消去する前に、ファイルを保存してください。</p><button className="button primary" type="button" onClick={exportData} disabled={busy}>JSONバックアップを保存</button></section>
     <section className="data-panel"><h2>バックアップから復元</h2><p>現在の学習データを置き換えます。ファイルを検証し、現在データを自動退避した後、確認してから復元します。空の項目では現在データを消しません。複数端末のデータの合算は行いません。復元中は別タブでの学習を止めてください。</p>
       <label className="backup-file-label" htmlFor="learning-backup">ChemicaのバックアップJSON<input id="learning-backup" ref={fileInput} type="file" accept=".json,application/json" disabled={busy || archive?.pending === true} onChange={event => { void chooseFile(event.target.files?.[0]); }} /></label>

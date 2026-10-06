@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { usePathname } from "next/navigation";
 import { PWA_BUILD_ID } from "@/lib/pwaBuild";
 import { useNetworkStatus } from "@/lib/useNetworkStatus";
 function ask(worker:ServiceWorker,type:string):Promise<{version:string;ready:boolean}>{
@@ -12,6 +14,31 @@ function ask(worker:ServiceWorker,type:string):Promise<{version:string;ready:boo
 }
 export function PwaStatus(){
   const online=useNetworkStatus();
+  const pathname=usePathname();
+  const [settingsHost,setSettingsHost]=useState<HTMLElement|null>(null);
+  const [feedbackVisible,setFeedbackVisible]=useState(false);
+  const [updatedNotice,setUpdatedNotice]=useState(false);
+  // Presentation-only marker for a user-requested reload; never learning storage.
+  const rememberUpdate=()=>{
+    try{sessionStorage.setItem("chemica-pwa-update-notice",PWA_BUILD_ID);}catch{}
+  };
+  useEffect(()=>{
+    const timer=window.setTimeout(()=>setSettingsHost(pathname==="/settings/data"?document.getElementById("pwa-settings-controls"):null),0);
+    return()=>window.clearTimeout(timer);
+  },[pathname]);
+  useEffect(()=>{
+    let hide:number|undefined;
+    const timer=window.setTimeout(()=>{
+      try{
+        const previous=sessionStorage.getItem("chemica-pwa-update-notice");
+        sessionStorage.removeItem("chemica-pwa-update-notice");
+        if(previous&&previous!==PWA_BUILD_ID){
+          setUpdatedNotice(true);hide=window.setTimeout(()=>setUpdatedNotice(false),2500);
+        }
+      }catch{}
+    },0);
+    return()=>{window.clearTimeout(timer);if(hide!==undefined)window.clearTimeout(hide);};
+  },[]);
   const [ready,setReady]=useState(false);
   const [failed,setFailed]=useState(false);
   const [updating,setUpdating]=useState(false);
@@ -19,6 +46,11 @@ export function PwaStatus(){
   const [versionMismatch,setVersionMismatch]=useState(false);
   const [checking,setChecking]=useState(false);
   const [checkResult,setCheckResult]=useState("");
+  useEffect(()=>{
+    if(!feedbackVisible||!checkResult||checking)return;
+    const timer=window.setTimeout(()=>setFeedbackVisible(false),2500);
+    return()=>window.clearTimeout(timer);
+  },[feedbackVisible,checkResult,checking]);
   const registration=useRef<ServiceWorkerRegistration|null>(null);
   const reloadRequested=useRef<ServiceWorker|null>(null);
   const checkForUpdate=useRef<(()=>Promise<void>)|null>(null);
@@ -75,7 +107,7 @@ export function PwaStatus(){
     };
     const onController=()=>{
       if(reloadRequested.current&&navigator.serviceWorker.controller===reloadRequested.current){
-        reloadRequested.current=null;window.location.reload();return;
+        reloadRequested.current=null;try{sessionStorage.setItem("chemica-pwa-update-notice",PWA_BUILD_ID);}catch{}window.location.reload();return;
       }
       void check();
     };
@@ -121,22 +153,25 @@ export function PwaStatus(){
     if(registration.current?.waiting){
       reloadRequested.current=registration.current.waiting;
       registration.current.waiting.postMessage({type:"CHEMICA_SKIP_WAITING"});
-    }else window.location.reload();
+    }else{rememberUpdate();window.location.reload();}
   };
   const manuallyCheck=async()=>{
-    setChecking(true);setCheckResult("");
+    setChecking(true);setCheckResult("");setFeedbackVisible(true);
     try{await checkForUpdate.current?.();}finally{setChecking(false);}
   };
-  if(process.env.NODE_ENV!=="production")return online?null:<div className="pwa-status">オフライン・端末内に保存</div>;
-  return <><div className="pwa-status no-print" aria-live="polite">
-    <span>{!online?"オフライン・端末内に保存":ready?"オフライン利用可能":failed?"オフライン保存を準備できませんでした":"オフライン保存を準備中…"}</span>
-    {failed&&online&&"serviceWorker" in navigator&&<button type="button" onClick={()=>{void repair();}} disabled={updating}>{updating?"保存確認中…":"保存を再確認"}</button>}
-    {"serviceWorker" in navigator&&<button type="button" onClick={()=>{void manuallyCheck();}} disabled={!online||checking}>{checking?"更新を確認中…":"更新を確認"}</button>}
-    {checkResult&&<span>{checkResult}</span>}
-    {versionMismatch&&!newVersion&&<span>表示中のアプリとオフライン保存の版が異なります。更新を確認してください。</span>}
-  </div>
+  if(process.env.NODE_ENV!=="production")return online?null:<div className="pwa-status pwa-offline no-print">オフライン</div>;
+  return <>
+    {!online&&<div className="pwa-status pwa-offline no-print" role="status">オフライン</div>}
+    {(checking||updatedNotice)&&<div className="pwa-transient no-print" role="status" aria-live="polite">{updatedNotice?"更新しました":"更新を確認中…"}</div>}
+    {settingsHost&&createPortal(<div className="pwa-settings" aria-live="polite">
+      <p>{!online?"オフラインです":ready?"オフライン利用可能":failed?"オフライン保存を準備できませんでした":"オフライン保存を準備中…"}</p>
+      {"serviceWorker" in navigator&&<button className="button secondary" type="button" onClick={()=>{void manuallyCheck();}} disabled={!online||checking}>{checking?"更新を確認中…":"更新を確認"}</button>}
+      {failed&&online&&"serviceWorker" in navigator&&<button className="button secondary" type="button" onClick={()=>{void repair();}} disabled={updating}>{updating?"保存確認中…":"保存を再確認"}</button>}
+      {feedbackVisible&&!checking&&checkResult&&<p>{checkResult}</p>}
+      {versionMismatch&&!newVersion&&<p>表示中のアプリとオフライン保存の版が異なります。更新を確認してください。</p>}
+    </div>,settingsHost)}
     {newVersion&&<div className="pwa-update-notice no-print" role="status" aria-live="polite">
-      <span>新しい版があります。学習を区切ってから再読み込みしてください。</span>
+      <span>新しいバージョンがあります。学習を区切ってから再読み込みしてください。</span>
       <button type="button" onClick={update}>再読み込み</button>
     </div>}
   </>;

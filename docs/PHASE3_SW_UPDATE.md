@@ -97,3 +97,31 @@ navigator.serviceWorker.addEventListener("controllerchange", () => console.log("
 - 最終UUIDはNext BUILD_ID、pwaBuild.ts、sw.js、precache対象23ページすべてで一致。
 - docs/verification/phase3-precache.jsonはbuild生成に伴い最新UUID/assetsへ更新。
 - 本番deploy / commit / pushは行っていない。実機PWAと本番更新は上記手動手順で確認する。
+
+## 更新UI整理（2026-10-07、最新の表示仕様）
+上記調査後、常設ステータス表示を整理した。Worker本体、登録/更新確認/waiting/activate/skipWaiting/controllerchangeの切替条件、更新確認周期は変更していない。
+
+| 状態 | 通常画面の表示 |
+| --- | --- |
+| 通常・オンライン | 更新関連の表示なし |
+| オフライン | 右上の小さな「オフライン」。pointer-events:noneで操作を妨げない |
+| 手動更新確認中 | 小さな「更新を確認中…」。確認完了後は消える |
+| 新版waiting | 「新しいバージョンがあります」と「再読み込み」。操作まで通知を維持 |
+| 手動reload後に別buildへ切替 | 「更新しました」を2.5秒表示して消す |
+
+「更新を確認」、オフライン保存状態、失敗時の「保存を再確認」、版不一致の説明は /settings/data の「アプリの更新」に移した。手動確認結果もその設定内で2.5秒だけ表示し、自動チェック結果を常設しない。通常画面で更新チェックだけを実行してもreloadしない。
+
+更新完了の表示判定にはsessionStorageの専用key chemica-pwa-update-noticeを使う。手動reload直前のbuild IDを一時記録し、reload後にIDが変わった場合だけ完了通知を出してkeyを削除する。同じbuildのreloadや自動チェック完了を「更新しました」とは扱わない。sessionStorage使用不可なら表示を省略するだけで、切替処理を妨げない。localStorage/IndexedDB/学習保存層には変更なし。
+
+通常画面に「オフライン利用可能」は出ないため、本番手順の保存準備確認は /settings/data で行う。テストはUI文言ではなくCHEMICA_STATUSのready応答で準備完了を待つ。既存のoffline操作・データ保持・cache repairの検証は維持した。
+
+検証:
+- npm run build / npm run lint / npm run typecheck: 成功。
+- npm run test:pwa: 14/14成功。
+- 既存offline browser: Chrome/Edge計8件成功。
+- 更新UI/実Worker更新: Chrome/Edge計6件成功。
+- UIテストは通常表示なし、オフライン表示、設定内のボタン、更新通知維持、明示操作だけのdocument reload、完了通知の2.5秒後消去を確認。
+- スマホのoffline/新版/完了通知のスクリーンショットを確認。完了通知は下部ナビ上に配置。
+- テストのreload計測はframenavigated（履歴更新も含む）から実documentのloadへ補正。
+- public/sw.jsとprecache一覧は通常buildで再生成。Worker template/UUID生成スクリプト/Next設定/学習保存層の差分なし。
+- 本番deploy / commit / pushは未実施。

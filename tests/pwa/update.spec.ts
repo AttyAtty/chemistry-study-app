@@ -92,6 +92,18 @@ for(const initialWaiting of [true,false]){
       },changeController(){container.dispatchEvent(new Event("controllerchange"));}});
     },{initialWaiting});
     const page=await context.newPage();await page.goto("/home");
+    await expect(page.getByRole("button",{name:"更新を確認",exact:true})).toHaveCount(0);
+    await expect(page.locator(".pwa-status")).toHaveCount(0);
+    await expect(page.locator(".pwa-transient")).toHaveCount(0);
+    if(!initialWaiting){
+      await page.screenshot({path:info.outputPath("normal-mobile.png"),animations:"disabled"});
+      await context.setOffline(true);
+      await expect(page.locator(".pwa-offline")).toHaveText("オフライン");
+      await page.screenshot({path:info.outputPath("offline-mobile.png"),animations:"disabled"});
+      await context.setOffline(false);
+      await expect(page.locator(".pwa-offline")).toHaveCount(0);
+    }
+    await page.goto("/settings/data");
     await expect(page.getByRole("button",{name:"更新を確認",exact:true})).toBeVisible();
     if(!initialWaiting){
       await expect(page.locator(".pwa-update-notice")).toHaveCount(0);
@@ -99,16 +111,27 @@ for(const initialWaiting of [true,false]){
     }
     const notice=page.locator(".pwa-update-notice");
     await expect(notice).toBeVisible();
-    let navigations=0;page.on("framenavigated",frame=>{if(frame===page.mainFrame())navigations++;});
+    let navigations=0;page.on("load",()=>{navigations++;});
     await page.evaluate(()=>(window as unknown as {changeController:()=>void}).changeController());
     await page.getByRole("button",{name:"更新を確認",exact:true}).click();
     await page.evaluate(()=>{window.dispatchEvent(new Event("focus"));document.dispatchEvent(new Event("visibilitychange"));window.scrollTo(0,document.body.scrollHeight);});
     await page.waitForTimeout(1500);
     await expect(notice).toBeVisible();
+    await expect(notice).toContainText("新しいバージョンがあります");
+    await page.screenshot({path:info.outputPath("update-mobile.png"),animations:"disabled"});
+    await expect(page.getByText("新版の準備ができました",{exact:true})).toHaveCount(0,{timeout:5000});
     expect(await notice.evaluate(el=>el.getBoundingClientRect().top)).toBeGreaterThanOrEqual(0);
     expect(navigations).toBe(0);
-    await Promise.all([page.waitForEvent("framenavigated"),notice.getByRole("button",{name:"再読み込み",exact:true}).click()]);
+    await Promise.all([page.waitForEvent("load"),notice.getByRole("button",{name:"再読み込み",exact:true}).click()]);
     expect(navigations).toBe(1);
+    if(!initialWaiting){
+      // UI-only previous-build marker; no learning storage is touched.
+      await page.evaluate(()=>sessionStorage.setItem("chemica-pwa-update-notice","previous-build"));
+      await page.goto("/home");
+      await expect(page.locator(".pwa-transient")).toHaveText("更新しました");
+      await page.screenshot({path:info.outputPath("updated-mobile.png"),animations:"disabled"});
+      await expect(page.locator(".pwa-transient")).toHaveCount(0,{timeout:5000});
+    }
   }finally{await context.close();}
  });
 }
