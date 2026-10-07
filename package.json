@@ -16,9 +16,12 @@
     "predev": "node scripts/prepare-pwa.mjs --dev",
     "typecheck": "node scripts/prepare-pwa.mjs --check && tsc --noEmit --incremental false",
     "test:pwa": "node --test scripts/test-service-worker.mjs",
-    "test:pwa:browser": "playwright test"
+    "test:pwa:browser": "playwright test",
+    "test:supabase": "node --test scripts/test-supabase-foundation.mjs",
+    "check:supabase": "node scripts/check-supabase-connection.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.117.3",
     "@vercel/analytics": "^2.0.1",
     "next": "16.2.10",
     "react": "19.2.4",
@@ -36,5 +39,8 @@
   },
   "overrides": {
     "postcss": "8.5.10"
+  },
+  "engines": {
+    "node": ">=22.0.0"
   }
 }

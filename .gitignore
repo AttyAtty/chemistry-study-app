@@ -47,3 +47,6 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 /.phase3-browser-profile/
+
+# Safe, empty environment template only
+!/.env.local.example
