@@ -4,7 +4,7 @@ const version=fs.readFileSync(".next/BUILD_ID","utf8").trim();
 const buildSource=fs.readFileSync("src/lib/pwaBuild.ts","utf8");
 if(!buildSource.includes(JSON.stringify(version)))throw new Error("PWA/Next build ID mismatch");
 const prerender=JSON.parse(fs.readFileSync(".next/prerender-manifest.json","utf8"));
-const routes=Object.keys(prerender.routes).filter(route=>!route.startsWith("/_") && !route.startsWith("/api/") && fs.existsSync(path.join(".next/server/app",route==="/"? "index.html":route.slice(1)+".html"))).sort();
+const routes=Object.keys(prerender.routes).filter(route=>!route.startsWith("/_") && !route.startsWith("/api/") && route!=="/auth" && !route.startsWith("/auth/") && fs.existsSync(path.join(".next/server/app",route==="/"? "index.html":route.slice(1)+".html"))).sort();
 for(const route of ["/","/home","/quiz","/search","/progress","/settings/data","/offline","/courses/chemistry-basic","/tools/memory-quiz","/flashcards/review"])
  if(!routes.includes(route))throw new Error("Required offline route is not prerendered: "+route);
 function walk(folder){return fs.readdirSync(folder,{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?walk(path.join(folder,entry.name)):[path.join(folder,entry.name)]);}

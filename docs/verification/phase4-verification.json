@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-08",
+  "implementation": "Phase 4 latter half",
+  "buildId": "d7b409a8-ccfc-4961-b86a-cd1b261e2932",
+  "checks": {
+    "build": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "test:storage": {
+      "passed": 35
+    },
+    "test:storage:phase2": {
+      "passed": 25
+    },
+    "test:pwa": {
+      "passed": 15
+    },
+    "test:supabase": {
+      "passed": 8
+    },
+    "test:phase4": {
+      "passed": 19,
+      "rlsEngine": "PGlite PostgreSQL, real migration SQL, simulated JWT auth context"
+    },
+    "test:pwa:browser": {
+      "phase3Passed": 14,
+      "phase4Passed": 8,
+      "browsers": [
+        "Chrome",
+        "Edge"
+      ],
+      "phase4AuthAndREST": "mock",
+      "offlineLogoutNetworkFailure": "passed in Chrome and Edge",
+      "runs": [
+        "full suite 18 passed",
+        "expanded auth suite 8 passed",
+        "offline logout extension 2 passed"
+      ],
+      "uniquePassed": 22
+    },
+    "audit:chemistry": "passed",
+    "audit:learning-ids": {
+      "passed": true,
+      "units": 13,
+      "questions": 744,
+      "flashcards": 763,
+      "duplicateFlashcardIds": []
+    },
+    "liveRlsScriptSyntax": "passed",
+    "git diff --check": "passed"
+  },
+  "unverified": [
+    "Production migration application",
+    "Email OTP template and SMTP configuration",
+    "Real email OTP login and session refresh against Supabase",
+    "Production two-account CRUD/RLS isolation",
+    "Production cloud upload"
+  ],
+  "deployed": false,
+  "scope": "local-first, optional Auth, per-user cloud writes, explicit initial upload; no full multi-device sync"
+}

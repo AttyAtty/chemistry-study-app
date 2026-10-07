@@ -51,3 +51,8 @@ export function startLearningStorage(version:string){
   void refreshIndexedDb();
   return()=>{if(--active===0){unsubscribe();window.removeEventListener("storage",onStorage);window.removeEventListener("online",onChange);}};
 }
+
+export function getVerifiedCopyForCloud(){
+  try{if(cache&&sourceMatches(cache.metadata.source,window.localStorage))return JSON.parse(JSON.stringify(cache)) as VerifiedCopy;}catch{}
+  return undefined;
+}

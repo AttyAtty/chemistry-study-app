@@ -18,7 +18,9 @@
     "test:pwa": "node --test scripts/test-service-worker.mjs",
     "test:pwa:browser": "playwright test",
     "test:supabase": "node --test scripts/test-supabase-foundation.mjs",
-    "check:supabase": "node scripts/check-supabase-connection.mjs"
+    "check:supabase": "node scripts/check-supabase-connection.mjs",
+    "test:phase4": "node --test scripts/test-phase4-cloud.mjs scripts/test-phase4-rls.mjs",
+    "check:phase4:rls": "node scripts/check-phase4-live-rls.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",
@@ -28,6 +30,7 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@playwright/test": "^1.63.0",
     "@types/node": "^20",
     "@types/react": "^19",

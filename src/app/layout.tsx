@@ -1,3 +1,4 @@
+import { AccountRuntime } from "@/components/AccountRuntime";
 import { PwaStatus } from "@/components/PwaStatus";
 import { PWA_BUILD_ID } from "@/lib/pwaBuild";
 import type { Metadata } from "next";
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <Header />
     <StorageNotice />
     <LearningStorageRuntime />
+    <AccountRuntime />
     <PwaStatus />
     {children}
     <MobileNavigation />

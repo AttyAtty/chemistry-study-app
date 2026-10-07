@@ -4,7 +4,7 @@ const PRECACHE = PREFIX + CONFIG.version + ":precache";
 const RUNTIME = PREFIX + CONFIG.version + ":runtime";
 const READY = "/__chemica_offline_ready__";
 const origin = self.location.origin;
-const excluded = path => path === "/sw.js" || path.startsWith("/api/") || path.startsWith("/_vercel/");
+const excluded = path => path === "/sw.js" || path === "/auth" || path.startsWith("/auth/") || path.startsWith("/api/") || path.startsWith("/_vercel/");
 const routePath = path => path.length > 1 ? path.replace(/\/$/, "") : path;
 const isFlight = request => request.headers.get("RSC") === "1" || new URL(request.url).searchParams.has("_rsc");
 const buildMatches = html => html.includes('name="chemica-build" content="' + CONFIG.version + '"');
@@ -96,7 +96,7 @@ self.addEventListener("activate",event=>{
 });
 self.addEventListener("fetch",event=>{
   const request=event.request,url=new URL(request.url);
-  if(url.origin!==origin || request.method!=="GET" || excluded(url.pathname))return;
+  if(url.origin!==origin || request.method!=="GET" || request.headers.has("Authorization") || excluded(url.pathname))return;
   if(isFlight(request)) {
     // Never mix router-state-dependent RSC responses with HTML.
     // Next 16's non-RSC response fallback performs a document navigation.

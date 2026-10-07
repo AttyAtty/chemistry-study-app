@@ -102,3 +102,5 @@ test("new network HTML is served online but cannot overwrite the cached edition"
  const online=await h.event("fetch",{request:h.request("/home")});assert.match(await online.text(),/another-build/);
  h.state.offline=true;const offline=await h.event("fetch",{request:h.request("/home")});assert.match(await offline.text(),/build-new/);
 });
+
+test("Auth callback, Authorization requests and Supabase data never enter runtime caches",async()=>{const h=harness();await h.event("install");for(const request of [h.request("/auth/callback"),h.request("/auth"),h.request("/home","navigate",{Authorization:"Bearer test"}),{...h.request("/rest/v1/flashcard_progress","cors"),url:"https://project.supabase.co/rest/v1/flashcard_progress"}])assert.equal(await h.event("fetch",{request}),undefined);});
