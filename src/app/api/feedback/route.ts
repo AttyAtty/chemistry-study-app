@@ -24,6 +24,33 @@ const isRateLimited = (key: string, now: number) => {
 
 const jsonError = (message: string, status: number) => NextResponse.json({ ok: false, message }, { status });
 
+// Never log provider text verbatim: it can echo credentials or request data.
+const safeResendError = (value: unknown) => {
+  const error = value && typeof value === "object" ? value as Record<string, unknown> : {};
+  const allowedNames = new Set([
+    "validation_error", "missing_api_key", "invalid_api_key", "restricted_api_key",
+    "invalid_access", "not_found", "method_not_allowed", "rate_limit_exceeded",
+    "daily_quota_exceeded", "monthly_quota_exceeded", "application_error",
+    "internal_server_error", "invalid_idempotent_request", "concurrent_idempotent_requests",
+  ]);
+  const message = typeof error.message === "string" ? error.message : "";
+  // Only fixed diagnostic labels leave this function, never matched substrings.
+  const categories: [RegExp, string][] = [
+    [/api.?key.*(invalid|missing|restricted)|(invalid|missing|restricted).*api.?key/i, "API key rejected or missing"],
+    [/domain.*(verif|validat)|(verif|validat).*domain/i, "Sender domain verification problem"],
+    [/testing emails|test.*(recipient|email address)|own email address/i, "Test-mode recipient restriction"],
+    [/from.*(invalid|required|missing)|(invalid|required|missing).*from/i, "Sender address validation problem"],
+    [/recipient|\bto\b.*(invalid|required|missing)/i, "Recipient validation problem"],
+    [/rate.?limit|too many requests/i, "Rate limit exceeded"],
+    [/quota|daily.*limit|monthly.*limit/i, "Sending quota exceeded"],
+  ];
+  return {
+    errorName: typeof error.name === "string" && allowedNames.has(error.name) ? error.name : "unrecognized_provider_error",
+    errorMessage: categories.find(([pattern]) => pattern.test(message))?.[1] ?? "Provider message withheld for privacy",
+    ...(typeof error.statusCode === "number" && Number.isInteger(error.statusCode) && error.statusCode >= 100 && error.statusCode <= 599 ? { statusCode: error.statusCode } : {}),
+  };
+};
+
 export async function POST(request: NextRequest) {
   let body: Record<string, unknown>;
   try {
@@ -62,9 +89,20 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({ from, to: [to], subject: `[Chemica] ${type}`, text, ...(email ? { reply_to: email } : {}) }),
       cache: "no-store",
     });
-    if (!response.ok) return jsonError("送信できませんでした。時間をおいて再度お試しください。", 502);
+    if (!response.ok) {
+      let providerError: unknown;
+      let responseBodyFormat = "json";
+      try {
+        providerError = await response.json();
+      } catch {
+        responseBodyFormat = "unreadable_or_non_json";
+      }
+      console.error({ provider: "resend", stage: "api_response", status: response.status, responseBodyFormat, ...safeResendError(providerError) });
+      return jsonError("送信できませんでした。時間をおいて再度お試しください。", 502);
+    }
     return NextResponse.json({ ok: true });
   } catch {
+    console.error({ provider: "resend", stage: "request_exception", errorName: "request_failed", errorMessage: "Request failed without a usable response" });
     return jsonError("送信できませんでした。時間をおいて再度お試しください。", 502);
   }
 }
