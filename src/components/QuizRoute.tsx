@@ -19,23 +19,23 @@ export function QuizRoute() {
       <main className="page-container">
         <section className="page-intro compact">
           <p className="eyebrow">QUIZ SELECT</p>
-          <h1>テストを選ぶ</h1>
+          <h1>問題演習を選ぶ</h1>
           <p>単元と問題数を選択してください。</p>
         </section>
         <div className="quiz-select-grid">
           <article className="quiz-select-card featured">
             <span className="unit-icon">🧠</span>
-            <h2>総合テスト</h2>
-            <p>カテゴリの偏りを抑えて、すべての単元から出題します。</p>
+            <h2>総合演習</h2>
+            <p>カテゴリの偏りを抑えて各単元から出題します。化学基礎総合の別枠問題は含みません。</p>
             <div className="quiz-count-links">
               <Link className="button primary" href="/quiz?unit=all">出題条件を選ぶ</Link>
             </div>
           </article>
           <article className="quiz-select-card">
             <span className="unit-icon">📝</span>
-            <h2>暗記小テストメーカー</h2>
-            <p>既存教材から記述式10問を作り、A4の問題・解答を印刷できます。</p>
-            <div className="quiz-count-links"><Link className="button secondary" href="/tools/memory-quiz">小テストを作る</Link></div>
+            <h2>印刷小テスト</h2>
+            <p>分野・範囲・問題数を選んで記述問題を作り、問題と解答を印刷できます。</p>
+            <div className="quiz-count-links"><Link className="button secondary" href="/tools/memory-quiz">印刷小テストを作る</Link></div>
           </article>
           {chemistryUnits.map((unit) => (
             <article className="quiz-select-card" key={unit.slug}>
@@ -55,7 +55,7 @@ export function QuizRoute() {
   if (unitSlug === "all") {
     return (
       <main className="page-container">
-        <QuizClient key={`${unitSlug}-${count}-${mode}`} questionPool={getAllQuestions()} unitSlug="all" unitTitle="総合テスト" initialCount={count} initialMode={mode}/>
+        <QuizClient key={`${unitSlug}-${count}-${mode}`} questionPool={getAllQuestions()} unitSlug="all" unitTitle="総合演習" initialCount={count} initialMode={mode}/>
       </main>
     );
   }
@@ -66,7 +66,7 @@ export function QuizRoute() {
         <QuizClient key={`${unitSlug}-${count}-${mode}`}
           questionPool={chemistryBasicComprehensiveQuestions}
           unitSlug="chemistry-basic-comprehensive"
-          unitTitle="化学基礎 総合テスト"
+          unitTitle="化学基礎 総合演習"
           initialCount={count}
           initialMode={mode}
         />

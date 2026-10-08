@@ -43,6 +43,36 @@ async function seed(page:Page){
  await page.evaluate(key=>localStorage.setItem(key,JSON.stringify({"phase4-browser-card":{status:"known",lastReviewedAt:"2026-10-08T00:00:00Z"}})),learningKey);
  await page.reload();
 }
+test("OTP displays destination, resends, changes email, handles expired code and returns to source", async ({}, info) => {
+ const context = await launch(info);
+ try {
+  const page = await context.newPage(); await mocks(page);
+  await page.goto("/settings/data?returnTo=%2Fprogress");
+  await page.getByLabel("メールアドレス", {exact:true}).fill("a@example.test");
+  await page.getByRole("button", {name:"確認コードを送信",exact:true}).click();
+  await expect(page.getByText(/送信先：a@example.test/)).toBeVisible();
+  await expect(page.getByLabel("メールアドレス", {exact:true})).toHaveAttribute("readonly", "");
+  await expect(page.getByRole("button", {name:/再送まで/})).toBeDisabled();
+  await page.clock.install(); await page.clock.fastForward(61000);
+  await page.getByRole("button", {name:"コードを再送する",exact:true}).click();
+  await expect(page.getByText("確認コードを再送しました。", {exact:true})).toBeVisible();
+  await page.getByRole("button", {name:"メールアドレスを変更",exact:true}).click();
+  await expect(page.getByLabel("確認コード", {exact:true})).toHaveCount(0);
+  await page.getByLabel("メールアドレス", {exact:true}).fill("b@example.test");
+  await page.getByRole("button", {name:"確認コードを送信",exact:true}).click();
+  await page.route("**/auth/v1/verify", async route => route.fulfill({status:403,json:{code:"otp_expired",message:"Token has expired or is invalid"}}));
+  await page.getByLabel("確認コード", {exact:true}).fill("000000");
+  await page.getByRole("button", {name:"コードでログイン",exact:true}).click();
+  await expect(page.locator(".account-settings [role='alert']")).toContainText("無効、または期限切れ");
+  await page.unroute("**/auth/v1/verify");
+  await page.getByLabel("確認コード", {exact:true}).fill("123456");
+  await page.getByRole("button", {name:"コードでログイン",exact:true}).click();
+  await expect(page.getByText("メール認証でログイン中：b@example.test",{exact:true})).toBeVisible();
+  await page.getByRole("link", {name:"元のページへ戻る",exact:true}).click();
+  await expect(page).toHaveURL(/\/progress$/);
+  await expect(page.locator(".account-status")).toContainText("ログイン済み・クラウド保存未設定");
+ } finally { await context.close(); }
+});
 test("email OTP session survives reload; explicit cloud upload, logout keeps local and B is blocked",async({},info)=>{
  const context=await launch(info);
  try{

@@ -1,8 +1,10 @@
 "use client";
+import { DataSettingsLink } from "@/components/DataSettingsLink";
 
 import Link from "next/link";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import type { ChemistryUnit } from "@/data/chemistry";
+import { HomeStudyActions } from "./HomeStudyActions";
 import { ChemicaLogo } from "@/components/ChemicaLogo";
 import { ColoredChemText } from "@/components/ColoredChemText";
 import { dailyIons, dailyPrecipitates, dailyReactions, localDateSeed } from "@/data/dailyChemistry";
@@ -34,13 +36,9 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
     <section className="hero home-hero home-dashboard-hero">
       <div className="home-brand-center"><ChemicaLogo variant="hero" showTagline /></div>
       <section className="home-quick-start" aria-labelledby="quick-start-title">
-        <div><p className="eyebrow">QUICK START</p><h1 id="quick-start-title">今すぐ使う</h1></div>
+        <div><p className="eyebrow">QUICK START</p><h1 id="quick-start-title">今日の学習</h1></div>
         <form className="home-dashboard-search" action="/search"><label htmlFor="home-knowledge-search">Chemica全体検索</label><div><input id="home-knowledge-search" name="q" type="search" placeholder="Fe³⁺、KMnO₄、ベンゼン…"/><button type="submit">検索</button></div></form>
-        <div className="home-quick-actions">
-          <Link href="/flashcards/review?flashcards=due"><strong>今日の復習</strong><span>期限の来た暗記カード</span></Link>
-          <Link href="/quiz?unit=all&count=10"><strong>10問チャレンジ</strong><span>全分野から短時間テスト</span></Link>
-          <a href="#fields"><strong>分野から学ぶ</strong><span>主要4分野を選ぶ</span></a>
-        </div>
+        <HomeStudyActions /><DataSettingsLink className="home-account-entry">ログイン・データ保存 →</DataSettingsLink>
       </section>
     </section>
 
@@ -69,7 +67,7 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
           <div className="unit-card-top"><span className="unit-number">{String(units.indexOf(unit) + 1).padStart(2, "0")}</span><span className="level-chip">{unit.level}</span></div>
           <h3>{unit.shortTitle}</h3><p>{unit.summary}</p>
           <div className="tag-row">{unit.keywords.slice(0, 3).map(keyword => <span key={keyword}>{keyword}</span>)}</div>
-          <div className="card-actions"><span className="card-link-label">学習する <span>→</span></span><Link className="mini-button card-secondary-action" href={`/quiz?unit=${unit.slug}&count=5`}>5問テスト</Link></div>
+          <div className="card-actions"><span className="card-link-label">学習する <span>→</span></span><Link className="mini-button card-secondary-action" href={`/quiz?unit=${unit.slug}&count=5`}>5問演習</Link></div>
         </article>)}
       </div>
     </section>

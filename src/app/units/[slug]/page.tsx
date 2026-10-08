@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { StudyLink as Link } from "@/components/StudyLink";
 import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/PrintButton";
 import { FlashcardDeck } from "@/components/FlashcardDeck";
 import { StudySection } from "@/components/StudySection";
 import { chemistryUnits, getUnit } from "@/data/chemistry";
 import { getFlashcardsForUnit } from "@/data/flashcards";
-import { UnitQuickActions } from "@/components/UnitQuickActions";
 import { getUnitPageArchitecture } from "@/lib/unitInformationArchitecture";
 
 export function generateStaticParams() {
@@ -16,7 +15,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const unit = getUnit(slug);
-  return { title: unit ? `${unit.title} | Chemica` : "単元 | Chemica" };
+  return { title: unit ? unit.title : "単元" };
 }
 
 export default async function UnitPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -32,37 +31,31 @@ export default async function UnitPage({ params }: { params: Promise<{ slug: str
   const detailSections=unit.sections.filter(section=>!featuredIds.has(section.id));
   const advancedSections=detailSections.filter(section=>/advanced|発展|補足|安全/.test(`${section.id}${section.title}${section.description??""}`));
   const standardDetailSections=detailSections.filter(section=>!advancedSections.includes(section));
-  const extendedQuizCount=unit.questions.length>=30?30:unit.questions.length>=20?20:5;
+
 
   return (
     <main className={`page-container${isBasic ? " chemistry-basic-print chemistry-basic-unit" : ""}`}>
       <section className="unit-hero">
         <div>
-          <Link className="back-link no-print" href={isBasic ? "/courses/chemistry-basic" : "/home"}>← {isBasic ? "化学基礎コース" : "単元一覧"}</Link>
+          <Link className="back-link no-print" href={isBasic ? "/courses/chemistry-basic" : "/home#fields"} scroll={isBasic}>← {isBasic ? "化学基礎コース" : "単元一覧"}</Link>
           <p className="eyebrow">{isBasic ? "CHEMISTRY BASICS" : "STUDY UNIT"}</p>
           <h1><span aria-hidden="true">{unit.icon}</span>{unit.title}</h1>
           <p>{unit.summary}</p>
           <div className="tag-row">{unit.keywords.map((keyword) => <span key={keyword}>{keyword}</span>)}</div>
         </div>
-        <div className="unit-quiz-panel">
-          <strong>{unit.questions.length}問収録</strong>
-          <p>教材を確認したら、問題数を選んで定着度を確認しましょう。</p>
-          <div className="quiz-count-links no-print">
-            <Link className="button primary" href={`/quiz?unit=${unit.slug}&count=10`}>10問</Link>
-            <Link className="button secondary" href={`/quiz?unit=${unit.slug}&count=${extendedQuizCount}`}>{extendedQuizCount}問</Link>
-            {isBasic && <PrintButton />}
-          </div>
-        </div>
       </section>
-      <UnitQuickActions unit={unit} architecture={architecture} hasFlashcards={flashcards.length>0}/>
-
-      <nav className="section-nav unit-priority-nav no-print" aria-label="この単元の主要メニュー">
-        {featuredSections.map((section) => <a href={`#${section.id}`} key={section.id}>{section.title}</a>)}
+      <nav className="unit-quick-actions no-print" aria-label="単元の学習方法">
+        <a href="#unit-material">教材</a>
         {flashcards.length>0&&<a href="#flashcards">暗記カード</a>}
-        {standardDetailSections.length>0&&<a href="#unit-details">詳細・すべて</a>}
-        {advancedSections.length>0&&<a href="#unit-advanced">発展・補足</a>}
+        <Link href={`/quiz?unit=${unit.slug}&count=5`}>問題演習（{unit.questions.length}問収録）</Link>
+        {isBasic && <PrintButton />}
       </nav>
-
+      <details className="material-toc no-print"><summary>教材内の目次</summary>
+        <nav className="section-nav" aria-label="教材内の目次">
+          {unit.sections.map(section=><a href={`#${section.id}`} key={section.id}>{section.title}</a>)}
+        </nav>
+      </details>
+      <div id="unit-material" />
       <header className="unit-content-heading"><p className="eyebrow">START HERE</p><h2>{architecture.featuredLabel}</h2></header>
       {featuredSections.map((section) => <div key={section.id}><StudySection section={section}/>{architecture.flashcardAfterSectionId===section.id&&flashcards.length>0&&<FlashcardDeck cards={flashcards} unitId={unit.slug}/>}</div>)}
 
@@ -79,7 +72,7 @@ export default async function UnitPage({ params }: { params: Promise<{ slug: str
 
       <section className="bottom-cta no-print">
         <div><p className="eyebrow">CHECK</p><h2>覚えた内容を問題で確認</h2></div>
-        <Link className="button primary" href={`/quiz?unit=${unit.slug}&count=10`}>テストを始める</Link>
+        <Link className="button primary" href={`/quiz?unit=${unit.slug}&count=10`}>演習を始める</Link>
       </section>
       <div className="content-report no-print"><Link href={`/feedback?type=${encodeURIComponent("教材内容の誤り")}&source=${encodeURIComponent(`/units/${unit.slug}`)}`}>この内容について報告</Link></div>
     </main>

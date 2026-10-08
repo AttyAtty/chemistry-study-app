@@ -55,10 +55,10 @@ export function ElectrolysisWorkbench({ cases }: { cases: ElectrolysisCase[] }) 
         </div>
 
         <div className="equation-practice">
-          <h3>自分でイオン反応式を書く</h3>
-          <label>陰極式<input key={`${selected}-c`} placeholder="例：Cu²⁺ + 2e⁻ → Cu" /></label>
-          <label>陽極式<input key={`${selected}-a`} placeholder="例：2Cl⁻ → Cl₂ + 2e⁻" /></label>
-          <label>全体式<input key={`${selected}-o`} placeholder="必要なら電子数をそろえて加える" /></label>
+          <h3>自分でイオン反応式を書く</h3><p>自己採点用です。入力内容の自動採点・保存は行いません。選択した条件の入力例を参考に、解答と比べてください。</p>
+          <label>陰極式<input key={`${selected}-c`} placeholder={`例：${current.cathodeEquation}`} /></label>
+          <label>陽極式<input key={`${selected}-a`} placeholder={`例：${current.anodeEquation}`} /></label>
+          <label>全体式<input key={`${selected}-o`} placeholder={current.overallEquation ? `例：${current.overallEquation}` : "電子数をそろえて加える"} /></label>
           <button className="answer-toggle" onClick={() => setShowAnswer((value) => !value)}>
             {showAnswer ? "解答を隠す" : "解答を表示"}
           </button>

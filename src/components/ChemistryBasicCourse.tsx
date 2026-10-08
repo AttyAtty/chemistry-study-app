@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { StudyLink as Link } from "@/components/StudyLink";
 import { useEffect, useMemo, useState } from "react";
 import type { ChemistryUnit } from "@/data/chemistry";
 import type { FormulaReference, GlossaryEntry } from "@/data/chemistry-basic";
@@ -47,13 +47,13 @@ export function ChemistryBasicCourse({
           <p>高校化学基礎を学ぶ人、文系受験生、共通テスト対策をしたい人向け。物質の構成から酸化還元まで、3単元を順番に学べます。</p>
           <div className="hero-actions no-print">
             <Link className="button primary" href={`/units/${units[0]?.slug ?? ""}`}>最初から学ぶ</Link>
-            <Link className="button secondary" href="/quiz?unit=chemistry-basic-comprehensive&count=all">総合テスト</Link>
+            <Link className="button secondary" href="/quiz?unit=chemistry-basic-comprehensive&count=all">総合演習</Link>
           </div>
         </div>
         <div className="basic-progress-panel" aria-label="化学基礎の進捗">
-          <strong>{average}%</strong><span>コース進捗</span>
-          <div className="basic-progress-track"><i style={{ width: `${average}%` }} /></div>
-          <small>{completed} / {units.length} 単元で70%以上</small>
+          <strong>{completed} / {units.length}</strong><span>最高得点70%以上の単元</span>
+          <div className="basic-progress-track"><i style={{ width: `${units.length ? completed / units.length * 100 : 0}%` }} /></div>
+          <small>各単元の最高得点の平均：{average}%（未受験は0として集計）</small>
         </div>
       </section>
 
@@ -68,7 +68,7 @@ export function ChemistryBasicCourse({
               <span className="level-chip">{unit.questions.length}問</span>
               <h3>{unit.title}</h3><p>{unit.summary}</p>
               <div className="basic-progress-track"><i style={{ width: `${unitProgress?.bestPercent ?? 0}%` }} /></div>
-              <small>最高得点 {unitProgress?.bestPercent ?? 0}%</small>
+              <small>{unitProgress?.attempts ? `最高得点 ${unitProgress.bestPercent}%` : "未受験"}</small>
               <div className="card-actions no-print"><span className="card-link-label">学習する <span>→</span></span><Link className="mini-button card-secondary-action" href={`/quiz?unit=${unit.slug}&count=10`}>10問</Link></div>
             </article>;
           })}
@@ -76,7 +76,7 @@ export function ChemistryBasicCourse({
       </section>
 
       <section className="basic-course-tools no-print">
-        <Link href="/quiz?unit=chemistry-basic-comprehensive&count=all"><strong>総合テスト</strong><span>{comprehensiveCount}問から出題</span></Link>
+        <Link href="/quiz?unit=chemistry-basic-comprehensive&count=all"><strong>総合演習</strong><span>{comprehensiveCount}問から出題</span></Link>
         <a href="#glossary"><strong>復習カード</strong><span>重要語句を検索</span></a>
         <button type="button" onClick={() => window.print()}><strong>印刷教材</strong><span>公式・要点をA4/PDFへ</span></button>
       </section>
@@ -95,7 +95,7 @@ export function ChemistryBasicCourse({
 
       <section className="section-block basic-related no-print">
         <div className="section-heading"><div><p className="eyebrow">NEXT STEP</p><h2>さらに学ぶ</h2></div></div>
-        <div className="tag-row"><Link href="/home">気体・沈殿・錯イオン・電池・電気分解など、発展単元を見る →</Link></div>
+        <div className="tag-row"><Link href="/home#fields" scroll={false}>気体・沈殿・錯イオン・電池・電気分解など、発展単元を見る →</Link></div>
       </section>
     </main>
   );

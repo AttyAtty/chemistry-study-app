@@ -7,7 +7,7 @@ import {
   chemistryBasicUnits,
 } from "@/data/chemistry-basic";
 
-export const metadata: Metadata = { title: "化学基礎コース | Chemica" };
+export const metadata: Metadata = { title: "化学基礎コース" };
 
 export default function ChemistryBasicCoursePage() {
   return <ChemistryBasicCourse units={chemistryBasicUnits} formulas={chemistryBasicFormulas} glossary={chemistryBasicGlossary} comprehensiveCount={chemistryBasicComprehensiveQuestions.length} />;

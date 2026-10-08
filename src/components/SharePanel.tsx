@@ -2,15 +2,20 @@
 /* eslint-disable @next/next/no-img-element -- QR生成サービスの動的URLをそのまま表示するため */
 
 import { useNetworkStatus } from "@/lib/useNetworkStatus";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import { useDialogFocus } from "@/lib/useDialogFocus";
 
 export function SharePanel() {
   const online = useNetworkStatus();
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState("");
   const [copied, setCopied] = useState(false);
+  const dialogRef = useRef<HTMLElement>(null);
+  const close = useCallback(() => setOpen(false), []);
+  useDialogFocus(open, dialogRef, close);
 
   function openPanel() {
+    setCopied(false);
     setUrl(window.location.href);
     setOpen(true);
   }
@@ -32,17 +37,19 @@ export function SharePanel() {
   }
 
   async function share() {
-    if (navigator.share) await navigator.share({ title: document.title, text: "高校化学の学習ページを共有します。", url });
-    else await copyLink();
+    try {
+      if (navigator.share) await navigator.share({ title: document.title, text: "高校化学の学習ページを共有します。", url });
+      else await copyLink();
+    } catch { /* Dismissing the native share sheet leaves this dialog available. */ }
   }
 
   const qrUrl = url ? `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=${encodeURIComponent(url)}` : "";
 
   return <div className="share-widget no-print">
-    <button className="share-trigger" type="button" onClick={openPanel} aria-haspopup="dialog"><span aria-hidden="true">↗</span> 共有</button>
-    {open && <div className="share-backdrop" role="presentation" onMouseDown={() => setOpen(false)}>
-      <section className="share-dialog" role="dialog" aria-modal="true" aria-labelledby="share-title" onMouseDown={event => event.stopPropagation()}>
-        <button className="share-close" type="button" onClick={() => setOpen(false)} aria-label="閉じる">×</button>
+    <button className="share-trigger" type="button" onClick={openPanel} aria-haspopup="dialog"><span aria-hidden="true">↗</span> リンク共有</button>
+    {open && <div className="share-backdrop" role="presentation" onMouseDown={close}>
+      <section className="share-dialog" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="share-title" onMouseDown={event => event.stopPropagation()}>
+        <button className="share-close" type="button" onClick={close} aria-label="閉じる">×</button>
         <span className="share-kicker">SHARE CHEMICA</span>
         <h2 id="share-title">このページを共有</h2>
         <p>QRコードを読み取るか、リンクをコピーして送れます。</p>

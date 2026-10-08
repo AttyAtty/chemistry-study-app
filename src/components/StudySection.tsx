@@ -32,7 +32,8 @@ export function StudySection({ section }: { section: StudySectionType }) {
       )}
 
       {section.kind === "table" && (
-        <div className="table-wrap">
+        <div className="table-wrap" role="region" aria-label={`${section.title}の表（横にスクロールできます）`} tabIndex={0}>
+          <p className="table-scroll-hint no-print">横にスクロールすると、右側の説明も読めます。</p>
           <table>
             <thead>
               <tr>{section.columns.map((column) => <th key={column}>{column}</th>)}</tr>

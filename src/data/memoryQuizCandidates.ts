@@ -48,7 +48,7 @@ const fieldKind = (label: string): MemoryQuestionKind => {
   return "short";
 };
 
-const fieldPrompt = (subject: string, label: string) => {
+const fieldPrompt = (subject: string, label: string, element?: string) => {
   if (/酸性|中性|塩基性/.test(label)) return `${subject}が${label.replace(/色$/,"")}で示す色を答えよ。`;
   if (/炎色/.test(label)) return `${subject}の炎色反応の色を答えよ。`;
   if (/沈殿.*色|色/.test(label)) return /↓|→/.test(subject) ? `${subject}で生じる沈殿の色を答えよ。` : `${subject}${/イオン|[⁺⁻]/.test(subject) ? "を含む水溶液" : ""}の色を答えよ。`;
@@ -69,7 +69,7 @@ const fieldPrompt = (subject: string, label: string) => {
   if (/配位子/.test(label)) return `${subject}の配位子を答えよ。`;
   if (/配位数/.test(label)) return `${subject}の配位数を答えよ。`;
   if (/立体構造|形/.test(label)) return `${subject}の立体構造を答えよ。`;
-  if (/酸化数/.test(label)) return `${subject}中の指定された元素の酸化数を答えよ。`;
+  if (/酸化数/.test(label)) return element ? `${subject}中の${element}の酸化数を答えよ。` : undefined;
   if (/^[A-Z][a-z]?$/.test(label)) return `${subject}中の${label}の酸化数を答えよ。`;
   if (/溶解性/.test(label)) return `${subject}の水への溶解性を答えよ。`;
   if (/性質|液性/.test(label)) return `${subject}の${label}を答えよ。`;
@@ -83,7 +83,7 @@ function categoryPrompt(card: Flashcard) {
   const subject = card.front.trim(), category = card.category ?? "";
   if (/水溶液.*色|イオン.*色|沈殿の色|硫化物の色/.test(category)) return `${subject}${/[⁺⁻]|イオン/.test(subject) ? "を含む水溶液" : ""}の色を答えよ。`;
   if (/炎色反応/.test(category)) return `${subject}の炎色反応の色を答えよ。`;
-  if (/酸化数/.test(category)) return `${subject}中の各元素の酸化数を、元素記号とともに答えよ。`;
+  if (/酸化数/.test(category)) return undefined; // Element context is required; never guess from a formula.
   if (/名称・化学式/.test(category)) return formulaLike(subject) ? `${subject}の物質名を答えよ。` : `${subject}の化学式を書け。`;
   if (/気体の発生法|製法/.test(category)) return `${subject}を生成する化学反応式を書け。`;
   if (/確認|検出/.test(category)) return `${subject}を確認・検出する方法を1つ答えよ。`;
@@ -97,7 +97,8 @@ function adaptFlashcard(card: Flashcard, category: TestCategory, unitTitle: stri
   const fields = splitFields(card.back).filter((field) => !vagueField.test(field.label) && !/代表例・性質|生成定数|^K$/.test(field.label) && supportedField.test(field.label));
   const base = { category, categoryLabel: categoryLabels[category], sourceUnit: unitTitle };
   if (fields.length) return fields.slice(0, 4).flatMap((field, index) => {
-    const prompt = fieldPrompt(card.front, field.label);
+    const element = splitFields(card.back).find(item => /注目元素|対象元素/.test(item.label))?.value;
+    const prompt = fieldPrompt(card.front, field.label, element);
     if (!prompt) return [];
     return [{
     ...base,

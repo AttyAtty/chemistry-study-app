@@ -71,20 +71,21 @@ test("precache, direct offline routes, soft navigation, search, mobile and fallb
   await expect(page.locator(".knowledge-search-results")).toBeVisible();
   await page.goto(base+"/tools/memory-quiz");
   const oldQuestions=await page.locator(".memory-question-list").innerText();
-  await page.getByRole("button",{name:"別の10問を作る"}).click();
+  await page.getByRole("button",{name:"問題を作り直す"}).click();
   await expect(page.locator(".memory-question-list li")).toHaveCount(10);
   await expect(page.locator(".memory-question-list")).not.toHaveText(oldQuestions);
   await page.goto(base+"/home");
   await page.locator(".main-nav a[href='/quiz']").click();
   await expect(page).toHaveURL(/\/quiz$/);await expect(page.locator(".quiz-select-grid")).toBeVisible();
   await page.goto(base+"/units/organic-reactions");await expect(page.locator(".reaction-map-studio .reaction-edge-layer").first()).toBeVisible();
+  await page.locator(".reaction-map-studio .map-options summary").first().click();
   await page.locator(".reaction-map-studio .variant-buttons button").nth(1).click();
   await expect(page.locator(".reaction-map-studio .variant-buttons button").nth(1)).toHaveClass(/active/);
   await page.setViewportSize({width:390,height:844});await page.goto(base+"/home");
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
   await page.screenshot({path:info.outputPath("offline-mobile.png"),fullPage:false,animations:"disabled"});
   const manifest=await page.evaluate(async()=>await (await fetch("/site.webmanifest")).json());
-  expect(manifest.display).toBe("standalone");expect(manifest.start_url).toBe("/");
+  expect(manifest.display).toBe("standalone");expect(manifest.start_url).toBe("/home");expect(manifest.id).toBe("/");
   for(const icon of manifest.icons){expect(await page.evaluate(async(url:string)=>(await fetch(url)).status,icon.src)).toBe(200);}
   await page.goto(base+"/not-cached-test");await expect(page.getByRole("heading",{name:"このページはオフラインでは開けません"})).toBeVisible();
   await page.goto(base+"/feedback");await expect(page.getByRole("heading",{name:"このページはオフラインでは開けません"})).toBeVisible();
@@ -99,7 +100,7 @@ test("offline card/quiz/history/dirty/backup/restore and persistent browser rest
   await page.locator(".universal-flashcard").first().click();await page.locator(".flashcard-judgement .needs-review").first().click();
   await expect.poll(()=>page.evaluate(key=>Object.keys(JSON.parse(localStorage.getItem(key)??"{}")).length,keys[0])).toBe(1);
   await page.goto(base+"/quiz?unit=chemistry-basic-composition&count=5&mode=unseen");
-  await page.getByRole("button",{name:"テストを始める",exact:true}).click();
+  await page.getByRole("button",{name:"演習を始める",exact:true}).click();
   for(let index=0;index<5;index++){
    const prompt=await page.locator(".question-card h2").innerText();const question=pool.find(question=>question.prompt===prompt);expect(question).toBeDefined();
    await page.locator(".choice-button").nth((question!.answerIndex+1)%question!.choices.length).click();

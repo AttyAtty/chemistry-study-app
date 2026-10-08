@@ -150,6 +150,10 @@ export function ReactionMapStudio({ category }: { category: "organic" | "inorgan
   const [viewportSize,setViewportSize]=useState({width:1000,height:620});
   const [mobileLayout,setMobileLayout]=useState(false);
   const viewportRef=useRef<HTMLDivElement>(null);
+  const [fullscreen,setFullscreen]=useState(false);
+  const [fullscreenError,setFullscreenError]=useState("");
+  const studioRef=useRef<HTMLDivElement>(null);
+  useEffect(()=>{const update=()=>setFullscreen(document.fullscreenElement===studioRef.current);document.addEventListener("fullscreenchange",update);return()=>document.removeEventListener("fullscreenchange",update);},[]);
   const map = useMemo(()=>maps.find(item => item.id === mapId) ?? maps[0],[maps,mapId]);
   const graph=useMemo(()=>buildGraph(map),[map]);
   const printLayout = useMemo(()=>layoutGraph(map,graph),[map,graph]);
@@ -181,20 +185,22 @@ export function ReactionMapStudio({ category }: { category: "organic" | "inorgan
   const offsetY=rotate?(safe.height-printLayout.bbox.width*scale)/2-printLayout.bbox.minX*scale:(safe.height-printLayout.bbox.height*scale)/2-printLayout.bbox.minY*scale;
   const printConfig:PrintConfig={orientation,rotate,scale,offsetX,offsetY};
   const printOrientation = orientation==="landscape" ? "map-landscape" : "map-portrait";
-  return <div className="reaction-map-studio">
+  return <div className={`reaction-map-studio ${fullscreen ? "is-fullscreen" : ""}`} ref={studioRef}>
     <div className="map-toolbar no-print">
-      <label>系統図<select value={map.id} onChange={e=>{setMapId(e.target.value);setPuzzle(false);setEditable(false);setScreenZoom(1);setOverview(false);viewportRef.current?.scrollTo({left:0,top:0});}}>{maps.map(item=><option value={item.id} key={item.id}>{item.title}</option>)}</select></label>
-      <div className="variant-buttons">{variants.map(([value,label])=><button className={!puzzle&&variant===value?"active":""} onClick={()=>{setVariant(value);setPuzzle(false);if(value==="random")setRandomSeed(x=>x+1);}} key={value}>{label}</button>)}</div>
+      <label>系統図<select aria-label="系統図" value={map.id} onChange={e=>{setMapId(e.target.value);setPuzzle(false);setEditable(false);setScreenZoom(1);setOverview(false);viewportRef.current?.scrollTo({left:0,top:0});}}>{maps.map(item=><option value={item.id} key={item.id}>{item.title}</option>)}</select></label>
+      <details className="map-options"><summary>表示モード・学習設定</summary><div className="variant-buttons">{variants.map(([value,label])=><button className={!puzzle&&variant===value?"active":""} onClick={()=>{setVariant(value);setPuzzle(false);if(value==="random")setRandomSeed(x=>x+1);}} key={value}>{label}</button>)}</div>
       <button className={puzzle?"puzzle-button active":"puzzle-button"} onClick={()=>setPuzzle(true)}>パズルモード</button>
+      </details><details className="map-options"><summary>配置編集・印刷設定</summary>
       <button className={editable&&!puzzle?"layout-button active":"layout-button"} onClick={()=>{setPuzzle(false);setEditable(value=>!value);}}>配置編集</button>
-      <label>印刷方向<select value={printDirection} onChange={e=>setPrintDirection(e.target.value as typeof printDirection)}><option value="auto">自動</option><option value="portrait">縦</option><option value="landscape">横</option><option value="rotate">縦へ90°回転</option></select></label>
-      <label>印刷倍率<select value={printSizing} onChange={e=>setPrintSizing(e.target.value as typeof printSizing)}><option value="fit">ページに合わせる</option><option value="actual">100%</option></select></label>
-      <button className="print-map-button" onClick={()=>window.print()}>この系統図を印刷</button>
+      <label>印刷方向<select aria-label="印刷方向" value={printDirection} onChange={e=>setPrintDirection(e.target.value as typeof printDirection)}><option value="auto">自動</option><option value="portrait">縦</option><option value="landscape">横</option><option value="rotate">縦へ90°回転</option></select></label>
+      <label>印刷倍率<select aria-label="印刷倍率" value={printSizing} onChange={e=>setPrintSizing(e.target.value as typeof printSizing)}><option value="fit">ページに合わせる</option><option value="actual">100%</option></select></label>
+      <button className="print-map-button" onClick={()=>window.print()}>この系統図を印刷</button></details>
     </div>
     <div className={`reaction-map-print-area ${printOrientation} ${rotate?"print-rotate":""}`}>
       <header className="map-title"><p>{category === "organic" ? "有機化学" : "無機化学"} 反応系統図</p><h3>{map.title}</h3><span>{puzzle ? "パズル" : variants.find(([v])=>v===variant)?.[1]}</span></header>
       {category==="organic"&&<div className="reaction-scope-legend no-print"><span className="core">基本</span><span className="advanced">発展</span><span className="supplement">補足</span><span className="industrial">工業的反応</span></div>}
-      <div className="map-screen-controls no-print"><button aria-label="系統図を縮小" onClick={()=>setScreenZoom(value=>Math.max(.65,value-.1))}>−</button><output aria-label="表示倍率">{overview&&screenZoom===1?"全体":`${Math.round(actualScale*100)}%`}</output><button aria-label="系統図を拡大" onClick={()=>setScreenZoom(value=>Math.min(Math.max(2,1/baseScale),value+.25))}>＋</button><button onClick={fitView}>全体表示</button><button onClick={()=>{setOverview(false);setScreenZoom(1);}}>読みやすい倍率</button><button onClick={()=>centerGraph()}>中心物質へ戻る</button></div>
+      <div className="map-screen-controls no-print"><button aria-label="系統図を縮小" onClick={()=>setScreenZoom(value=>Math.max(.65,value-.1))}>−</button><output aria-label="表示倍率">{overview&&screenZoom===1?"全体":`${Math.round(actualScale*100)}%`}</output><button aria-label="系統図を拡大" onClick={()=>setScreenZoom(value=>Math.min(Math.max(2,1/baseScale),value+.25))}>＋</button><button onClick={fitView}>全体表示</button><button onClick={()=>{setOverview(false);setScreenZoom(1);}}>読みやすい倍率</button><button onClick={()=>centerGraph()}>中心へ</button><button onClick={async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if(studioRef.current?.requestFullscreen)await studioRef.current.requestFullscreen();else setFullscreenError("このブラウザは全画面表示に対応していません。全体表示・拡大を使ってください。");}catch{setFullscreenError("全画面表示を開けませんでした。全体表示・拡大を使ってください。");}}}>{fullscreen ? "全画面を終了" : "全画面表示"}</button></div>
+      <p className="map-help no-print">＋・−で拡大／縮小。図の中を縦横にスクロールして移動できます。「全体表示」で全体を確認できます。</p>{fullscreenError&&<p role="status">{fullscreenError}</p>}
       <div className="reaction-map-viewport" ref={viewportRef} style={{height:viewportSize.height}}><div className="reaction-map-screen-scale" style={{width:screenLayout.canvas.width*actualScale,height:screenLayout.canvas.height*actualScale}}><div className="reaction-map-canvas-transform" style={{width:screenLayout.canvas.width,height:screenLayout.canvas.height,transform:`scale(${actualScale})`}}>
         {puzzle ? <Puzzle key={`${map.id}-${mobileLayout}`} map={map} layout={screenLayout} printConfig={printConfig}/> : <Diagram key={`${map.id}-${mobileLayout}`} map={map} layout={screenLayout} variant={variant} randomSeed={randomSeed} editable={editable} printConfig={printConfig}/>}
       </div></div></div>
