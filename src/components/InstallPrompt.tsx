@@ -63,7 +63,7 @@ export function InstallRuntime() {
   return !open ? null : <div className="share-backdrop no-print" onClick={dismiss}>
     <section className="share-dialog" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="install-title" onClick={e => e.stopPropagation()}>
       <button className="share-close" onClick={dismiss} aria-label="追加案内を閉じる">×</button>
-      <h2 id="install-title">ホーム画面に追加</h2><p>次回から学習ホームを直接開けます。リンク共有とは別の操作です。</p>
+      <h2 id="install-title">ホーム画面に追加</h2><p>次回からChemicaをアプリとして開けます。リンク共有とは別の操作です。</p>
       {event ? <button className="button primary" onClick={() => { void install(); }}>アプリを追加する</button> : ios ? <p>iPhone・iPadではSafariで開き、共有メニュー →「ホーム画面に追加」→「追加」を選んでください。</p> : <p>ブラウザのメニューから「アプリをインストール」または「ホーム画面に追加」を選んでください。表示されない場合は、そのブラウザで追加に対応していません。</p>}
       {message && <p role="status">{message}</p>}<button className="button secondary" onClick={dismiss}>今は閉じる</button>
     </section>

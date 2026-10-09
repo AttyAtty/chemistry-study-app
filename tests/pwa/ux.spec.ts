@@ -149,7 +149,12 @@ for (const width of [1280, 390]) {
       await page.evaluate(() => localStorage.setItem("chemistry-study-progress-v1", JSON.stringify({ all: { attempts: 1, correct: 3, total: 5, bestPercent: 60, lastStudied: new Date().toISOString() } })));
       await page.reload(); await expect(page.getByText("前回の続き", { exact: true })).toBeVisible();
       await expect(page.getByText("新しいカードへ", { exact: true })).toBeVisible();
-      await page.goto("/"); await expect(page).toHaveURL(/\/home$/);
+      await page.goto("/");
+      await expect(page.locator(".start-button")).toHaveText("始める");
+      await expect(page.locator(".start-content > p")).toHaveCount(0);
+      await page.locator(".start-button").click();
+      await expect(page.locator(".start-page")).toHaveClass(/is-transitioning/);
+      await expect(page).toHaveURL(/\/home$/);
       await page.goto("/tools/memory-quiz");
       await expect(page.locator(".memory-answer-disclosure")).not.toHaveAttribute("open", "");
       await page.getByLabel("分野", { exact: true }).selectOption("theory");
@@ -173,6 +178,33 @@ for (const width of [1280, 390]) {
     } finally { await browser.close(); }
   });
 }
+
+test("entrance stays visible for returning browser and standalone launches", async ({}, info) => {
+  for (const standalone of [false, true]) {
+    const { page, browser } = await setup(info, 390);
+    try {
+      await page.addInitScript(app => {
+        localStorage.setItem("chemica-visited", "1");
+        localStorage.setItem("chemica-last-material", "/units/inorganic-reactions");
+        localStorage.setItem("chemistry-study-progress-v1", JSON.stringify({ all: { attempts: 1, correct: 3, total: 5, bestPercent: 60, lastStudied: "2026-10-09T00:00:00.000Z" } }));
+        const original = window.matchMedia.bind(window);
+        window.matchMedia = query => query === "(display-mode: standalone)" ? { ...original(query), matches: app } as MediaQueryList : original(query);
+      }, standalone);
+      await page.goto("/");
+      await expect(page.locator(".start-button")).toBeVisible();
+      const records = await page.evaluate(() => localStorage.getItem("chemistry-study-progress-v1"));
+      // Wait beyond the former redirect effect and the original animation duration.
+      await page.waitForTimeout(1300);
+      await expect(page).toHaveURL("http://127.0.0.1:3211/");
+      await expect(page.locator(".start-content > p")).toHaveCount(0);
+      await page.locator(".start-button").click();
+      await expect(page.locator(".start-page")).toHaveClass(/is-transitioning/);
+      await expect(page).toHaveURL(/\/home$/);
+      expect(await page.evaluate(() => localStorage.getItem("chemistry-study-progress-v1"))).toBe(records);
+      await fits(page);
+    } finally { await browser.close(); }
+  }
+});
 
 test("install guide uses browser prompt, can be dismissed, and stays hidden in app display", async ({}, info) => {
   const { page, browser } = await setup(info, 390, false);

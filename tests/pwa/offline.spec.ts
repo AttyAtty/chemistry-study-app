@@ -85,7 +85,7 @@ test("precache, direct offline routes, soft navigation, search, mobile and fallb
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
   await page.screenshot({path:info.outputPath("offline-mobile.png"),fullPage:false,animations:"disabled"});
   const manifest=await page.evaluate(async()=>await (await fetch("/site.webmanifest")).json());
-  expect(manifest.display).toBe("standalone");expect(manifest.start_url).toBe("/home");expect(manifest.id).toBe("/");
+  expect(manifest.display).toBe("standalone");expect(manifest.start_url).toBe("/");expect(manifest.id).toBe("/");
   for(const icon of manifest.icons){expect(await page.evaluate(async(url:string)=>(await fetch(url)).status,icon.src)).toBe(200);}
   await page.goto(base+"/not-cached-test");await expect(page.getByRole("heading",{name:"このページはオフラインでは開けません"})).toBeVisible();
   await page.goto(base+"/feedback");await expect(page.getByRole("heading",{name:"このページはオフラインでは開けません"})).toBeVisible();
@@ -113,6 +113,8 @@ test("offline card/quiz/history/dirty/backup/restore and persistent browser rest
   await expect.poll(async()=>((await database(page)).questionHistory).length).toBe(5);
   for(const store of ["flashcardProgress","questionHistory","studyProgress"]){for(const record of (await database(page))[store] as {dirty:boolean;updatedAt:string}[]){expect(record.dirty).toBe(true);expect(Date.parse(record.updatedAt)).not.toBeNaN();}}
   const before=await raw(page);await page.reload();expect(await raw(page)).toEqual(before);
+  await page.goto(base+"/");await expect(page.locator(".start-button")).toBeVisible();expect(await raw(page)).toEqual(before);
+  await page.locator(".start-button").click();await expect(page).toHaveURL(base+"/home");expect(await raw(page)).toEqual(before);
   await page.goto(base+"/progress");await expect(page.locator("main")).toBeVisible();
   await page.goto(base+"/flashcards/review?flashcards=due");await expect(page.locator(".universal-flashcard")).toBeVisible();
   await page.goto(base+"/settings/data");
