@@ -1,0 +1,27 @@
+.separation-page { padding-bottom: 60px; }
+.separation-entry, .separation-notes { margin: 24px 0; padding: var(--card-padding); border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+.separation-entry h2 { margin-top: 0; }
+.separation-viewer { min-width: 0; }
+.separation-controls, .separation-controls > div { display: flex; flex-wrap: wrap; gap: 10px; }
+.separation-controls { justify-content: space-between; }
+.separation-controls button { cursor: pointer; min-height: 44px; padding: 8px 16px; border: 1px solid var(--muted); border-radius: 12px; background: var(--surface); color: var(--text); font: inherit; }
+.separation-controls button[aria-pressed="true"] { background: var(--text); color: var(--surface); }
+.separation-scroll { width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+.separation-scroll:focus-visible, .separation-controls button:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+.separation-svg { display: block; width: 100%; min-width: 820px; height: auto; margin: auto; color: var(--text); }
+.separation-svg.is-zoomed { width: 150%; min-width: 1240px; }
+.separation-svg text { fill: var(--text); font: 17px "Yu Gothic", Meiryo, system-ui, sans-serif; }
+.separation-svg .separation-node-title { font-size: 19px; font-weight: 700; }
+.separation-svg .separation-reagent { font-weight: 700; }
+.separation-svg .separation-condition, .separation-svg .separation-layer { font-size: 15px; fill: var(--muted); }
+.separation-node rect { fill: var(--surface-soft); stroke: var(--muted); stroke-width: 1.2; }
+.separation-node.aqueous rect { stroke-width: 2; stroke-dasharray: 7 4; }
+.separation-node.ether rect { stroke-width: 2; }
+.separation-node.product rect, .separation-node.precipitate rect { fill: var(--surface); stroke-width: 2; }
+.separation-edge { fill: none; stroke: currentColor; stroke-width: 1.8; }
+.separation-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; margin: 24px 0; }
+.separation-details article, .separation-text { background: var(--surface); padding: 20px; border: 1px solid var(--line); border-radius: 12px; overflow-wrap: anywhere; }
+.separation-details h3 { margin-top: 0; }
+.separation-formula { font-weight: 700; }
+.separation-text { margin-top: 20px; }
+.separation-viewer summary { cursor: pointer; }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@/components/separation/separation.css";
 import { StudyLink as Link } from "@/components/StudyLink";
 import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/PrintButton";
@@ -56,6 +57,12 @@ export default async function UnitPage({ params }: { params: Promise<{ slug: str
         </nav>
       </details>
       <div id="unit-material" />
+      {["inorganic-reactions", "complex-ions-qualitative-analysis", "colors-and-tests", "organic-reactions"].includes(unit.slug) && <section className="separation-entry">
+        <p className="eyebrow">SEPARATION / ANALYSIS</p>
+        <h2>{unit.slug === "organic-reactions" ? "芳香族化合物の系統分離" : "金属イオンの系統分析"}</h2>
+        <p>{unit.slug === "organic-reactions" ? "酸塩基抽出で、水層へ移る理由と物質の回収を確認します。" : "沈殿の生成とろ液の行方を、SVGの系統分析図で確認します。"}</p>
+        <Link className="button primary" href={`/separation/${unit.slug === "organic-reactions" ? "aromatic-separation" : "metal-analysis"}`}>系統図で学ぶ →</Link>
+      </section>}
       <header className="unit-content-heading"><p className="eyebrow">START HERE</p><h2>{architecture.featuredLabel}</h2></header>
       {featuredSections.map((section) => <div key={section.id}><StudySection section={section}/>{architecture.flashcardAfterSectionId===section.id&&flashcards.length>0&&<FlashcardDeck cards={flashcards} unitId={unit.slug}/>}</div>)}
 

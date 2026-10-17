@@ -1,0 +1,24 @@
+import type { Metadata } from "next";
+import "@/components/separation/separation.css";
+import { notFound } from "next/navigation";
+import { StudyLink } from "@/components/StudyLink";
+import { SeparationDiagram } from "@/components/separation/SeparationDiagram";
+import { separationDiagrams } from "@/data/separation/diagrams";
+
+export const dynamicParams = false;
+export function generateStaticParams() { return separationDiagrams.map(diagram=>({slug:diagram.id})); }
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata> {
+  const {slug}=await params;
+  return {title:separationDiagrams.find(diagram=>diagram.id===slug)?.title ?? "系統分離・系統分析"};
+}
+export default async function SeparationPage({params}:{params:Promise<{slug:string}>}) {
+  const {slug}=await params;
+  const diagram=separationDiagrams.find(diagram=>diagram.id===slug);
+  if(!diagram) notFound();
+  const organic=diagram.id==="aromatic-separation";
+  return <main className="page-container separation-page">
+    <StudyLink className="back-link" href={`/units/${organic?"organic-reactions":"inorganic-reactions"}`}>← {organic?"有機化学":"無機化学"}の教材へ</StudyLink>
+    <header className="unit-content-heading"><p className="eyebrow">SEPARATION / ANALYSIS</p><h1>{diagram.title}</h1><p>{diagram.description}</p></header>
+    <SeparationDiagram diagram={diagram}/>
+  </main>;
+}
