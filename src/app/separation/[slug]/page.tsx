@@ -19,6 +19,7 @@ export default async function SeparationPage({params}:{params:Promise<{slug:stri
   return <main className="page-container separation-page">
     <StudyLink className="back-link" href={`/units/${organic?"organic-reactions":"inorganic-reactions"}`}>← {organic?"有機化学":"無機化学"}の教材へ</StudyLink>
     <header className="unit-content-heading"><p className="eyebrow">SEPARATION / ANALYSIS</p><h1>{diagram.title}</h1><p>{diagram.description}</p></header>
+    <div className="separation-practice-entry"><StudyLink className="button primary" href={`/separation/practice?diagram=${diagram.id}`}>練習問題を作る</StudyLink></div>
     <SeparationDiagram diagram={diagram}/>
   </main>;
 }

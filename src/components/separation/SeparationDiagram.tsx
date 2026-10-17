@@ -3,25 +3,28 @@
 import { useId, useState } from "react";
 import type { Diagram } from "@/data/separation/types";
 import { BenzeneStructure } from "./BenzeneStructure";
+import type { SeparationExercise } from "@/lib/separationExercise";
+import { ExerciseText, ExerciseTextParts, HtmlExerciseField, type ExerciseView } from "./ExerciseField";
 
-export function SeparationDiagram({ diagram }: { diagram: Diagram }) {
+export function SeparationDiagram({ diagram, exercise, showAnswers=false }: { diagram: Diagram; exercise?: SeparationExercise; showAnswers?: boolean }) {
   const [detailed, setDetailed] = useState(false);
   const [zoom, setZoom] = useState(false);
   const uid = useId().replaceAll(":", "");
   const byId = new Map(diagram.nodes.map(node => [node.id, node]));
+  const view: ExerciseView | undefined = exercise ? {exercise,showAnswers} : undefined;
   return <section className="separation-viewer" aria-label={diagram.title}>
     <div className="separation-controls">
-      <div role="group" aria-label="表示モード">
+      {!exercise && <div role="group" aria-label="表示モード">
         <button type="button" aria-pressed={!detailed} onClick={() => setDetailed(false)}>基本表示</button>
         <button type="button" aria-pressed={detailed} onClick={() => setDetailed(true)}>詳細表示</button>
-      </div>
+      </div>}
       <button type="button" aria-pressed={zoom} onClick={() => setZoom(!zoom)}>{zoom ? "全体を表示" : "拡大して読む"}</button>
     </div>
     <p id={`${uid}-hint`}>{diagram.readingHint} 図全体を縮小表示しています。「拡大して読む」で細部を確認できます。</p>
     <div className="separation-scroll" role="region" aria-label={`${diagram.title}の図（横スクロール可能）`} aria-describedby={`${uid}-hint`} tabIndex={0}>
       <svg className={`separation-svg ${diagram.variant ?? ""}${zoom ? " is-zoomed" : ""}`} viewBox={`0 0 ${diagram.width} ${diagram.height}`} style={{maxWidth: zoom ? undefined : diagram.width}} role="img" aria-labelledby={`${uid}-title ${uid}-desc`}>
         <title id={`${uid}-title`}>{diagram.title}</title>
-        <desc id={`${uid}-desc`}>{diagram.description} 図の全内容は下の「図の内容を文章で読む」でも確認できます。</desc>
+        <desc id={`${uid}-desc`}>{exercise ? "番号付きの下線が空欄です。答えを表示すると選択された空欄だけを解答に切り替えます。" : `${diagram.description} 図の全内容は下の「図の内容を文章で読む」でも確認できます。`}</desc>
         <defs><marker id={`${uid}-arrow`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" /></marker></defs>
         {diagram.edges.map(edge => {
           const from = byId.get(edge.from)!; const to = byId.get(edge.to)!;
@@ -36,10 +39,10 @@ export function SeparationDiagram({ diagram }: { diagram: Diagram }) {
           return <g key={edge.id} data-edge-id={edge.id}>
             <path className="separation-edge" d={path} markerEnd={edge.to && !byId.get(edge.to)?.display?.hidden ? `url(#${uid}-arrow)` : undefined} />
             {!edge.display?.hideLabel && (edge.display?.instructions ? <g>
-              {edge.display.instructions.map((instruction,i)=><text key={`${instruction.fieldId}-${i}`}
-                data-field-id={instruction.fieldId} data-field-kind={instruction.kind}
+              {edge.display.instructions.map((instruction,i)=><ExerciseText key={`${instruction.fieldId}-${i}`}
+                fieldId={instruction.fieldId} kind={instruction.kind} text={instruction.text} view={view}
                 className={`separation-instruction ${instruction.kind === "reagent" ? "separation-reagent" : "separation-operation"} tone-${instruction.kind === "reagent" ? edge.display?.tone ?? "default" : "default"}`}
-                x={instruction.x} y={instruction.y}>{instruction.text}</text>)}
+                fontSize={instruction.kind === "reagent" ? 19 : 13} x={instruction.x} y={instruction.y}/>)}
             </g> : <g>
               <text data-field-id={edge.reagent?.id} className={`separation-reagent tone-${edge.display?.tone ?? "default"}`} x={edge.labelX} y={edge.labelY}>
                 {(edge.display?.reagentLines ?? [edge.reagent?.label ?? ""]).map((line,i)=><tspan key={i} x={edge.labelX} dy={i ? 26 : 0}>{line}</tspan>)}
@@ -54,23 +57,37 @@ export function SeparationDiagram({ diagram }: { diagram: Diagram }) {
           if (compact?.hidden) return null;
           const compounds = compact?.compounds?.map(id => diagram.compounds!.find(compound => compound.id === id)!);
           return <g key={node.id} data-node-id={node.id} data-field-id={node.id} className={`separation-node ${node.kind} ${layer?.kind ?? ""}`}>
-            <title>{[node.label,node.formula,...node.lines].join("。")}</title>
+            <title>{exercise && node.kind !== "mixture" ? "分離段階" : [node.label,node.formula,...node.lines].join("。")}</title>
             {!compact?.unboxed && <rect x={node.x} y={node.y} width={node.width} height={node.height} rx="0" />}
             {compounds ? <>
               {layer && <text className={`separation-layer layer-${layer.kind}${node.kind === "product" ? " recovered-layer" : ""}`} x={node.x + (layer.kind === "aqueous" || node.kind === "product" ? 4 : node.width - 4)} y={node.y-10} textAnchor={layer.kind === "aqueous" || node.kind === "product" ? "start" : "end"}>{layer.kind === "aqueous" ? "水層" : "エーテル層"}</text>}
               {compounds.map((compound,i)=><BenzeneStructure key={compound.id} compound={compound}
                 x={node.x+node.width*(i+.5)/compounds.length} y={node.y+66}
-                fieldId={`${node.id}:compound:${compound.id}`} showName={compact?.showCompoundNames} />)}
+                fieldId={`${node.id}:compound:${compound.id}`} showName={compact?.showCompoundNames} view={view} slotWidth={node.width/compounds.length} />)}
             </> : <>
-              {(compact?.label ?? node.label) && <text className={`separation-node-title tone-${compact?.tone ?? "default"}`} x={node.x+node.width/2} y={node.y+26} textAnchor="middle">{compact?.label ?? node.label}</text>}
-              {(compact?.lines ?? node.lines).map((line,i) => <text x={node.x+node.width/2} y={node.y+(compact?.label === "" ? 35 : 58)+i*29} textAnchor="middle" key={i}>{line}</text>)}
+              {(compact?.label ?? node.label) && <ExerciseText fieldId={`${node.id}:label`} text={compact?.label ?? node.label} className={`separation-node-title tone-${compact?.tone ?? "default"}`} x={node.x+node.width/2} y={node.y+26} anchor="middle" maxWidth={node.width-20} fontSize={19} view={view}/>}
+              {(compact?.lines ?? node.lines).map((line,i) => view && compact?.lineParts?.[i]
+                ? <ExerciseTextParts key={i} parts={compact.lineParts[i]} x={node.x+node.width/2} y={node.y+58+i*29} view={view}/>
+                : <ExerciseText fieldId={`${node.id}:line:${i}`} text={line} x={node.x+node.width/2} y={node.y+(compact?.label === "" ? 35 : 58)+i*29} anchor="middle" maxWidth={node.width-20} view={view} key={i}/>)}
             </>}
-            {compact?.caption && <text className="separation-condition" x={node.x+node.width/2} y={node.y+node.height-8} textAnchor="middle">{compact.caption}</text>}
+            {compact?.caption && <ExerciseText fieldId={`${node.id}:caption`} text={compact.caption} className="separation-condition" x={node.x+node.width/2} y={node.y+node.height-8} anchor="middle" maxWidth={node.width-20} fontSize={16} view={view}/>}
           </g>;
         })}
       </svg>
     </div>
-    {detailed && <section className="separation-operation-details" aria-label="分離操作の詳細">
+    {view && <section className="separation-supplement" aria-label="補足操作の問題">
+      <h3>補足操作の確認</h3><p>図中の試薬・操作と同じ空欄番号を目印に、続く手順を確認してください。</p>
+      <div className="separation-supplement-grid">{diagram.edges.map(edge=>{
+        const items=view.exercise.targets.filter(target=>target.location === "supplement" && target.edgeId===edge.id);
+        if(!items.length) return null;
+        const context=view.exercise.targets.find(target=>target.edgeId===edge.id && target.location==="diagram" && target.blankCategory==="reagent")
+          ?? view.exercise.targets.find(target=>target.edgeId===edge.id && target.location==="diagram");
+        return <article key={edge.id}><h4>図中の{context ? <HtmlExerciseField fieldId={context.id} text={context.answer} view={view}/> : "処理"}の操作</h4>
+          <ol>{items.map(target=><li key={target.id}><HtmlExerciseField fieldId={target.id} text={target.answer} view={view}/></li>)}</ol>
+        </article>;
+      })}</div>
+    </section>}
+    {!exercise && detailed && <section className="separation-operation-details" aria-label="分離操作の詳細">
       <h2>分離操作の詳細</h2>
       <div className="separation-operation-grid">{diagram.edges.filter(edge=>edge.operation && !edge.display?.hideLabel).map(edge=><article key={edge.id} data-operation-id={edge.operation!.id}>
         <h3>{edge.reagent?.label}</h3>
@@ -85,7 +102,7 @@ export function SeparationDiagram({ diagram }: { diagram: Diagram }) {
         {edge.operation!.notes.map(note=><p key={note.id}>{note.text}</p>)}
       </article>)}</div>
     </section>}
-    {detailed && <div className="separation-details" aria-label="物質・操作の詳細">
+    {!exercise && detailed && <div className="separation-details" aria-label="物質・操作の詳細">
       <h2>物質・操作の詳細</h2>
       {diagram.nodes.filter(node=>node.notes.length).map(node=><article key={node.id}>
         <h3>{node.label}</h3><p className="separation-formula">{node.formula}</p>
@@ -93,13 +110,13 @@ export function SeparationDiagram({ diagram }: { diagram: Diagram }) {
         {node.notes.map(note=><p key={note.id}>{note.text}</p>)}
       </article>)}
     </div>}
-    <details className="separation-text"><summary>図の内容を文章で読む</summary>
+    {!exercise && <><details className="separation-text"><summary>図の内容を文章で読む</summary>
       {diagram.nodes.map(node=><article key={node.id}><h3>{node.label}</h3><p>{node.formula}</p><p>{node.lines.join(" / ")}</p>
         {diagram.edges.filter(edge=>edge.from===node.id).map(edge=><p key={edge.id}>→ {edge.reagent?.label} {edge.condition?.label}{edge.operation && ` / ${edge.operation.label}`}：{byId.get(edge.to)?.label}{edge.note && `（${edge.note.text}）`}</p>)}
       </article>)}
     </details>
     <aside className="separation-notes"><h2>補足説明</h2>{diagram.notes.map(note=><p key={note.id}>{note.text}</p>)}
       <details><summary>内容の確認に用いた資料</summary>{diagram.sources.map(source=><p key={source.url}><a href={source.url} target="_blank" rel="noreferrer">{source.title}</a></p>)}<p>図と解説はアプリ内に保存されます。参考資料を開く場合のみ通信が必要です。</p></details>
-    </aside>
+    </aside></>}
   </section>;
 }

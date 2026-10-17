@@ -143,7 +143,7 @@ place(m.alkali, 805, 825, 245, 100, "第6属：沈殿しない", ["Na⁺　K⁺"
 Object.assign(m.alkali.display!, { unboxed: true, tone: "purple" });
 inorganicEdges[8].display!.points.push([925, 816]);
 const leadHotWater = node("lead-hot-water", "PbCl₂のみ溶ける", "Pb²⁺", ["Pb²⁺になる"], 5, 520, [], { kind: "product", width: 260, height: 80 });
-leadHotWater.display = { label: "PbCl₂のみ溶ける", lines: ["（Pb²⁺になる）"], unboxed: true };
+leadHotWater.display = { label: "PbCl₂のみ溶ける", lines: ["（Pb²⁺になる）"], unboxed: true, labelBlankCategory: "species" };
 metalAnalysis.nodes.push(leadHotWater);
 const hotWaterEdge = edge("metal-lead-hot-water", m.chlorides, leadHotWater, "熱水");
 route(hotWaterEdge, [[145, 323], [145, 510]], 88, 405, "");
@@ -211,7 +211,10 @@ function operation(e: SeparationEdge, label: string, actions: [string, string][]
   e.operation = {
     id: `${e.id}-operation`, label, blankable: true,
     amount: amount ? { id: `${e.id}-amount`, kind: amount[0], label: amount[1], blankable: true } : undefined,
-    actions: actions.map(([key, text]) => ({ id: `${e.id}-action-${key}`, label: text, blankable: true })),
+    actions: actions.map(([key, text]) => ({ id: `${e.id}-action-${key}`, label: text, blankable: true,
+      practiceSupplement: ["filter","shake","separate","vent","cool","recover","remove-solvent"].includes(key),
+      practiceLabel: key === "cool" ? "必要に応じて冷却し、析出物をろ別する" : key === "filter" ? "沈殿とろ液を分け、ろ液を次の操作に用いる" : undefined,
+    })),
     notes: notes(`${e.id}-operation`, detail),
   };
   if (condition) e.condition = { id: e.condition?.id ?? `${e.id}-condition`, label: condition, blankable: true };
@@ -279,7 +282,10 @@ organicStages.forEach((_,i) => {
       : [label(extract,"operation",extract.operation!.id,"加え振とう・分液",0,7)]),
     { fieldId: extract.condition!.id, kind: "condition", text: i===0 ? "酸性に" : "塩基性に", x: oldCondition.x, y: oldCondition.y },
   ];
-  if (bicarbonate) extract.display!.instructions.push({ fieldId: `${extract.operation!.id}-note-0`, kind: "note", text:"CO₂発生", x:oldCondition.x+78, y:oldCondition.y });
+  if (bicarbonate) {
+    Object.assign(extract.operation!.notes[0], { blankable:true, blankCategory:"result" });
+    extract.display!.instructions.push({ fieldId: `${extract.operation!.id}-note-0`, kind: "note", text:"CO₂発生", x:oldCondition.x+78, y:oldCondition.y });
+  }
   operation(recover,"加えて遊離し、回収", [add,["mix","加えた水溶液を混合する"],
     ...(i===1 ? [["cool","必要に応じて冷却し、析出した安息香酸をろ別する"] as [string,string]] : []),
     ["recover",i===1 ? "析出または再抽出によって回収する" : "遊離物をエーテルで再抽出して回収する"],
@@ -304,4 +310,15 @@ for(const e of aromaticSeparation.edges.filter(e=>e.id.startsWith("organic-disti
   if(!e.display!.hideLabel) e.display!.instructions = [label(e,"operation",e.operation!.id,"分留"),label(e,"action",action(e,"heat").id,"加熱して分ける",0,20)];
 }
 aromaticSeparation.sources.push({ title:"抽出操作・分液とガス抜き（Nichols実験教材）", url:"https://chem.libretexts.org/Bookshelves/Organic_Chemistry/Organic_Chemistry_Lab_Techniques_%28Nichols%29/04%3A_Extraction/4.06%3A_Step-by-Step_Procedures_For_Extractions" });
+m.alkali.display!.lineBlankCategories = ["species", "result"];
+// Separate chemical species from their colour clues; no chemical-string matching is needed.
+const precipitateParts: Record<string, [string,string][]> = {
+  chlorides:[["AgCl","（白）"],["PbCl₂","（白）"]], copper:[["CuS","（黒）"]],
+  hydroxides:[["Al(OH)₃","（白）"],["Fe(OH)₃","（赤褐色）"]], zinc:[["ZnS","（白）"]],
+  carbonates:[["CaCO₃","（白）"],["BaCO₃","（白）"]],
+};
+for(const [id,rows] of Object.entries(precipitateParts)) m[id].display!.lineParts = rows.map(([species,result],i)=>[
+  {id:`${id}:line:${i}`,text:species,blankCategory:"species",blankable:true},
+  {id:`${id}:line:${i}:result`,text:result,blankCategory:"result",blankable:true},
+]);
 export const separationDiagrams = [metalAnalysis, aromaticSeparation];

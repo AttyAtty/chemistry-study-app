@@ -62,3 +62,25 @@
 .separation-operation-details dd { margin: 0; }
 .separation-operation-details ol { padding-left: 1.4em; }
 .separation-operation-context { color: var(--muted); font-size: 13px; }
+
+.separation-practice-entry { margin: 20px 0; }
+.separation-practice-settings, .separation-supplement { padding: var(--card-padding); margin: 24px 0; border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius-md); }
+.separation-setting-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,260px),1fr)); gap: 16px; }
+.separation-setting { display:grid; gap:8px; }
+.separation-practice-settings label { display: grid; gap: 8px; font-weight: 700; }
+.separation-practice-settings select, .separation-practice-settings input:not([type="checkbox"]) { width: 100%; min-width: 0; padding: 10px; min-height: 44px; border: 1px solid var(--muted); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; }
+.separation-practice-settings .separation-structure-choice { display:flex; align-items:center; margin: 18px 0; }
+.separation-structure-choice input { width:20px; height:20px; flex-shrink:0; }
+.separation-practice-settings > button { margin-top:18px; }
+.separation-question-actions { display:flex; flex-wrap:wrap; gap:12px; }
+.separation-question-status { overflow-wrap:anywhere; }
+.separation-svg .separation-blank path { fill:none; stroke:#304b6d; stroke-width:1.5; }
+.separation-svg text.separation-blank-number { fill:#304b6d; font:10px system-ui,sans-serif; }
+.separation-svg text.separation-answer, .separation-answer { color:#1857b4; fill:#1857b4; font-weight:700; }
+.separation-svg .separation-compound-name text { font-size:inherit; }
+.separation-supplement li { margin:12px 0; overflow-wrap:anywhere; }
+.separation-supplement-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); gap:18px; }
+.separation-supplement-grid article { padding:12px; border:1px solid var(--line); border-radius:8px; min-width:0; }
+.separation-supplement-grid h4 { margin-top:0; overflow-wrap:anywhere; }
+.separation-html-blank { display:inline-block; min-width:min(100%,240px); max-width:100%; border-bottom:1px solid var(--text); vertical-align:baseline; }
+.separation-html-blank small { padding:0 5px; }

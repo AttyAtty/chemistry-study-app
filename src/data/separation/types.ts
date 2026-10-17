@@ -1,12 +1,20 @@
 /** Stable IDs and field-level blankability are shared by the viewer and future exercises. */
-export type Blankable = { blankable: boolean };
-export type Note = { id: string; text: string };
+export const blankCategoryLabels = {
+  species: "物質", reagent: "試薬", condition: "条件", operation: "操作方法",
+  amount: "加え方・程度", action: "操作手順", result: "反応結果",
+} as const;
+export type BlankCategory = keyof typeof blankCategoryLabels;
+export type Blankable = { blankable: boolean; blankCategory?: BlankCategory };
+export type DiagramTextPart = Blankable & { id: string; text: string; blankCategory: BlankCategory };
+export type Note = { id: string; text: string; blankable?: boolean; blankCategory?: BlankCategory };
 export type Reagent = Blankable & { id: string; label: string; formula?: string; alternatives?: string[]; role?: "chemical" | "process" };
 export type Condition = Blankable & { id: string; label: string };
 export type QualitativeAmount = Blankable & {
   id: string; label: string; kind: "small-portions" | "excess" | "sufficient";
 };
-export type OperationAction = Blankable & { id: string; label: string };
+export type OperationAction = Blankable & {
+  id: string; label: string; practiceSupplement?: boolean; practiceLabel?: string;
+};
 export type Operation = Blankable & {
   id: string; label: string; amount?: QualitativeAmount; actions: OperationAction[]; notes: Note[];
 };
@@ -27,6 +35,8 @@ export type SeparationNode = Blankable & {
   display?: {
     label: string; lines: string[]; caption?: string; hidden?: boolean; unboxed?: boolean;
     tone?: string; compounds?: string[]; showCompoundNames?: boolean;
+    labelBlankCategory?: BlankCategory; lineBlankCategories?: BlankCategory[];
+    lineParts?: DiagramTextPart[][];
   };
 };
 export type SeparationEdge = Blankable & {
