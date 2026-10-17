@@ -8,8 +8,8 @@
 .separation-controls button[aria-pressed="true"] { background: var(--text); color: var(--surface); }
 .separation-scroll { width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
 .separation-scroll:focus-visible, .separation-controls button:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
-.separation-svg { display: block; width: 100%; min-width: 1000px; height: auto; margin: auto; color: var(--text); }
-.separation-svg.is-zoomed { width: 150%; min-width: 1240px; }
+.separation-svg { display: block; width: 100%; min-width: 0; height: auto; margin: auto; color: var(--text); }
+.separation-svg.is-zoomed { width: 180%; min-width: 1240px; }
 .separation-svg text { fill: var(--text); font: 18px "Yu Gothic", Meiryo, system-ui, sans-serif; }
 .separation-svg .separation-node-title { font-size: 19px; font-weight: 700; }
 .separation-svg .separation-reagent { font-weight: 700; }
@@ -27,3 +27,31 @@
 .separation-formula { font-weight: 700; }
 .separation-text { margin-top: 20px; }
 .separation-viewer summary { cursor: pointer; }
+
+/* Reference-image diagrams: plain paper, staircase branches and molecular frames. */
+.separation-svg.metal-staircase, .separation-svg.organic-staircase { background: #fff; color: #111; }
+.separation-svg.metal-staircase text, .separation-svg.organic-staircase text { fill: #111; }
+.separation-svg .separation-node rect { fill: #fff; stroke: #111; stroke-width: 2; }
+.separation-svg .separation-node-title { font-weight: 500; }
+.separation-svg text.separation-condition { fill: #008354; font-size: 16px; }
+.separation-svg text.tone-orange { fill: #c75400; }
+.separation-svg text.tone-pink { fill: #d60086; }
+.separation-svg text.tone-green { fill: #008354; }
+.separation-svg text.tone-cyan { fill: #007fa8; }
+.separation-svg text.tone-blue { fill: #183cff; }
+.separation-svg text.tone-purple { fill: #9b3da2; }
+.separation-svg text.tone-red { fill: #e22015; }
+.separation-svg .separation-reagent { font-weight: 500; font-size: 19px; }
+.separation-svg.organic-staircase .separation-node rect { stroke: #e000df; stroke-width: 2.5; stroke-dasharray: none; }
+.separation-svg.organic-staircase .separation-node.aqueous rect { stroke: #00b8d2; }
+.separation-svg .separation-layer.layer-aqueous { fill: #008ba8; }
+.separation-svg .separation-layer.layer-ether { fill: #c900b9; }
+.separation-svg .separation-layer.recovered-layer { font-size: 14px; }
+.separation-svg .benzene-bonds { fill: none; stroke: #242424; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+.separation-svg .benzene-substituent { font: 19px Georgia, "Times New Roman", serif; }
+.separation-svg .benzene-substituent.is-ionic { fill: #e22015; }
+.separation-svg .benzene-name { font-size: 17px; }
+.separation-svg .benzene-category { font-size: 16px; }
+.separation-svg text.category-酸性 { fill: #d52218; }
+.separation-svg text.category-塩基性 { fill: #183cff; }
+.separation-svg text.category-中性 { fill: #9b3da2; }

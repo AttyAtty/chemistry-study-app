@@ -8,7 +8,8 @@ test("separation diagrams: navigation, mobile controls and offline rendering", a
     await page.goto("/units/inorganic-reactions");
     await page.getByRole("link", { name: "系統図で学ぶ" }).click();
     await expect(page.getByRole("heading", { name: "金属イオンの系統分析", exact: true })).toBeVisible();
-    await expect(page.locator("[data-node-id]")).toHaveCount(11);
+    await expect(page.locator("[data-node-id]")).toHaveCount(8);
+    await expect(page.locator('[data-node-id="after-hcl"]')).toHaveCount(0);
     await expect(page.locator('[data-node-id="chlorides"]')).toContainText("第1属：塩化物沈殿");
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.locator(".separation-svg").screenshot({ path: test.info().outputPath("metal-desktop.png"), style: "header { visibility: hidden !important; }" });
@@ -21,7 +22,10 @@ test("separation diagrams: navigation, mobile controls and offline rendering", a
     await page.screenshot({ path: test.info().outputPath("metal-mobile.png"), fullPage: true });
     await page.goto("/units/organic-reactions");
     await page.getByRole("link", { name: "系統図で学ぶ" }).click();
-    await expect(page.locator("[data-node-id]")).toHaveCount(10);
+    await expect(page.locator("[data-node-id]")).toHaveCount(12);
+    await expect(page.locator("[data-compound-id]")).toHaveCount(22);
+    await expect(page.locator(".benzene-bonds polygon")).toHaveCount(22);
+    await expect(page.locator('[data-edge-id="organic-distill-nitrobenzene"]')).toContainText("分留");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
     await page.locator(".separation-scroll").evaluate(el => { el.scrollLeft = el.scrollWidth; });
     await page.screenshot({ path: test.info().outputPath("organic-mobile.png"), fullPage: true });
@@ -31,10 +35,10 @@ test("separation diagrams: navigation, mobile controls and offline rendering", a
     for (const slug of ["metal-analysis", "aromatic-separation"]) {
       await page.goto(`/separation/${slug}`);
       expect(await page.locator(".separation-svg").evaluate(svg => {
-        const bounds = (svg as SVGSVGElement).viewBox.baseVal;
+        const bounds = svg.getBoundingClientRect();
         return [...svg.querySelectorAll("text")].every(text => {
-          const box = text.getBBox();
-          return box.x >= 0 && box.y >= 0 && box.x + box.width <= bounds.width && box.y + box.height <= bounds.height;
+          const box = text.getBoundingClientRect();
+          return box.left >= bounds.left-1 && box.top >= bounds.top-1 && box.right <= bounds.right+1 && box.bottom <= bounds.bottom+1;
         });
       })).toBe(true);
     }

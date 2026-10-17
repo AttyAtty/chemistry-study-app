@@ -94,8 +94,8 @@ export const aromaticSeparation: Diagram = {
   notes:notes("organic",["最初は5種をジエチルエーテルに溶かした状態。図の左右は操作の枝分かれを表し、分液漏斗内の上下配置ではありません。", "イオン性の塩は水層へ、非イオン性の分子は主にエーテル層へ分配されます。分配は完全ではなく、実際の回収には再抽出等が必要です。", "NaHCO₃との反応ではCO₂が発生します。これは分離原理の学習図で、実験手順書ではありません。"]),
   sources:[{title:"酸塩基抽出（Nichols実験教材）",url:"https://chem.libretexts.org/Bookshelves/Organic_Chemistry/Organic_Chemistry_Lab_Techniques_%28Nichols%29/04%3A_Extraction/4.08%3A_Acid-Base_Extraction"}],
 };
-/** Two textbook templates: one vertical filtrate/ether spine and left-hand fractions.
- * Positions and compact labels are presentation data, not replacements for chemical data.
+/** Coordinates follow the two supplied reference images, not a generic column layout.
+ * Hidden filtrates retain their IDs and chemistry for explanations and future exercises.
  */
 function place(n: SeparationNode, x: number, y: number, width: number, height: number,
   label: string, lines: string[], caption?: string) {
@@ -106,51 +106,103 @@ function route(e: SeparationEdge, points: [number, number][], labelX: number, la
   Object.assign(e, { labelX, labelY, display: { points, condition, hideLabel } });
 }
 
-metalAnalysis.width = 1000;
-metalAnalysis.height = 1190;
-place(m["metal-mix"], 30, 25, 920, 100, "混合イオン", [
+metalAnalysis.width = 1060;
+metalAnalysis.height = 950;
+metalAnalysis.variant = "metal-staircase";
+metalAnalysis.readingHint = "混合イオンから右下へ階段状に分離します。下向きの枝が各属の沈殿です。";
+place(m["metal-mix"], 20, 30, 1020, 55, "", [
   "Ag⁺　Pb²⁺　Cu²⁺　Al³⁺　Fe³⁺　Zn²⁺　Ca²⁺　Ba²⁺　Na⁺　K⁺",
 ]);
 const metalStages = [
-  ["chlorides", "after-hcl", "第1属：塩化物沈殿", ["AgCl（白）　PbCl₂（白）"], "塩化物をろ別", "PbCl₂：熱水に溶解"],
-  ["copper", "after-copper", "第2属：硫化物沈殿", ["CuS（黒）"], "酸性", undefined],
-  ["hydroxides", "after-hydroxides", "第3属：水酸化物沈殿", ["Al(OH)₃（白）　Fe(OH)₃（赤褐）"], "H₂S除去・Fe再酸化後", undefined],
-  ["zinc", "after-zinc", "第4属：硫化物沈殿", ["ZnS（白）"], "塩基性", undefined],
-  ["carbonates", "alkali", "第5属：炭酸塩沈殿", ["CaCO₃（白）　BaCO₃（白）"], "NH₃・NH₄Cl共存", undefined],
+  ["chlorides", "after-hcl", "第1属：塩化物沈殿", ["AgCl（白）", "PbCl₂（白）"], "orange"],
+  ["copper", "after-copper", "第2属：硫化物沈殿", ["CuS（黒）"], "pink"],
+  ["hydroxides", "after-hydroxides", "第3属：水酸化物沈殿", ["Al(OH)₃（白）", "Fe(OH)₃（赤褐色）"], "green"],
+  ["zinc", "after-zinc", "第4属：硫化物沈殿", ["ZnS（白）"], "cyan"],
+  ["carbonates", "alkali", "第5属：炭酸塩沈殿", ["CaCO₃（白）", "BaCO₃（白）"], "blue"],
 ] as const;
-metalStages.forEach(([solidId, residueId, label, lines, condition, caption], i) => {
-  const y = 225 + i * 210;
+metalStages.forEach(([solidId, residueId, label, lines, tone], i) => {
+  const junctionY = 175 + i * 130;
+  const axis = 275 + i * 130;
+  const solidAxis = axis - 130;
   const solid = m[solidId]; const residue = m[residueId];
-  place(solid, 30, y, 420, 96, label, [...lines], caption);
-  const compact = residueId === "after-hydroxides" ? ["[Zn(NH₃)₄]²⁺　Ca²⁺　Ba²⁺", "Na⁺　K⁺"]
-    : residueId === "alkali" ? ["Na⁺（炎色：黄）　K⁺（赤紫）"] : residue.lines;
-  place(residue, 530, y, 420, 96, residueId === "alkali" ? "最終ろ液" : "ろ液", [...compact]);
-  const from = i === 0 ? m["metal-mix"] : m[metalStages[i - 1][1]];
-  const junctionY = y - 28;
-  route(inorganicEdges[i * 2], [[740, from.y + from.height], [740, y]], 475, junctionY - 44, condition);
-  route(inorganicEdges[i * 2 + 1], [[740, junctionY], [240, junctionY], [240, y]], 0, 0, undefined, true);
+  place(solid, solidAxis - 140, junctionY + 48, 280, 100, label, [...lines]);
+  Object.assign(solid.display!, { unboxed: true, tone });
+  // These are chemical intermediates, not additional visible boxes in the reference.
+  place(residue, axis + 130, junctionY, 0, 0, residue.label, []);
+  residue.display!.hidden = i < 4;
+  const startY = i === 0 ? 85 : junctionY - 130;
+  route(inorganicEdges[i * 2], [[axis, startY], [axis, junctionY], [axis + 130, junctionY]], axis + 9, startY + 51, "");
+  inorganicEdges[i * 2].display!.tone = tone;
+  inorganicEdges[i * 2].display!.reagentLines = [
+    ["HCl"], ["H₂S（酸性条件）"], ["① 煮沸（H₂S除去）", "② HNO₃", "③ NH₃・NH₄Cl"],
+    ["H₂S（塩基性条件）"], ["(NH₄)₂CO₃"],
+  ][i];
+  route(inorganicEdges[i * 2 + 1], [[axis, junctionY], [solidAxis, junctionY], [solidAxis, junctionY + 39]], 0, 0, undefined, true);
 });
+place(m.alkali, 805, 825, 245, 100, "第6属：沈殿しない", ["Na⁺　K⁺", "炎色反応で分析"]);
+Object.assign(m.alkali.display!, { unboxed: true, tone: "purple" });
+inorganicEdges[8].display!.points.push([925, 816]);
+const leadHotWater = node("lead-hot-water", "PbCl₂のみ溶ける", "Pb²⁺", ["Pb²⁺になる"], 5, 520, [], { kind: "product", width: 260, height: 80 });
+leadHotWater.display = { label: "PbCl₂のみ溶ける", lines: ["（Pb²⁺になる）"], unboxed: true };
+metalAnalysis.nodes.push(leadHotWater);
+const hotWaterEdge = edge("metal-lead-hot-water", m.chlorides, leadHotWater, "熱水");
+route(hotWaterEdge, [[145, 323], [145, 510]], 88, 405, "");
+hotWaterEdge.display!.tone = "red";
+metalAnalysis.edges.push(hotWaterEdge);
 
-aromaticSeparation.width = 1000;
-aromaticSeparation.height = 1225;
-place(o["ether-start"], 30, 25, 920, 100, "混合物（ジエチルエーテル溶液）", [
-  "安息香酸　フェノール　アニリン　ニトロベンゼン　トルエン",
-]);
+aromaticSeparation.width = 1100;
+aromaticSeparation.height = 1370;
+aromaticSeparation.variant = "organic-staircase";
+aromaticSeparation.readingHint = "上の5種の混合物から開始します。右下へ続くエーテル層と、各水層から下へ続く遊離操作をたどります。";
+aromaticSeparation.compounds = [
+  { id: "benzoic-acid", name: "安息香酸", substituent: "COOH", category: "酸性" },
+  { id: "phenol", name: "フェノール", substituent: "OH", category: "酸性" },
+  { id: "aniline", name: "アニリン", substituent: "NH₂", category: "塩基性" },
+  { id: "nitrobenzene", name: "ニトロベンゼン", substituent: "NO₂", category: "中性" },
+  { id: "toluene", name: "トルエン", substituent: "CH₃", category: "中性" },
+  { id: "anilinium", name: "アニリン塩酸塩", substituent: "NH₃⁺ Cl⁻", category: "塩", ionic: true },
+  { id: "benzoate", name: "安息香酸ナトリウム", substituent: "COO⁻Na⁺", category: "塩", ionic: true },
+  { id: "phenoxide", name: "ナトリウムフェノキシド", substituent: "O⁻Na⁺", category: "塩", ionic: true },
+];
+place(o["ether-start"], 40, 40, 1000, 220, "", []);
+Object.assign(o["ether-start"].display!, { compounds: ["benzoic-acid", "phenol", "aniline", "nitrobenzene", "toluene"], showCompoundNames: true });
 const organicStages = [
-  ["anilinium", "ether-1", "aniline", "アニリン塩酸塩", "アニリン", "弱塩基の遊離", "振とう・静置して分液"],
-  ["benzoate", "ether-2", "benzoic-acid", "安息香酸ナトリウム", "安息香酸", "弱酸の遊離", "CO₂発生・分液"],
-  ["phenoxide", "neutral", "phenol", "ナトリウムフェノキシド", "フェノール", "弱酸の遊離", "振とう・静置して分液"],
+  ["anilinium", "ether-1", "aniline", 40, 160, 270, 770, ["benzoic-acid", "phenol", "nitrobenzene", "toluene"], "弱塩基の遊離", "塩基性化合物が中和"],
+  ["benzoate", "ether-2", "benzoic-acid", 270, 175, 550, 490, ["phenol", "nitrobenzene", "toluene"], "弱酸の遊離", "CO₂の遊離"],
+  ["phenoxide", "neutral", "phenol", 550, 170, 800, 240, ["nitrobenzene", "toluene"], "弱酸の遊離", "酸性化合物が中和"],
 ] as const;
-organicStages.forEach(([waterId, etherId, productId, salt, productName, recovery, condition], i) => {
-  const y = 235 + i * 340;
+organicStages.forEach(([waterId, etherId, productId, waterX, waterWidth, etherX, etherWidth, compounds, recovery, condition], i) => {
+  const y = 340 + i * 270;
   const water = o[waterId]; const ether = o[etherId]; const product = o[productId];
-  place(water, 30, y, 420, 100, "水層", [salt, water.formula]);
-  place(ether, 530, y, 420, 100, etherId === "neutral" ? "エーテル層（中性物質）" : "エーテル層", ether.lines);
-  place(product, 30, y + 205, 420, 70, productName, [product.formula]);
+  place(water, waterX, y, waterWidth, 170, "水層", []);
+  water.display!.compounds = [waterId];
+  place(ether, etherX, y, etherWidth, 170, "エーテル層", []);
+  ether.display!.compounds = [...compounds];
+  place(product, waterX, y + 270, waterWidth, 170, "エーテル層", []);
+  product.layerId = "ether";
+  product.display!.compounds = [productId];
   const from = i === 0 ? o["ether-start"] : o[organicStages[i - 1][1]];
-  const junctionY = y - 28;
-  route(organicEdges[i * 3], [[740, from.y + from.height], [740, y]], 475, junctionY - 44, condition);
-  route(organicEdges[i * 3 + 1], [[740, junctionY], [240, junctionY], [240, y]], 0, 0, undefined, true);
-  route(organicEdges[i * 3 + 2], [[240, water.y + water.height], [240, product.y]], 260, water.y + water.height + 45, recovery);
+  const axis = from.x + from.width / 2;
+  const waterAxis = waterX + waterWidth / 2; const etherAxis = etherX + etherWidth / 2;
+  const junctionY = y - 30;
+  route(organicEdges[i * 3], [[axis, from.y + from.height], [axis, junctionY], [etherAxis, junctionY], [etherAxis, y]], axis + 9, from.y + from.height + 35, condition);
+  organicEdges[i * 3].display!.tone = "red";
+  organicEdges[i * 3].display!.conditionPosition = { x: waterAxis + 9, y: junctionY - 10 };
+  // Use the exact short labels in the reference while preserving reagent objects.
+  organicEdges[i * 3].display!.reagentLines = [["HCl"], ["NaHCO₃"], ["NaOH"]][i];
+  route(organicEdges[i * 3 + 1], [[axis, junctionY], [waterAxis, junctionY], [waterAxis, y]], 0, 0, undefined, true);
+  route(organicEdges[i * 3 + 2], [[waterAxis, water.y + water.height], [waterAxis, product.y]], waterAxis + 9, water.y + water.height + 35, recovery);
+  Object.assign(organicEdges[i * 3 + 2].display!, { tone: i === 0 ? "cyan" : "red", reagentLines: [["NaOH"], ["HCl"], ["HCl または CO₂"]][i] });
+  if (i === 2) organicEdges[i * 3 + 2].reagent!.alternatives = ["CO₂"];
 });
+for (const [id, x, width, compound] of [["nitrobenzene-product", 800, 110, "nitrobenzene"], ["toluene-product", 940, 100, "toluene"]] as const) {
+  const product = node(id, compound === "toluene" ? "トルエン" : "ニトロベンゼン", compound === "toluene" ? "C₆H₅CH₃" : "C₆H₅NO₂", [], x, 1150,
+    ["溶媒を除いた中性物質を、沸点差を利用して分留する。"], { kind: "product", width, height: 170 });
+  product.display = { label: "", lines: [], compounds: [compound] };
+  aromaticSeparation.nodes.push(product);
+  const fraction = edge(`organic-distill-${compound}`, o.neutral, product, "分留");
+  route(fraction, [[920, 1050], [920, 1120], [x + width / 2, 1120], [x + width / 2, 1150]], 930, 1090, "", compound === "toluene");
+  fraction.display!.tone = "purple";
+  aromaticSeparation.edges.push(fraction);
+}
 export const separationDiagrams = [metalAnalysis, aromaticSeparation];

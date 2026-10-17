@@ -66,3 +66,23 @@ test("textbook templates use orthogonal descending branches and distinct recover
     assert.equal(a.x,b.x); assert.ok(b.y > a.y+a.height);
   }
 });
+
+test("reference staircase omits intermediate boxes and advances to the right", () => {
+  for (const id of ["after-hcl","after-copper","after-hydroxides","after-zinc"]) {
+    assert.equal(metalAnalysis.nodes.find(n=>n.id===id).display.hidden,true);
+  }
+  const solids=["chlorides","copper","hydroxides","zinc","carbonates"].map(id=>metalAnalysis.nodes.find(n=>n.id===id));
+  solids.forEach((n,i)=>{ assert.equal(n.display.unboxed,true); if(i) { assert.ok(n.x > solids[i-1].x); assert.ok(n.y > solids[i-1].y); } });
+  assert.ok(metalAnalysis.edges.some(e=>e.id==="metal-lead-hot-water" && e.reagent.label==="熱水"));
+});
+
+test("organic structures track every fraction, its substituent and final distillation", () => {
+  const compounds=new Map(aromaticSeparation.compounds.map(c=>[c.id,c]));
+  assert.equal(compounds.size,aromaticSeparation.compounds.length);
+  for(const n of aromaticSeparation.nodes) for(const id of n.display.compounds) assert.ok(compounds.has(id));
+  assert.deepEqual(aromaticSeparation.nodes[0].display.compounds,["benzoic-acid","phenol","aniline","nitrobenzene","toluene"]);
+  for(const id of ["anilinium","benzoate","phenoxide"]) assert.equal(compounds.get(id).ionic,true);
+  assert.equal(aromaticSeparation.edges.filter(e=>e.reagent?.label==="分留").length,2);
+  const residues=["ether-1","ether-2","neutral"].map(id=>aromaticSeparation.nodes.find(n=>n.id===id));
+  residues.forEach((n,i)=>{ if(i) { assert.ok(n.x > residues[i-1].x); assert.ok(n.width < residues[i-1].width); } });
+});

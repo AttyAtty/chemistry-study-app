@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import type { Diagram } from "@/data/separation/types";
+import { BenzeneStructure } from "./BenzeneStructure";
 
 export function SeparationDiagram({ diagram }: { diagram: Diagram }) {
   const [detailed, setDetailed] = useState(false);
@@ -16,9 +17,9 @@ export function SeparationDiagram({ diagram }: { diagram: Diagram }) {
       </div>
       <button type="button" aria-pressed={zoom} onClick={() => setZoom(!zoom)}>{zoom ? "全体を表示" : "拡大して読む"}</button>
     </div>
-    <p id={`${uid}-hint`}>上の混合物から開始し、右の{diagram.layers.length ? "エーテル層" : "ろ液"}を下へたどります。左の枝は分離した{diagram.layers.length ? "水層と回収物" : "沈殿"}です。小さい画面では横にスクロールできます。</p>
+    <p id={`${uid}-hint`}>{diagram.readingHint} 図全体を縮小表示しています。「拡大して読む」で細部を確認できます。</p>
     <div className="separation-scroll" role="region" aria-label={`${diagram.title}の図（横スクロール可能）`} aria-describedby={`${uid}-hint`} tabIndex={0}>
-      <svg className={`separation-svg${zoom ? " is-zoomed" : ""}`} viewBox={`0 0 ${diagram.width} ${diagram.height}`} style={{maxWidth: zoom ? undefined : diagram.width}} role="img" aria-labelledby={`${uid}-title ${uid}-desc`}>
+      <svg className={`separation-svg ${diagram.variant ?? ""}${zoom ? " is-zoomed" : ""}`} viewBox={`0 0 ${diagram.width} ${diagram.height}`} style={{maxWidth: zoom ? undefined : diagram.width}} role="img" aria-labelledby={`${uid}-title ${uid}-desc`}>
         <title id={`${uid}-title`}>{diagram.title}</title>
         <desc id={`${uid}-desc`}>{diagram.description} 図の全内容は下の「図の内容を文章で読む」でも確認できます。</desc>
         <defs><marker id={`${uid}-arrow`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" /></marker></defs>
@@ -33,21 +34,32 @@ export function SeparationDiagram({ diagram }: { diagram: Diagram }) {
           const path = edge.display?.points.map(([x,y],i)=>`${i ? "L" : "M"}${x},${y}`).join(" ")
             ?? (sameRow ? `M${startX},${startY} H${endX}` : `M${startX},${startY} V${bendY} H${endX} V${endY}`);
           return <g key={edge.id} data-edge-id={edge.id}>
-            <path className="separation-edge" d={path} markerEnd={`url(#${uid}-arrow)`} />
+            <path className="separation-edge" d={path} markerEnd={edge.to && !byId.get(edge.to)?.display?.hidden ? `url(#${uid}-arrow)` : undefined} />
             {!edge.display?.hideLabel && <g>
-              <text data-field-id={edge.reagent?.id} className="separation-reagent" x={edge.labelX} y={edge.labelY}>{edge.reagent?.label}</text>
-              {edge.condition && <text data-field-id={edge.condition.id} className="separation-condition" x={edge.labelX} y={edge.labelY + 23}>{edge.display?.condition ?? edge.condition.label}</text>}
+              <text data-field-id={edge.reagent?.id} className={`separation-reagent tone-${edge.display?.tone ?? "default"}`} x={edge.labelX} y={edge.labelY}>
+                {(edge.display?.reagentLines ?? [edge.reagent?.label ?? ""]).map((line,i)=><tspan key={i} x={edge.labelX} dy={i ? 26 : 0}>{line}</tspan>)}
+              </text>
+              {edge.condition && (edge.display?.condition ?? edge.condition.label) && <text data-field-id={edge.condition.id} className="separation-condition" x={edge.display?.conditionPosition?.x ?? edge.labelX} y={edge.display?.conditionPosition?.y ?? edge.labelY + 23}>{edge.display?.condition ?? edge.condition.label}</text>}
             </g>}
           </g>;
         })}
         {diagram.nodes.map(node => {
           const layer = diagram.layers.find(layer => layer.id === node.layerId);
           const compact = node.display;
+          if (compact?.hidden) return null;
+          const compounds = compact?.compounds?.map(id => diagram.compounds!.find(compound => compound.id === id)!);
           return <g key={node.id} data-node-id={node.id} data-field-id={node.id} className={`separation-node ${node.kind} ${layer?.kind ?? ""}`}>
             <title>{[node.label,node.formula,...node.lines].join("。")}</title>
-            <rect x={node.x} y={node.y} width={node.width} height={node.height} rx="3" />
-            <text className="separation-node-title" x={node.x+node.width/2} y={node.y+26} textAnchor="middle">{compact?.label ?? node.label}</text>
-            {(compact?.lines ?? node.lines).map((line,i) => <text x={node.x+node.width/2} y={node.y+53+i*24} textAnchor="middle" key={i}>{line}</text>)}
+            {!compact?.unboxed && <rect x={node.x} y={node.y} width={node.width} height={node.height} rx="0" />}
+            {compounds ? <>
+              {layer && <text className={`separation-layer layer-${layer.kind}${node.kind === "product" ? " recovered-layer" : ""}`} x={node.x + (layer.kind === "aqueous" || node.kind === "product" ? 4 : node.width - 4)} y={node.y-10} textAnchor={layer.kind === "aqueous" || node.kind === "product" ? "start" : "end"}>{layer.kind === "aqueous" ? "水層" : "エーテル層"}</text>}
+              {compounds.map((compound,i)=><BenzeneStructure key={compound.id} compound={compound}
+                x={node.x+node.width*(i+.5)/compounds.length} y={node.y+66}
+                fieldId={`${node.id}:compound:${compound.id}`} showName={compact?.showCompoundNames} />)}
+            </> : <>
+              {(compact?.label ?? node.label) && <text className={`separation-node-title tone-${compact?.tone ?? "default"}`} x={node.x+node.width/2} y={node.y+26} textAnchor="middle">{compact?.label ?? node.label}</text>}
+              {(compact?.lines ?? node.lines).map((line,i) => <text x={node.x+node.width/2} y={node.y+(compact?.label === "" ? 35 : 58)+i*29} textAnchor="middle" key={i}>{line}</text>)}
+            </>}
             {compact?.caption && <text className="separation-condition" x={node.x+node.width/2} y={node.y+node.height-8} textAnchor="middle">{compact.caption}</text>}
           </g>;
         })}
