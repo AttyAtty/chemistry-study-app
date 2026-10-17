@@ -8,10 +8,14 @@ export type SeparationNode = Blankable & {
   id: string; label: string; formula: string; kind: "mixture" | "precipitate" | "solution" | "product";
   lines: string[]; notes: Note[]; color?: string; colorLabel?: string; layerId?: string;
   x: number; y: number; width: number; height: number;
+  /** Compact textbook presentation; full chemistry remains in label/formula/notes. */
+  display?: { label: string; lines: string[]; caption?: string };
 };
 export type SeparationEdge = Blankable & {
   id: string; from: string; to: string; reagent?: Reagent; condition?: Condition; note?: Note;
   labelX: number; labelY: number;
+  /** Orthogonal route, authored per separation template; retains the original edge ID. */
+  display?: { points: [number, number][]; hideLabel?: boolean; condition?: string };
 };
 export type Group = { id: string; label: string; nodeIds: string[] };
 export type Diagram = {

@@ -16,7 +16,7 @@ export function SeparationDiagram({ diagram }: { diagram: Diagram }) {
       </div>
       <button type="button" aria-pressed={zoom} onClick={() => setZoom(!zoom)}>{zoom ? "全体を表示" : "拡大して読む"}</button>
     </div>
-    <p id={`${uid}-hint`}>左の列を上から下へ進み、枝分かれした物質を回収します。小さい画面では図を横にスクロールできます。</p>
+    <p id={`${uid}-hint`}>上の混合物から開始し、右の{diagram.layers.length ? "エーテル層" : "ろ液"}を下へたどります。左の枝は分離した{diagram.layers.length ? "水層と回収物" : "沈殿"}です。小さい画面では横にスクロールできます。</p>
     <div className="separation-scroll" role="region" aria-label={`${diagram.title}の図（横スクロール可能）`} aria-describedby={`${uid}-hint`} tabIndex={0}>
       <svg className={`separation-svg${zoom ? " is-zoomed" : ""}`} viewBox={`0 0 ${diagram.width} ${diagram.height}`} style={{maxWidth: zoom ? undefined : diagram.width}} role="img" aria-labelledby={`${uid}-title ${uid}-desc`}>
         <title id={`${uid}-title`}>{diagram.title}</title>
@@ -30,26 +30,31 @@ export function SeparationDiagram({ diagram }: { diagram: Diagram }) {
           const endX = sameRow ? to.x : to.x + to.width / 2;
           const endY = sameRow ? to.y + to.height / 2 : to.y;
           const bendY = to.y - 82;
+          const path = edge.display?.points.map(([x,y],i)=>`${i ? "L" : "M"}${x},${y}`).join(" ")
+            ?? (sameRow ? `M${startX},${startY} H${endX}` : `M${startX},${startY} V${bendY} H${endX} V${endY}`);
           return <g key={edge.id} data-edge-id={edge.id}>
-            <path className="separation-edge" d={sameRow ? `M${startX},${startY} H${endX}` : `M${startX},${startY} V${bendY} H${endX} V${endY}`} markerEnd={`url(#${uid}-arrow)`} />
-            <text className="separation-reagent" x={edge.labelX} y={edge.labelY}>{edge.reagent?.label}</text>
-            {edge.condition && <text className="separation-condition" x={edge.labelX} y={edge.labelY + 24}>{edge.condition.label}</text>}
+            <path className="separation-edge" d={path} markerEnd={`url(#${uid}-arrow)`} />
+            {!edge.display?.hideLabel && <g>
+              <text data-field-id={edge.reagent?.id} className="separation-reagent" x={edge.labelX} y={edge.labelY}>{edge.reagent?.label}</text>
+              {edge.condition && <text data-field-id={edge.condition.id} className="separation-condition" x={edge.labelX} y={edge.labelY + 23}>{edge.display?.condition ?? edge.condition.label}</text>}
+            </g>}
           </g>;
         })}
         {diagram.nodes.map(node => {
           const layer = diagram.layers.find(layer => layer.id === node.layerId);
-          return <g key={node.id} data-node-id={node.id} className={`separation-node ${layer?.kind ?? node.kind}`}>
+          const compact = node.display;
+          return <g key={node.id} data-node-id={node.id} data-field-id={node.id} className={`separation-node ${node.kind} ${layer?.kind ?? ""}`}>
             <title>{[node.label,node.formula,...node.lines].join("。")}</title>
-            <rect x={node.x} y={node.y} width={node.width} height={node.height} rx="14" />
-            <text className="separation-node-title" x={node.x+16} y={node.y+29}>{node.label}</text>
-            {node.lines.map((line,i) => <text x={node.x+16} y={node.y+61+i*26} key={i}>{line}</text>)}
-            {layer && <text className="separation-layer" x={node.x+16} y={node.y+129}>{layer.label}</text>}
-            {node.color && <circle cx={node.x+node.width-24} cy={node.y+node.height-23} r="8" fill={node.color} stroke="var(--muted)" />}
+            <rect x={node.x} y={node.y} width={node.width} height={node.height} rx="3" />
+            <text className="separation-node-title" x={node.x+node.width/2} y={node.y+26} textAnchor="middle">{compact?.label ?? node.label}</text>
+            {(compact?.lines ?? node.lines).map((line,i) => <text x={node.x+node.width/2} y={node.y+53+i*24} textAnchor="middle" key={i}>{line}</text>)}
+            {compact?.caption && <text className="separation-condition" x={node.x+node.width/2} y={node.y+node.height-8} textAnchor="middle">{compact.caption}</text>}
           </g>;
         })}
       </svg>
     </div>
     {detailed && <div className="separation-details" aria-label="物質・操作の詳細">
+      <h2>物質・操作の詳細</h2>
       {diagram.nodes.filter(node=>node.notes.length).map(node=><article key={node.id}>
         <h3>{node.label}</h3><p className="separation-formula">{node.formula}</p>
         {node.colorLabel && <p>沈殿色：{node.colorLabel}</p>}

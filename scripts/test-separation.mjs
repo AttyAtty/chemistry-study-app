@@ -42,3 +42,27 @@ test("organic extraction branches into aqueous salts and recovered compounds in 
   for(const id of ["aniline","benzoic-acid","phenol"]) assert.equal(aromaticSeparation.nodes.find(n=>n.id===id).kind,"product");
   assert.match(aromaticSeparation.nodes.find(n=>n.id==="neutral").formula,/C₆H₅NO₂ \/ C₆H₅CH₃/);
 });
+
+test("textbook templates use orthogonal descending branches and distinct recovery rows", () => {
+  for (const diagram of separationDiagrams) {
+    const start = diagram.nodes[0];
+    assert.ok(start.width >= 900, "mixture spans both branches");
+    for (const edge of diagram.edges) {
+      const points = edge.display.points;
+      for (let i = 1; i < points.length; i++) {
+        assert.ok(points[i][0] === points[i-1][0] || points[i][1] === points[i-1][1], edge.id);
+        assert.ok(points[i][1] >= points[i-1][1], edge.id);
+      }
+      for (const [x,y] of points) assert.ok(x >= 0 && x <= diagram.width && y >= 0 && y <= diagram.height);
+    }
+    for (let i = 0; i < diagram.nodes.length; i++) for (const b of diagram.nodes.slice(i+1)) {
+      const a = diagram.nodes[i];
+      assert.ok(a.x+a.width <= b.x || b.x+b.width <= a.x || a.y+a.height <= b.y || b.y+b.height <= a.y, `${a.id} overlaps ${b.id}`);
+    }
+  }
+  for (const [salt, product] of [["anilinium","aniline"],["benzoate","benzoic-acid"],["phenoxide","phenol"]]) {
+    const a = aromaticSeparation.nodes.find(n=>n.id===salt);
+    const b = aromaticSeparation.nodes.find(n=>n.id===product);
+    assert.equal(a.x,b.x); assert.ok(b.y > a.y+a.height);
+  }
+});
