@@ -16,6 +16,9 @@ test("separation diagrams: navigation, mobile controls and offline rendering", a
     await page.setViewportSize({ width: 390, height: 844 });
     await page.getByRole("button", { name: "詳細表示", exact: true }).click();
     await expect(page.locator(".separation-details")).toContainText("再酸化");
+    await expect(page.locator('[data-operation-id="metal-3-residue-operation"]')).toContainText("過剰に");
+    await expect(page.locator('svg [data-field-id="metal-2-residue-condition"]')).toHaveText("酸性");
+    await expect(page.locator('svg [data-field-id="metal-2-residue-amount"]')).toHaveText("十分に");
     await page.getByRole("button", { name: "拡大して読む" }).click();
     await expect(page.locator(".separation-svg")).toHaveClass(/is-zoomed/);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
@@ -31,6 +34,10 @@ test("separation diagrams: navigation, mobile controls and offline rendering", a
     await page.screenshot({ path: test.info().outputPath("organic-mobile.png"), fullPage: true });
     await page.getByRole("button", { name: "詳細表示", exact: true }).click();
     await expect(page.locator(".separation-details")).toContainText("NaHCO₃では通常ほとんど");
+    await expect(page.locator('[data-operation-id="organic-2-extract-operation"]')).toContainText("適宜ガス抜き");
+    await expect(page.locator('[data-operation-id="organic-2-extract-operation"]')).toContainText("静置");
+    await page.getByRole("button", {name:"基本表示",exact:true}).click();
+    await expect(page.locator(".separation-operation-details")).toHaveCount(0);
     await page.setViewportSize({ width: 1440, height: 1000 });
     for (const slug of ["metal-analysis", "aromatic-separation"]) {
       await page.goto(`/separation/${slug}`);
@@ -60,6 +67,7 @@ test("separation diagrams: navigation, mobile controls and offline rendering", a
       await expect(page.locator(".separation-svg")).toBeVisible();
       await page.getByRole("button", { name: "詳細表示", exact: true }).click();
       await expect(page.locator(".separation-details")).toBeVisible();
+      await expect(page.locator(".separation-operation-details")).toBeVisible();
     }
   } finally { await context.close(); await browser.close(); }
 });

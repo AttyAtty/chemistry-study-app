@@ -20,9 +20,9 @@
 .separation-node.mixture rect { fill: var(--surface-soft); stroke-width: 2; }
 .separation-node.product rect, .separation-node.precipitate rect { fill: var(--surface); stroke-width: 2; }
 .separation-edge { fill: none; stroke: currentColor; stroke-width: 1.8; }
-.separation-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; margin: 24px 0; }
-.separation-details article, .separation-text { background: var(--surface); padding: 20px; border: 1px solid var(--line); border-radius: 12px; overflow-wrap: anywhere; }
-.separation-details h3 { margin-top: 0; }
+.separation-details, .separation-operation-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; margin: 24px 0; }
+.separation-details article, .separation-operation-grid article, .separation-text { background: var(--surface); padding: 20px; border: 1px solid var(--line); border-radius: 12px; overflow-wrap: anywhere; }
+.separation-details h3, .separation-operation-grid h3 { margin-top: 0; }
 .separation-details > h2 { grid-column: 1 / -1; margin-bottom: 0; }
 .separation-formula { font-weight: 700; }
 .separation-text { margin-top: 20px; }
@@ -55,3 +55,10 @@
 .separation-svg text.category-酸性 { fill: #d52218; }
 .separation-svg text.category-塩基性 { fill: #183cff; }
 .separation-svg text.category-中性 { fill: #9b3da2; }
+.separation-svg text.separation-operation { font-size: 13px; fill: #385247; }
+.separation-operation-details { margin-top: 28px; }
+.separation-operation-details dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; }
+.separation-operation-details dt { font-weight: 700; }
+.separation-operation-details dd { margin: 0; }
+.separation-operation-details ol { padding-left: 1.4em; }
+.separation-operation-context { color: var(--muted); font-size: 13px; }

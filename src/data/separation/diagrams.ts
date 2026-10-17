@@ -1,4 +1,4 @@
-import type { Diagram, SeparationNode, SeparationEdge } from "./types";
+import type { Diagram, SeparationNode, SeparationEdge, QualitativeAmount, InstructionLabel } from "./types";
 
 const notes = (id: string, texts: string[]) => texts.map((text, i) => ({ id: `${id}-note-${i}`, text }));
 function node(id: string, label: string, formula: string, lines: string[], x: number, y: number,
@@ -205,4 +205,103 @@ for (const [id, x, width, compound] of [["nitrobenzene-product", 800, 110, "nitr
   fraction.display!.tone = "purple";
   aromaticSeparation.edges.push(fraction);
 }
+/** Qualitative procedures are separate from reagents and from presentation coordinates. */
+function operation(e: SeparationEdge, label: string, actions: [string, string][], detail: string[],
+  condition?: string, amount?: [QualitativeAmount["kind"], string]) {
+  e.operation = {
+    id: `${e.id}-operation`, label, blankable: true,
+    amount: amount ? { id: `${e.id}-amount`, kind: amount[0], label: amount[1], blankable: true } : undefined,
+    actions: actions.map(([key, text]) => ({ id: `${e.id}-action-${key}`, label: text, blankable: true })),
+    notes: notes(`${e.id}-operation`, detail),
+  };
+  if (condition) e.condition = { id: e.condition?.id ?? `${e.id}-condition`, label: condition, blankable: true };
+}
+function label(e: SeparationEdge, kind: InstructionLabel["kind"], fieldId: string, text: string, dx = 0, dy = 0): InstructionLabel {
+  return { kind, fieldId, text, x: e.labelX + dx, y: e.labelY + dy };
+}
+function action(e: SeparationEdge, key: string) { return e.operation!.actions.find(a => a.id === `${e.id}-action-${key}`)!; }
+const add: [string, string] = ["add", "水溶液を加える"];
+const filter: [string, string] = ["filter", "沈殿をろ別し、ろ液を次の操作に用いる"];
+const settle: [string, string] = ["separate", "静置して二層に分かれた後、水層とエーテル層を分液する"];
+
+const hcl = inorganicEdges[0];
+operation(hcl, "希塩酸を加えてろ別", [add, filter], ["希塩酸を加えてAgClとPbCl₂を沈殿させ、沈殿とろ液を分ける。"], "酸性");
+hcl.display!.instructions = [label(hcl, "reagent", hcl.reagent!.id, "希HCl"), label(hcl, "action", action(hcl,"add").id, "加える", 0, 23)];
+
+for (const [index, condition, sufficient] of [[2,"酸性",true],[6,"塩基性",false]] as const) {
+  const e = inorganicEdges[index];
+  e.reagent!.label = "H₂S";
+  operation(e, "H₂Sを通じてろ別", [["pass-gas","H₂Sガスを通じる"], filter],
+    ["溶液の条件を整えてからH₂Sを通じ、硫化物の沈殿をろ別する。酸性と塩基性でS²⁻濃度が異なるため、液性が沈殿の選択性を決める。"], condition,
+    sufficient ? ["sufficient","十分に"] : undefined);
+  e.display!.instructions = [
+    label(e,"reagent",e.reagent!.id,"H₂S"), label(e,"condition",e.condition!.id,condition,50),
+    ...(e.operation!.amount ? [label(e,"amount",e.operation!.amount.id,"十分に",0,23)] : []),
+    label(e,"action",action(e,"pass-gas").id,"通じる",sufficient ? 45 : 0,23),
+  ];
+}
+const nh3 = inorganicEdges[4];
+nh3.reagent!.label = "NH₃水・NH₄Cl";
+operation(nh3,"前処理後、NH₃水を加えて塩基性にする", [
+  ["boil","加熱・煮沸して残存H₂Sを除く"], ["oxidize","HNO₃等で鉄をFe³⁺に再酸化する"],
+  ["add","NH₄Cl共存下でNH₃水を加える"], filter,
+], ["CuSをろ別したろ液を前処理した後、NH₄Clを共存させてNH₃水を過剰に加え、塩基性を調整する。Znは主にアンミン錯体としてろ液に残す。", "過剰NaOHへの置換はしない。Al(OH)₃が溶解し、分離の意味が変わる。"], "塩基性", ["excess","過剰に"]);
+nh3.display!.instructions = [
+  label(nh3,"action",action(nh3,"boil").id,"① 煮沸・H₂S除去"),
+  label(nh3,"action",action(nh3,"oxidize").id,"② HNO₃で再酸化",0,26),
+  label(nh3,"reagent",nh3.reagent!.id,"③ NH₃水",0,52),
+  label(nh3,"amount",nh3.operation!.amount!.id,"過剰に",95,52),
+  label(nh3,"action",action(nh3,"add").id,"加え",143,52),
+  label(nh3,"condition",nh3.condition!.id,"塩基性に",190,52),
+];
+const carbonate = inorganicEdges[8];
+operation(carbonate,"炭酸アンモニウム水溶液を加えてろ別", [add, filter], ["NH₃・NH₄Cl共存下で(NH₄)₂CO₃水溶液を加え、CaCO₃・BaCO₃を沈殿させる。"], "NH₃・NH₄Cl共存");
+carbonate.display!.instructions = [label(carbonate,"reagent",carbonate.reagent!.id,"(NH₄)₂CO₃"), label(carbonate,"action",action(carbonate,"add").id,"水溶液を加える",0,23)];
+operation(hotWaterEdge,"熱水を加えて加熱", [["add","熱水を加える"],["heat","加熱してPbCl₂を溶かす"],["filter","熱いうちに不溶のAgClと溶液を分ける"]], ["PbCl₂は熱水に溶けやすい。熱水を加えて加熱し、AgClから分離する。冷却するとPbCl₂が再び析出しうるため、熱時の分離と区別する。"]);
+hotWaterEdge.display!.instructions = [label(hotWaterEdge,"reagent",hotWaterEdge.reagent!.id,"熱水"), label(hotWaterEdge,"operation",hotWaterEdge.operation!.id,"加えて加熱",-22,23)];
+
+organicStages.forEach((_,i) => {
+  const extract = organicEdges[i*3]; const recover = organicEdges[i*3+2];
+  const bicarbonate = i===1;
+  operation(extract,bicarbonate ? "少量ずつ加えて穏やかに振とう・分液" : "加えて振とう・分液", [
+    add, ["shake",bicarbonate ? "穏やかに振とうする" : "振とうして二層を接触させる"],
+    ["vent",bicarbonate ? "CO₂の発生に応じて適宜ガス抜きを行う" : "必要に応じてガス抜きを行う"], settle,
+  ], bicarbonate ? [
+    "NaHCO₃水溶液を少量ずつ加え、はじめは穏やかに混合する。安息香酸との反応でCO₂が発生するため、適宜ガス抜きを行い、密閉したまま振り続けない。",
+    "混合後は静置し、二層に分かれてから水層とエーテル層を分液する。フェノールはこの条件では主にエーテル層に残る。",
+  ] : [
+    `${i===0 ? "希塩酸" : "NaOH水溶液"}を加えて振とうし、静置して二層に分かれた後、水層・エーテル層を分液する。必要に応じてガス抜きを行う。`,
+  ], i===0 ? "酸性" : "塩基性", bicarbonate ? ["small-portions","少量ずつ"] : undefined);
+  const oldCondition = extract.display!.conditionPosition!;
+  extract.display!.instructions = [
+    label(extract,"reagent",extract.reagent!.id,["希HCl","NaHCO₃水溶液","NaOH水溶液"][i],0,-13),
+    ...(bicarbonate ? [label(extract,"amount",extract.operation!.amount!.id,"少量ずつ",0,7),label(extract,"action",action(extract,"shake").id,"加え穏やかに振とう",64,7)]
+      : [label(extract,"operation",extract.operation!.id,"加え振とう・分液",0,7)]),
+    { fieldId: extract.condition!.id, kind: "condition", text: i===0 ? "酸性に" : "塩基性に", x: oldCondition.x, y: oldCondition.y },
+  ];
+  if (bicarbonate) extract.display!.instructions.push({ fieldId: `${extract.operation!.id}-note-0`, kind: "note", text:"CO₂発生", x:oldCondition.x+78, y:oldCondition.y });
+  operation(recover,"加えて遊離し、回収", [add,["mix","加えた水溶液を混合する"],
+    ...(i===1 ? [["cool","必要に応じて冷却し、析出した安息香酸をろ別する"] as [string,string]] : []),
+    ["recover",i===1 ? "析出または再抽出によって回収する" : "遊離物をエーテルで再抽出して回収する"],
+  ], [
+    i===0 ? "NaOH水溶液を加えて塩基性にし、アニリンを遊離させる。エーテルで再抽出し、静置・分液して回収する。"
+      : i===1 ? "HClを加えて酸性にし、安息香酸を遊離させる。十分な濃度なら析出するので、必要に応じて冷却してろ別する。"
+      : "HClを加えて酸性にし、フェノールを遊離させる。代わりにCO₂を通じる方法もある。遊離後も一部は水に溶けるため、エーテルで再抽出して回収する。",
+    ...(i===1 ? ["水層に残ったNaHCO₃もHClと反応してCO₂を生じうるので、酸は少量ずつ加えて混合する。"] : []),
+  ], i===0 ? "塩基性" : "酸性", i===1 ? ["small-portions","少量ずつ"] : undefined);
+  if (i===2) recover.operation!.actions.push({id:`${recover.id}-action-pass-gas`,label:"CO₂を用いる場合はガスを通じる",blankable:true});
+  recover.display!.instructions = [
+    label(recover,"reagent",recover.reagent!.id,["NaOH水溶液","HCl","HCl または CO₂"][i]),
+    label(recover,"condition",recover.condition!.id,i===0 ? "塩基性に" : "酸性に",0,21),
+    label(recover,"action",action(recover,"mix").id,i===2 ? "混合" : "加えて混合",70,21),
+    ...(i===2 ? [label(recover,"action",action(recover,"pass-gas").id,"CO₂は通気",110,21)] : []),
+  ];
+});
+for(const e of aromaticSeparation.edges.filter(e=>e.id.startsWith("organic-distill-"))) {
+  operation(e,"加熱して分留", [["remove-solvent","エーテルを除いた中性物質を対象とする"],["heat","加熱して沸点差により分留する"]], ["酸塩基抽出で残った中性2物質を、溶媒除去後、沸点差を利用して分ける。"]);
+  // Preserve the old process-label ID, but exclude it from reagent-only exercises.
+  Object.assign(e.reagent!, { role:"process", blankable:false });
+  if(!e.display!.hideLabel) e.display!.instructions = [label(e,"operation",e.operation!.id,"分留"),label(e,"action",action(e,"heat").id,"加熱して分ける",0,20)];
+}
+aromaticSeparation.sources.push({ title:"抽出操作・分液とガス抜き（Nichols実験教材）", url:"https://chem.libretexts.org/Bookshelves/Organic_Chemistry/Organic_Chemistry_Lab_Techniques_%28Nichols%29/04%3A_Extraction/4.06%3A_Step-by-Step_Procedures_For_Extractions" });
 export const separationDiagrams = [metalAnalysis, aromaticSeparation];

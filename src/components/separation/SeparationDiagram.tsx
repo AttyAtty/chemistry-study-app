@@ -35,12 +35,17 @@ export function SeparationDiagram({ diagram }: { diagram: Diagram }) {
             ?? (sameRow ? `M${startX},${startY} H${endX}` : `M${startX},${startY} V${bendY} H${endX} V${endY}`);
           return <g key={edge.id} data-edge-id={edge.id}>
             <path className="separation-edge" d={path} markerEnd={edge.to && !byId.get(edge.to)?.display?.hidden ? `url(#${uid}-arrow)` : undefined} />
-            {!edge.display?.hideLabel && <g>
+            {!edge.display?.hideLabel && (edge.display?.instructions ? <g>
+              {edge.display.instructions.map((instruction,i)=><text key={`${instruction.fieldId}-${i}`}
+                data-field-id={instruction.fieldId} data-field-kind={instruction.kind}
+                className={`separation-instruction ${instruction.kind === "reagent" ? "separation-reagent" : "separation-operation"} tone-${instruction.kind === "reagent" ? edge.display?.tone ?? "default" : "default"}`}
+                x={instruction.x} y={instruction.y}>{instruction.text}</text>)}
+            </g> : <g>
               <text data-field-id={edge.reagent?.id} className={`separation-reagent tone-${edge.display?.tone ?? "default"}`} x={edge.labelX} y={edge.labelY}>
                 {(edge.display?.reagentLines ?? [edge.reagent?.label ?? ""]).map((line,i)=><tspan key={i} x={edge.labelX} dy={i ? 26 : 0}>{line}</tspan>)}
               </text>
               {edge.condition && (edge.display?.condition ?? edge.condition.label) && <text data-field-id={edge.condition.id} className="separation-condition" x={edge.display?.conditionPosition?.x ?? edge.labelX} y={edge.display?.conditionPosition?.y ?? edge.labelY + 23}>{edge.display?.condition ?? edge.condition.label}</text>}
-            </g>}
+            </g>)}
           </g>;
         })}
         {diagram.nodes.map(node => {
@@ -65,6 +70,21 @@ export function SeparationDiagram({ diagram }: { diagram: Diagram }) {
         })}
       </svg>
     </div>
+    {detailed && <section className="separation-operation-details" aria-label="分離操作の詳細">
+      <h2>分離操作の詳細</h2>
+      <div className="separation-operation-grid">{diagram.edges.filter(edge=>edge.operation && !edge.display?.hideLabel).map(edge=><article key={edge.id} data-operation-id={edge.operation!.id}>
+        <h3>{edge.reagent?.label}</h3>
+        <p className="separation-operation-context">{byId.get(edge.from)?.label} → {byId.get(edge.to)?.label}</p>
+        <dl>
+          {edge.reagent && edge.reagent.role !== "process" && <><dt>試薬</dt><dd data-field-id={edge.reagent.id} data-field-kind="reagent">{edge.reagent.label}{edge.reagent.alternatives?.length ? `（代替：${edge.reagent.alternatives.join(" / ")}）` : ""}</dd></>}
+          {edge.condition && <><dt>条件</dt><dd data-field-id={edge.condition.id} data-field-kind="condition">{edge.condition.label}</dd></>}
+          {edge.operation!.amount && <><dt>加え方・程度</dt><dd data-field-id={edge.operation!.amount.id} data-field-kind="amount">{edge.operation!.amount.label}</dd></>}
+          <dt>操作</dt><dd data-field-id={edge.operation!.id} data-field-kind="operation">{edge.operation!.label}</dd>
+        </dl>
+        <ol>{edge.operation!.actions.map(action=><li key={action.id} data-field-id={action.id} data-field-kind="action">{action.label}</li>)}</ol>
+        {edge.operation!.notes.map(note=><p key={note.id}>{note.text}</p>)}
+      </article>)}</div>
+    </section>}
     {detailed && <div className="separation-details" aria-label="物質・操作の詳細">
       <h2>物質・操作の詳細</h2>
       {diagram.nodes.filter(node=>node.notes.length).map(node=><article key={node.id}>
@@ -75,7 +95,7 @@ export function SeparationDiagram({ diagram }: { diagram: Diagram }) {
     </div>}
     <details className="separation-text"><summary>図の内容を文章で読む</summary>
       {diagram.nodes.map(node=><article key={node.id}><h3>{node.label}</h3><p>{node.formula}</p><p>{node.lines.join(" / ")}</p>
-        {diagram.edges.filter(edge=>edge.from===node.id).map(edge=><p key={edge.id}>→ {edge.reagent?.label} {edge.condition?.label}：{byId.get(edge.to)?.label}{edge.note && `（${edge.note.text}）`}</p>)}
+        {diagram.edges.filter(edge=>edge.from===node.id).map(edge=><p key={edge.id}>→ {edge.reagent?.label} {edge.condition?.label}{edge.operation && ` / ${edge.operation.label}`}：{byId.get(edge.to)?.label}{edge.note && `（${edge.note.text}）`}</p>)}
       </article>)}
     </details>
     <aside className="separation-notes"><h2>補足説明</h2>{diagram.notes.map(note=><p key={note.id}>{note.text}</p>)}
