@@ -1,6 +1,7 @@
 import { learningRow } from "@/data/learningContentIds";
 import type { ChemistryUnit } from "@/data/chemistry";
 import { complexCoverageQuestions } from "@/data/coverageExpansionQuestions";
+import { precipitateFacts as pf } from "./inorganicPrecipitates";
 
 export const inorganicComplexesUnit: ChemistryUnit = {
   slug: "complex-ions-qualitative-analysis",
@@ -112,10 +113,10 @@ export const inorganicComplexesUnit: ChemistryUnit = {
       kind: "table",
       columns: ["分類", "白色・淡色", "有色・黒色"],
       rows: [
-        learningRow("ハロゲン化物", ["ハロゲン化物", "AgCl、PbCl₂、Hg₂Cl₂：白／AgBr：淡黄", "AgI：黄"]),
-        learningRow("硫酸塩", ["硫酸塩", "CaSO₄、SrSO₄、BaSO₄、PbSO₄：白", "—"]),
+        learningRow("ハロゲン化物", ["ハロゲン化物", `${pf.agcl.formula}、${pf.pbcl2.formula}、Hg₂Cl₂：${pf.agcl.color}／AgBr：淡黄`, "AgI：黄"]),
+        learningRow("硫酸塩", ["硫酸塩", `${[pf.caso4,pf.srso4,pf.baso4,pf.pbso4].map(p=>p.formula).join("、")}：${pf.caso4.color}`, "—"]),
         learningRow("炭酸塩", ["炭酸塩", "CaCO₃、MgCO₃、BaCO₃：白", "—"]),
-        learningRow("水酸化物", ["水酸化物", "Al(OH)₃、Zn(OH)₂、Pb(OH)₂：白／Fe(OH)₂：緑白／Cu(OH)₂：青白", "Fe(OH)₃：赤褐／Cr(OH)₃：灰緑／Ni(OH)₂：緑"]),
+        learningRow("水酸化物", ["水酸化物", `Al(OH)₃、Zn(OH)₂、Pb(OH)₂：白／${pf.feoh2.formula}：${pf.feoh2.color}／Cu(OH)₂：青白`, "Fe(OH)₃：赤褐／Cr(OH)₃：灰緑／Ni(OH)₂：緑"]),
         learningRow("酸化物", ["酸化物", "Al₂O₃、ZnO：白", "MnO₂、FeO、Fe₃O₄、CuO：黒／Ag₂O：暗褐／Fe₂O₃：赤褐／Cu₂O：赤"]),
         learningRow("クロム酸塩", ["クロム酸塩", "BaCrO₄、PbCrO₄：黄", "Ag₂CrO₄：暗赤"]),
         learningRow("硫化物", ["硫化物", "ZnS：白／MnS：淡赤／CdS：黄", "CuS、Ag₂S、PbS：黒／SnS：黒褐"]),

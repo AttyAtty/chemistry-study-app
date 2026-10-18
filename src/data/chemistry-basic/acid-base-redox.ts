@@ -1,4 +1,5 @@
 import { learningRow } from "@/data/learningContentIds";
+import { ionizationSeries } from "../ionizationSeries";
 import type { QuizQuestion } from "@/data/chemistry";
 import { cards, factQuestions, makeBasicUnit, table, type BasicFact } from "./helpers";
 
@@ -88,7 +89,7 @@ export const chemistryBasicAcidBaseRedox = makeBasicUnit({
     table("oxidation-numbers", "代表的な酸化数", "総和の規則から未知の酸化数を求めます。", ["物質・イオン", "注目元素", "酸化数"], [learningRow("H2O", ["H₂O", "H / O", "+1 / −2"]), learningRow("CO2", ["CO₂", "C", "+4"]), learningRow("H2SO4", ["H₂SO₄", "S", "+6"]), learningRow("NO3", ["NO₃⁻", "N", "+5"]), learningRow("KMnO4", ["KMnO₄", "Mn", "+7"]), learningRow("Cr2O72", ["Cr₂O₇²⁻", "Cr", "+6"]), learningRow("NH4", ["NH₄⁺", "N", "−3"])]),
     cards("metals", "半反応式・金属・腐食", "電子数をそろえ、金属の反応性を予測します。", [
       { learningId: "半反応式",  title: "半反応式", body: "Zn→Zn²⁺+2e⁻（酸化）、Cu²⁺+2e⁻→Cu（還元）。電子数をそろえて加えるとZn+Cu²⁺→Zn²⁺+Cuです。" },
-      { learningId: "イオン化傾向",  title: "イオン化傾向", body: "K Ca Na Mg Al Zn Fe Ni Sn Pb (H₂) Cu Hg Ag Pt Au。大きい金属ほど陽イオンになりやすく、水・酸・他の金属イオンとの反応を判断できます。" },
+      { learningId: "イオン化傾向",  title: "イオン化傾向", body: `${ionizationSeries.join(" ")}。大きい金属ほど陽イオンになりやすく、水・酸・他の金属イオンとの反応を判断できます。` },
       { learningId: "腐食と防食",  title: "腐食と防食", body: "鉄のさびは酸化反応です。塗装、めっき、表面被膜、合金化、亜鉛などによる犠牲防食で進行を抑えます。" },
     ]),
     cards("battery", "酸化還元と電池", "詳細は既存の電池・電気分解単元へ接続します。", [

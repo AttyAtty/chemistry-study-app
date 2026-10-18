@@ -1,12 +1,8 @@
 import {test} from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import ts from "typescript";
+import { loadPureTypeScript as load } from "./helpers/pure-typescript.mjs";
 
-async function load(file) {
-  const js=ts.transpileModule(fs.readFileSync(file,"utf8"),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
-  return import(`data:text/javascript;base64,${Buffer.from(js).toString("base64")}`);
-}
 const {separationDiagrams}=await load("src/data/separation/diagrams.ts");
 const {collectBlankTargets,createSeparationExercise,nextSeparationExercise}=await load("src/lib/separationExercise.ts");
 const options={mode:"all",rate:30,seed:"seed-a",structurePolicy:"hide"};

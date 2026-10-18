@@ -1,4 +1,5 @@
 import type { Diagram, SeparationNode, SeparationEdge, QualitativeAmount, InstructionLabel } from "./types";
+import { silverChlorideConfirmation } from "../inorganicPrecipitates";
 
 const notes = (id: string, texts: string[]) => texts.map((text, i) => ({ id: `${id}-note-${i}`, text }));
 function node(id: string, label: string, formula: string, lines: string[], x: number, y: number,
@@ -16,7 +17,7 @@ function edge(id: string, from: SeparationNode, to: SeparationNode, reagent?: st
 const inorganicNodes: SeparationNode[] = [
   node("metal-mix", "出発：10種の金属イオン", "Ag⁺, Pb²⁺, Cu²⁺, Al³⁺, Fe³⁺, Zn²⁺, Ca²⁺, Ba²⁺, Na⁺, K⁺", ["Ag⁺ / Pb²⁺ / Cu²⁺ / Al³⁺ / Fe³⁺", "Zn²⁺ / Ca²⁺ / Ba²⁺ / Na⁺ / K⁺"], 20, 20, [], { kind: "mixture" }),
   node("chlorides", "第1群：塩化物の沈殿", "AgCl / PbCl₂", ["AgCl：白色沈殿", "PbCl₂：白色沈殿"], 440, 270,
-    ["PbCl₂は熱水に溶けるため、AgClと分けられる。溶解度があるので鉛の沈殿は完全とは限らない。", "AgClはNH₃水に溶けて[Ag(NH₃)₂]⁺となり、HNO₃で酸性にするとAgClが再沈殿する。"], { kind: "precipitate", color: "#ffffff", colorLabel: "白色" }),
+    ["PbCl₂は熱水に溶けるため、AgClと分けられる。溶解度があるので鉛の沈殿は完全とは限らない。", silverChlorideConfirmation], { kind: "precipitate", color: "#ffffff", colorLabel: "白色" }),
   node("after-hcl", "第1段階のろ液", "Cu²⁺ / Al³⁺ / Fe³⁺ / Zn²⁺ / Ca²⁺ / Ba²⁺ / Na⁺ / K⁺", ["Cu²⁺ / Al³⁺ / Fe³⁺ / Zn²⁺", "Ca²⁺ / Ba²⁺ / Na⁺ / K⁺"], 20, 270),
   node("copper", "第2群：硫化物の沈殿", "CuS", ["CuS：黒色沈殿"], 440, 520,
     ["Cu²⁺の別試料に過剰NH₃水を加えると、深青色の[Cu(NH₃)₄]²⁺を生じる。"], { kind: "precipitate", color: "#202020", colorLabel: "黒色" }),

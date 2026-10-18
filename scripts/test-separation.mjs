@@ -1,12 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import fs from "node:fs";
-import ts from "typescript";
+import { loadPureTypeScript } from "./helpers/pure-typescript.mjs";
 
 // Compile only the pure data module, without Next.js or a browser runtime.
-const source = fs.readFileSync("src/data/separation/diagrams.ts", "utf8");
-const js = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
-const { metalAnalysis, aromaticSeparation, separationDiagrams } = await import(`data:text/javascript;base64,${Buffer.from(js).toString("base64")}`);
+const { metalAnalysis, aromaticSeparation, separationDiagrams } = await loadPureTypeScript("src/data/separation/diagrams.ts");
 
 test("all diagrams have stable unique IDs, valid references and reachable nodes", () => {
   for (const diagram of separationDiagrams) {
