@@ -1,0 +1,47 @@
+.illustrated-page { padding-bottom:50px; }
+.illustrated-entry { margin:24px 0; padding:24px; border:1px solid var(--line); border-radius:18px; background:var(--surface); }
+.illustrated-entry-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.illustrated-entry-grid>a { display:block; padding:20px; border:1px solid var(--line); border-radius:14px; color:var(--text); background:var(--surface); text-decoration:none; }
+.illustrated-entry-grid>a>span { float:right; color:#407b91; font-size:38px; }
+.illustrated-entry-grid strong { font-size:19px; }.illustrated-entry-grid p,.illustrated-entry-grid small { color:var(--muted); }
+.illustrated-lesson-nav { display:flex; flex-wrap:wrap; gap:12px; margin:20px 0; }.illustrated-lesson-nav a { padding:10px 14px; border:1px solid var(--line); border-radius:10px; }.illustrated-lesson-nav [aria-current] { background:#eef5ff; color:#214e83; }
+.illustrated-tools { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:20px; background:var(--surface); border:1px solid var(--line); border-radius:14px; }
+.illustrated-tools label { font-weight:700; }.illustrated-tools select { max-width:100%; min-height:44px; padding:8px; font:inherit; color:var(--text); background:var(--surface); border:1px solid var(--line); border-radius:8px; }.illustrated-tools p { flex-basis:100%; margin:0; color:var(--muted); font-size:13px; }
+.illustrated-print-area { min-width:0; }.illustrated-print-title { display:none; }
+.illustrated-sheet { min-width:0; margin:24px 0; padding:24px; border:1px solid var(--line); border-radius:16px; background:var(--surface); }
+.illustrated-sheet>h2 { margin:0 0 18px; font-size:22px; }.illustrated-caption { color:var(--muted); font-size:13px; line-height:1.7; }
+.illustrated-scroll,.illustrated-table-scroll { width:100%; max-width:100%; overflow-x:auto; }
+.illustrated-scroll:focus-visible,.illustrated-table-scroll:focus-visible { outline:3px solid #5277ac; outline-offset:3px; }
+.illustrated-diagram { display:block; width:100%; min-width:0; height:auto; background:white; color:#152e42; }
+.is-zoomed .illustrated-diagram { width:150%; min-width:1100px; max-width:none; }
+.illustrated-diagram text { fill:#142d40; font:19px "Yu Gothic",Meiryo,system-ui,sans-serif; }.illustrated-diagram .diagram-small { font-size:16px; }.illustrated-diagram .formula { font:24px Georgia,"Yu Gothic",serif; }
+.diagram-panel { fill:#fff; stroke:#c3d4df; stroke-width:1.4; }.product-panel { fill:#f6fafc; }.category-band { fill:#e9f2f6; stroke:#9db8c9; }
+.illustrated-arrow line,.classification-line,.network-scheme path,.helix-scheme,.polysaccharide-chain path { stroke:#365c72; stroke-width:2; fill:none; }.illustrated-arrow polygon { fill:#365c72; }
+.molecular-drawing line,.molecular-drawing path { stroke:#152d3d; stroke-width:1.6; fill:none; }.molecular-drawing text { font:21px Georgia,"Yu Gothic",serif; fill:#152d3d; }
+.molecular-drawing text.atom-reactive { fill:#a34c04; }.molecular-drawing text.atom-linkage { fill:#135f9e; }.molecular-drawing .repeat-bracket path { stroke-width:2; }.molecular-drawing .repeat-bracket text { font-style:italic; }
+.network-scheme circle,.polysaccharide-chain circle { fill:#e9f1f6; stroke:#365c72; stroke-width:1.5; }
+.sugar-unit circle { stroke:#486278; stroke-width:1.5; fill:#edf5fc; }.unit-fructose circle { fill:#fef0e8; }.unit-galactose circle { fill:#f1ebfa; }.unit-masked circle { fill:white; }
+.fischer-structure path { fill:none; stroke:#152d3d; stroke-width:1.5; }.fischer-structure rect { fill:white; }.fischer-structure text { font:21px Georgia,"Yu Gothic",serif; }.fischer-structure .carbon-number { font-size:12px; fill:#637989; }
+.hydrogen-bond { stroke:#738da0; stroke-dasharray:4 4; stroke-width:1.2; }.helix-scheme { stroke-width:4; }
+.illustrated-concept-flow { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:12px; padding:20px; border:1px solid var(--line); background:var(--surface); border-radius:12px; }
+.illustrated-table { width:100%; min-width:940px; border-collapse:collapse; table-layout:fixed; font-size:13px; }.illustrated-table caption { padding:8px 0 16px; text-align:left; font-weight:700; }.illustrated-table th,.illustrated-table td { padding:12px 10px; border:1px solid #c3d2de; text-align:left; vertical-align:top; overflow-wrap:anywhere; }.illustrated-table thead { background:#e9f1f6; color:#173449; }.illustrated-table th[scope=row] { font-weight:700; }.illustrated-table small { display:block; margin-top:8px; font-size:11px; }.illustrated-table .molecular-drawing { display:block; width:100%; max-width:170px; height:78px; background:white; }.illustrated-table .separation-html-blank { min-width:0; width:100%; }.illustrated-table .separation-html-blank>span { display:none; }.illustrated-table .separation-html-blank { height:26px; }
+.illustrated-notes { padding-left:1.4em; line-height:1.9; }.illustrated-notes li { margin-bottom:16px; }.illustrated-sources { margin-top:24px; }
+.illustrated-diagram .separation-blank path { stroke:#304b6d; stroke-width:1.5; fill:none; }.illustrated-diagram .separation-blank-number { font:12px system-ui,sans-serif; fill:#304b6d; }.illustrated-diagram .separation-answer { fill:#1857b4; font-weight:700; }
+.illustrated-print-area.is-a4-preview { width:210mm; max-width:none; margin:24px auto; background:#e2e8ee; }.illustrated-page:has(.is-a4-preview) { overflow-x:auto; }.is-a4-preview .illustrated-print-title { display:block; padding:8mm 10mm; background:white; color:#142d40; }.is-a4-preview .illustrated-sheet { box-sizing:border-box; width:210mm; min-height:277mm; margin:0 0 16px; padding:10mm; border-radius:0; background:white; color:#142d40; }.is-a4-preview .illustrated-diagram { width:100%; min-width:0; }.is-a4-preview .illustrated-table { min-width:0; font-size:11px; }.is-a4-preview .illustrated-table th,.is-a4-preview .illustrated-table td { padding:6px; }.is-a4-preview .illustrated-table-scroll { overflow:visible; }
+@media(max-width:620px) { .illustrated-entry-grid { grid-template-columns:1fr; }.illustrated-sheet { padding:12px; }.illustrated-sheet>h2 { font-size:19px; }.illustrated-tools { padding:14px; }.illustrated-tools label { flex-basis:100%; }.illustrated-tools select { width:100%; } }
+@page illustrated-material { size:A4 portrait; margin:10mm; }
+@media print {
+  body:has(.illustrated-print-area)>:not(.illustrated-page) { display:none!important; }
+  .illustrated-page { width:190mm; max-width:none; margin:0!important; padding:0!important; overflow:visible!important; }
+  .illustrated-page>:not(.illustrated-print-area) { display:none!important; }
+  .illustrated-print-area,.illustrated-print-area * { visibility:visible!important; }
+  .illustrated-print-area,.illustrated-print-area.is-a4-preview { width:190mm; margin:0; padding:0; background:white; color:#111; page:illustrated-material; }
+  .illustrated-print-title { display:none!important; }
+  .illustrated-print-area .illustrated-sheet { box-sizing:border-box; width:190mm; min-height:0; margin:0; padding:0; border:0; border-radius:0; background:white; color:#111; break-after:page; break-inside:avoid; }
+  .illustrated-print-area .illustrated-sheet:last-child { break-after:auto; }
+  .illustrated-sheet>h2 { font-size:16px; margin:0 0 4mm; }.illustrated-caption { font-size:10px; margin:3mm 0; }
+  .illustrated-scroll,.illustrated-table-scroll { overflow:visible!important; }
+  .illustrated-print-area .illustrated-diagram { width:190mm!important; min-width:0!important; max-width:190mm!important; height:auto; }
+  .illustrated-table { width:190mm!important; min-width:0!important; font-size:10px; }.illustrated-table th,.illustrated-table td { padding:5px; }.illustrated-table small { font-size:9px; }.illustrated-table caption { font-size:11px; }.illustrated-table .molecular-drawing { height:45px; }.illustrated-table tr { break-inside:avoid; }.illustrated-table .separation-html-blank { height:6mm; }
+  .illustrated-notes { font-size:12px; }.illustrated-sources { display:none; }.illustrated-sheet .no-print { display:none!important; }
+}

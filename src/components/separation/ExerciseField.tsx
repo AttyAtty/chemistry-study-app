@@ -2,12 +2,14 @@ import type { SeparationExercise } from "@/lib/separationExercise";
 import type { DiagramTextPart } from "@/data/separation/types";
 
 export type ExerciseView = { exercise: SeparationExercise; showAnswers: boolean };
+/** Shared presentation contract: diagrams need only selected IDs, not a particular question engine. */
+export type BlankView = { exercise: { blankIds: string[] }; showAnswers: boolean };
 function textWidth(text:string,fontSize:number) {
   return [...text].reduce((sum,c)=>sum+(c.charCodeAt(0)>255 ? fontSize : fontSize*.58),0);
 }
 
 export function SvgBlank({ fieldId, x, y, width, anchor = "start", view }: {
-  fieldId: string; x: number; y: number; width: number; anchor?: "start" | "middle" | "end"; view: ExerciseView;
+  fieldId: string; x: number; y: number; width: number; anchor?: "start" | "middle" | "end"; view: BlankView;
 }) {
   const number = view.exercise.blankIds.indexOf(fieldId) + 1;
   const start = anchor === "middle" ? x-width/2 : anchor === "end" ? x-width : x;
@@ -20,7 +22,7 @@ export function SvgBlank({ fieldId, x, y, width, anchor = "start", view }: {
 
 export function ExerciseText({ fieldId, x, y, text, className, fontSize=18, maxWidth, anchor="start", view, kind }: {
   fieldId: string; x: number; y: number; text: string; className?: string; fontSize?: number;
-  maxWidth?: number; anchor?: "start" | "middle" | "end"; view?: ExerciseView; kind?: string;
+  maxWidth?: number; anchor?: "start" | "middle" | "end"; view?: BlankView; kind?: string;
 }) {
   const selected = view?.exercise.blankIds.includes(fieldId) ?? false;
   // Width comes only from presentation size, never from answer matching/classification.
@@ -48,7 +50,7 @@ export function ExerciseHeading({fieldId,parts,x,y,view,hideHint=false}:{fieldId
   </g>;
 }
 
-export function HtmlExerciseField({ fieldId, text, view }: {fieldId:string; text:string; view:ExerciseView}) {
+export function HtmlExerciseField({ fieldId, text, view }: {fieldId:string; text:string; view:BlankView}) {
   const number = view.exercise.blankIds.indexOf(fieldId) + 1;
   if (number && !view.showAnswers) return <span className="separation-html-blank" data-blank-id={fieldId} aria-label={`空欄${number}`}><small>{number}</small><span aria-hidden="true">　　　　　　　　　</span></span>;
   return <span data-field-id={fieldId} data-revealed-id={number ? fieldId : undefined} className={number ? "separation-answer" : undefined}>{text}</span>;

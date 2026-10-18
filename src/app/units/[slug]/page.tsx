@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "@/components/separation/separation.css";
+import "@/components/illustrated/illustrated.css";
+import { IllustratedLessonLinks } from "@/components/illustrated/IllustratedLessonLinks";
 import { StudyLink as Link } from "@/components/StudyLink";
 import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/PrintButton";
@@ -57,6 +59,7 @@ export default async function UnitPage({ params }: { params: Promise<{ slug: str
         </nav>
       </details>
       <div id="unit-material" />
+      {unit.slug === "organic-reactions" && <IllustratedLessonLinks/>}
       {["inorganic-reactions", "complex-ions-qualitative-analysis", "colors-and-tests", "organic-reactions"].includes(unit.slug) && <section className="separation-entry">
         <p className="eyebrow">SEPARATION / ANALYSIS</p>
         <h2>{unit.slug === "organic-reactions" ? "芳香族化合物の系統分離" : "金属イオンの系統分析"}</h2>
