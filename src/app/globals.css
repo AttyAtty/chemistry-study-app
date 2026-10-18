@@ -1100,3 +1100,32 @@ body.quiz-in-session .page-container { padding-top:20px; }
   .anchor-highlight { outline:none; }
   .table-wrap th,.table-wrap td { position:static !important; box-shadow:none !important; }
 }
+
+/* One SVG and one answer registry serve screen, A4 preview and printing. */
+.separation-problem-phrase { font-size:15px; fill:#172033; }
+.separation-print-heading { display:none; }
+.separation-print-area.is-print-preview { width:210mm; max-width:none; margin:20px auto; padding:10mm; background:white; color:#111; border:1px solid #ccd4df; box-sizing:border-box; }
+.separation-exercise-preview:has(.is-print-preview) { overflow-x:auto; }
+.is-print-preview .separation-print-heading { display:block; }
+.is-print-preview .separation-controls,.is-print-preview .separation-viewer>p { display:none; }
+.is-print-preview .separation-scroll { overflow:visible; padding:0; border:0; }
+.is-print-preview .separation-svg { width:190mm!important; min-width:0!important; max-width:190mm!important; height:auto; }
+.separation-print-heading h2 { margin:0 0 3mm; font-size:17px; }
+.separation-print-heading p { margin:0 0 5mm; font-size:12px; }
+@page separation-practice { size:A4 portrait; margin:10mm; }
+@media print {
+  body:has(.separation-print-area)>:not(.separation-page) { display:none!important; }
+  .separation-page:has(.separation-print-area) { width:190mm; max-width:none; margin:0; padding:0; }
+  .separation-page:has(.separation-print-area)>:not(.separation-exercise-preview),
+  .separation-exercise-preview:has(.separation-print-area)>:not(.separation-print-area) { display:none!important; }
+  .separation-exercise-preview:has(.separation-print-area) { overflow:visible!important; margin:0; padding:0; }
+  .separation-print-area,.separation-print-area * { visibility:visible!important; }
+  .separation-print-area,.separation-print-area.is-print-preview { position:static; width:190mm; max-width:none; margin:0; padding:0; border:0; background:white; color:#111; page:separation-practice; }
+  .separation-print-heading { display:block; }
+  .separation-print-area .separation-controls,.separation-print-area .separation-viewer>p { display:none!important; }
+  .separation-print-area .separation-scroll { overflow:visible; padding:0; margin:0; border:0; background:white; }
+  .separation-print-area .separation-svg { display:block; width:190mm!important; min-width:0!important; max-width:190mm!important; height:auto; max-height:245mm; background:white; }
+  .separation-print-area .separation-supplement { break-before:page; border:0; margin:0; padding:0; }
+  .separation-print-area .separation-supplement article { break-inside:avoid; }
+  .separation-print-area .separation-viewer { padding:0; border:0; background:white; }
+}

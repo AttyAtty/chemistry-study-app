@@ -16,6 +16,7 @@ function PracticeForm({ initialDiagramId }: { initialDiagramId:string }) {
   const [structurePolicy,setStructurePolicy] = useState<StructurePolicy>("hide");
   const [question,setQuestion] = useState<SeparationExercise | null>(null);
   const [showAnswers,setShowAnswers] = useState(false);
+  const [printPreview,setPrintPreview] = useState(false);
   const [error,setError] = useState("");
   const diagram = separationDiagrams.find(item=>item.id===diagramId)!;
   const previewDiagram = question ? separationDiagrams.find(item=>item.id===question.diagramId)! : null;
@@ -63,9 +64,14 @@ function PracticeForm({ initialDiagramId }: { initialDiagramId:string }) {
       <div className="separation-question-actions">
         <button type="button" className="button primary" aria-pressed={showAnswers} onClick={()=>setShowAnswers(!showAnswers)}>{showAnswers ? "問題に戻す" : "答えを表示"}</button>
         {question.mode === "random" && <button type="button" className="button" onClick={next}>別の問題を生成</button>}
+        <button type="button" className="button" aria-pressed={printPreview} onClick={()=>setPrintPreview(!printPreview)}>{printPreview ? "通常プレビューに戻す" : "A4印刷プレビュー"}</button>
+        <button type="button" className="button" onClick={()=>window.print()}>印刷</button>
       </div>
       <p>{showAnswers ? "空欄にした箇所だけ、青色で答えを表示しています。" : "番号付きの下線に入る答えを考えてから、解答を確認してください。"}</p>
-      <SeparationDiagram key={`${question.diagramId}:${question.mode}:${question.seed}:${question.rate}:${question.structurePolicy}`} diagram={previewDiagram} exercise={question} showAnswers={showAnswers}/>
+      <div className={`separation-print-area${printPreview ? " is-print-preview" : ""}`}>
+        <div className="separation-print-heading"><h2>{previewDiagram.title} ― {showAnswers ? "解答" : "問題"}</h2><p>{exerciseModes[question.mode]} ／ 氏名：________________ {question.mode === "random" ? ` ／ seed: ${question.seed}` : ""}</p></div>
+        <SeparationDiagram key={`${question.diagramId}:${question.mode}:${question.seed}:${question.rate}:${question.structurePolicy}`} diagram={previewDiagram} exercise={question} showAnswers={showAnswers}/>
+      </div>
     </section>}
   </>;
 }

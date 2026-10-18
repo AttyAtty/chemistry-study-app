@@ -44,32 +44,36 @@ for(const diagram of separationDiagrams) {
     }
   });
 }
-test("typed operation metadata supplies categories and supplements missing from the small SVG",()=>{
+test("authored phrases preserve source IDs while grouping complete instructions",()=>{
+  for(const diagram of separationDiagrams) {
+    const targets=collectBlankTargets(diagram);
+    for(const edge of diagram.edges.filter(e=>!e.display.hideLabel)) {
+      const phrases=edge.display.problemPhrases;
+      assert.ok(phrases?.length);
+      const fields=[edge.reagent,edge.condition,edge.operation,edge.operation.amount,...edge.operation.actions,...edge.operation.notes].filter(Boolean);
+      for(const phrase of phrases) {
+        const target=targets.find(t=>t.id===phrase.id);
+        assert.equal(target.answer,phrase.text);
+        assert.equal(target.blankCategory,"operation");
+        assert.ok(phrase.sourceIds.length);
+        assert.ok(phrase.sourceIds.every(id=>fields.some(f=>f.id===id)));
+        assert.ok(phrase.x+phrase.width<=diagram.width);
+      }
+      assert.equal(targets.some(t=>t.id===edge.reagent.id),false,"no word-level duplicate");
+    }
+  }
   const metal=collectBlankTargets(separationDiagrams[0]);
+  assert.equal(metal.find(t=>t.id==="chlorides:line:0").answer,"AgCl（白）");
+  assert.equal(metal.some(t=>t.id==="chlorides:line:0:result"),false);
+  assert.equal(metal.find(t=>t.id==="chlorides:label").answer,"塩化物");
+  assert.equal(metal.find(t=>t.id==="metal-2-residue:phrase:pass-gas").answer,"H₂Sを酸性条件で十分に通じる");
+  assert.equal(metal.filter(t=>t.edgeId==="metal-3-residue" && t.location==="diagram").length,3);
   const organic=collectBlankTargets(separationDiagrams[1]);
-  for(const [id,category] of [["metal-2-residue-reagent","reagent"],["metal-2-residue-condition","condition"],["metal-2-residue-amount","amount"],["metal-2-residue-action-pass-gas","action"],["metal-lead-hot-water-operation","operation"]]) {
-    assert.equal(metal.find(t=>t.id===id)?.blankCategory,category);
-  }
-  for(const key of ["vent","separate"]) {
-    const target=organic.find(t=>t.id===`organic-2-extract-action-${key}`);
-    assert.equal(target?.location,"supplement"); assert.equal(target.blankCategory,"action");
-  }
-  assert.equal(organic.find(t=>t.id==="organic-2-extract-operation-note-0").blankCategory,"result");
-  assert.equal(organic.some(t=>t.id==="organic-distill-nitrobenzene-reagent"),false);
+  assert.equal(organic.find(t=>t.id==="benzoate:layer").blankCategory,"result");
+  assert.ok(organic.find(t=>t.id==="organic-2-extract-action-vent"));
   assert.equal(organic.filter(t=>t.blankCategory==="species").length,17);
-  assert.equal(metal.find(t=>t.id==="chlorides:line:0").answer,"AgCl");
-  assert.equal(metal.find(t=>t.id==="chlorides:line:0:result").blankCategory,"result");
 });
-test("blankable and category overrides come from metadata, not displayed chemical text",()=>{
-  const copy=structuredClone(separationDiagrams[0]);
-  const field=copy.edges[0].reagent;
-  field.label="arbitrary non-chemical display";
-  assert.equal(collectBlankTargets(copy).find(t=>t.id===field.id).blankCategory,"reagent");
-  field.blankCategory="condition";
-  assert.equal(collectBlankTargets(copy).find(t=>t.id===field.id).blankCategory,"condition");
-  field.blankable=false;
-  assert.equal(collectBlankTargets(copy).some(t=>t.id===field.id),false);
-});
+
 test("invalid configuration is rejected and generator never uses ambient randomness",()=>{
   for(const rate of [-1,0,100,NaN,Infinity,20.5]) assert.throws(()=>createSeparationExercise(separationDiagrams[0],{...options,rate}));
   for(const mode of ["unknown","constructor","toString"]) assert.throws(()=>createSeparationExercise(separationDiagrams[0],{...options,mode}));

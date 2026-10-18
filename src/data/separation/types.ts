@@ -22,6 +22,11 @@ export type InstructionLabel = {
   fieldId: string; kind: "reagent" | "condition" | "operation" | "amount" | "action" | "note";
   text: string; x: number; y: number;
 };
+/** Authored answer unit. Atomic source IDs remain available for later category filtering. */
+export type ProblemPhrase = {
+  id: string; text: string; sourceIds: string[]; blankCategory: BlankCategory;
+  x: number; y: number; width: number;
+};
 export type Layer = { id: string; label: string; kind: "aqueous" | "ether" };
 export type AromaticCompound = {
   id: string; name: string; substituent: string; category: string;
@@ -37,6 +42,7 @@ export type SeparationNode = Blankable & {
     tone?: string; compounds?: string[]; showCompoundNames?: boolean;
     labelBlankCategory?: BlankCategory; lineBlankCategories?: BlankCategory[];
     lineParts?: DiagramTextPart[][];
+    headingParts?: { prefix: string; answer: string; suffix: string };
   };
 };
 export type SeparationEdge = Blankable & {
@@ -50,6 +56,7 @@ export type SeparationEdge = Blankable & {
     conditionPosition?: { x: number; y: number };
     /** Short labels reference independently maskable source fields, without moving branches. */
     instructions?: InstructionLabel[];
+    problemPhrases?: ProblemPhrase[];
   };
 };
 export type Group = { id: string; label: string; nodeIds: string[] };

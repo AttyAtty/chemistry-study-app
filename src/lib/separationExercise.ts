@@ -8,12 +8,13 @@ export type StructurePolicy = "hint" | "hide";
 export type BlankTarget = {
   id: string; blankCategory: BlankCategory; answer: string; location: "diagram" | "supplement";
   nodeId?: string; edgeId?: string;
+  sourceIds?: string[];
 };
 export type ExerciseOptions = {
   mode: ExerciseMode; seed: string; rate: number; structurePolicy: StructurePolicy;
 };
 export type SeparationExercise = ExerciseOptions & {
-  schemaVersion: 1; generatorVersion: 1; diagramId: string; targets: BlankTarget[]; blankIds: string[];
+  schemaVersion: 1; generatorVersion: 2; diagramId: string; targets: BlankTarget[]; blankIds: string[];
 };
 
 /** This registry uses typed source fields and presentation metadata, never chemical-name matching. */
@@ -24,6 +25,8 @@ export function collectBlankTargets(diagram: Diagram): BlankTarget[] {
     if (!node.blankable || node.kind === "mixture" || node.display?.hidden) continue;
     const view = node.display;
     if (view?.compounds) {
+      const layer=diagram.layers.find(layer=>layer.id===node.layerId);
+      if(layer) add({id:`${node.id}:layer`,nodeId:node.id,blankCategory:"result",answer:layer.kind==="aqueous" ? "水層" : "エーテル層",location:"diagram"});
       for (const compoundId of view.compounds) {
         const compound = diagram.compounds?.find(c => c.id === compoundId);
         if (compound) add({ id: `${node.id}:compound:${compoundId}`, nodeId: node.id,
@@ -31,9 +34,9 @@ export function collectBlankTargets(diagram: Diagram): BlankTarget[] {
       }
     } else {
       const title = view?.label ?? node.label;
-      if (title) add({ id: `${node.id}:label`, nodeId: node.id, blankCategory: view?.labelBlankCategory ?? "result", answer: title, location: "diagram" });
+      if (title) add({ id: `${node.id}:label`, nodeId: node.id, blankCategory: view?.headingParts ? "species" : view?.labelBlankCategory ?? "result", answer: view?.headingParts?.answer ?? title, location: "diagram" });
       if (view?.lineParts) {
-        for (const parts of view.lineParts) for (const part of parts) if(part.blankable) add({id:part.id,nodeId:node.id,blankCategory:part.blankCategory,answer:part.text,location:"diagram"});
+        for (const parts of view.lineParts) if(parts.some(part=>part.blankable)) add({id:parts[0].id,nodeId:node.id,blankCategory:"species",answer:parts.map(part=>part.text).join(""),sourceIds:parts.map(part=>part.id),location:"diagram"});
       } else (view?.lines ?? node.lines).forEach((line, i) => add({ id: `${node.id}:line:${i}`, nodeId: node.id,
         blankCategory: view?.lineBlankCategories?.[i] ?? node.blankCategory ?? "species", answer: line, location: "diagram" }));
       if (view?.caption) add({ id: `${node.id}:caption`, nodeId: node.id, blankCategory: "result", answer: view.caption, location: "diagram" });
@@ -49,7 +52,9 @@ export function collectBlankTargets(diagram: Diagram): BlankTarget[] {
       if (edge.operation.amount) fields.set(edge.operation.amount.id, edge.operation.amount);
       for (const item of [...edge.operation.actions, ...edge.operation.notes]) fields.set(item.id, item);
     }
-    for (const instruction of edge.display?.instructions ?? []) {
+    const phrases=edge.display?.problemPhrases;
+    if(phrases) for(const phrase of phrases) add({id:phrase.id,edgeId:edge.id,blankCategory:phrase.blankCategory,answer:phrase.text,sourceIds:phrase.sourceIds,location:"diagram"});
+    for (const instruction of phrases ? [] : edge.display?.instructions ?? []) {
       const source = fields.get(instruction.fieldId);
       if (source?.blankable !== true) continue;
       add({ id: instruction.fieldId, edgeId: edge.id, blankCategory: source.blankCategory ?? (instruction.kind === "note" ? "result" : instruction.kind),
@@ -61,7 +66,7 @@ export function collectBlankTargets(diagram: Diagram): BlankTarget[] {
       if (edge.condition?.blankable) add({ id: edge.condition.id, edgeId: edge.id, blankCategory: edge.condition.blankCategory ?? "condition", answer: edge.condition.label, location: "diagram" });
     }
     for (const item of edge.operation?.actions ?? []) {
-      if (item.blankable && item.practiceSupplement && !targets.has(item.id)) add({ id: item.id, edgeId: edge.id,
+      if (item.blankable && item.practiceSupplement && !targets.has(item.id) && !phrases?.some(p=>p.sourceIds.includes(item.id))) add({ id: item.id, edgeId: edge.id,
         blankCategory: item.blankCategory ?? "action", answer: item.practiceLabel ?? item.label, location: "supplement" });
     }
   }
@@ -89,7 +94,7 @@ export function createSeparationExercise(diagram: Diagram, options: ExerciseOpti
     || (options.mode === "species" ? target.blankCategory === "species"
       : ["reagent","condition","operation","amount","action"].includes(target.blankCategory)));
   if (options.mode === "random") {
-    const random = seededRandom(`v1:${diagram.id}:${options.seed}`);
+    const random = seededRandom(`v2:${diagram.id}:${options.seed}`);
     selected = [...selected].sort((a,b)=>a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
     for (let i=selected.length-1; i>0; i--) {
       const j = Math.floor(random() * (i+1));
@@ -98,7 +103,7 @@ export function createSeparationExercise(diagram: Diagram, options: ExerciseOpti
     selected = selected.slice(0, Math.max(1, Math.round(selected.length * options.rate / 100)));
   }
   const ids = new Set(selected.map(target=>target.id));
-  return { ...options, schemaVersion:1, generatorVersion:1, diagramId:diagram.id,
+  return { ...options, schemaVersion:1, generatorVersion:2, diagramId:diagram.id,
     targets, blankIds: targets.filter(target=>ids.has(target.id)).map(target=>target.id) };
 }
 

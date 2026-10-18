@@ -24,19 +24,28 @@ export function ExerciseText({ fieldId, x, y, text, className, fontSize=18, maxW
 }) {
   const selected = view?.exercise.blankIds.includes(fieldId) ?? false;
   // Width comes only from presentation size, never from answer matching/classification.
-  const width = Math.min(maxWidth ?? 240, Math.max(25, textWidth(text,fontSize)));
+  const width = kind === "phrase" ? maxWidth ?? 240 : Math.min(maxWidth ?? 240, Math.max(25, textWidth(text,fontSize)));
   if (selected && view && !view.showAnswers) return <SvgBlank fieldId={fieldId} x={x} y={y} width={width} anchor={anchor} view={view}/>;
-  return <text data-field-id={fieldId} data-field-kind={kind} data-revealed-id={selected ? fieldId : undefined}
+  return <text style={kind === "phrase" ? {fontSize} : undefined}
+    textLength={kind === "phrase" && textWidth(text,fontSize)>width ? width : undefined} lengthAdjust="spacingAndGlyphs"
+    data-field-id={fieldId} data-field-kind={kind} data-revealed-id={selected ? fieldId : undefined}
     className={`${className ?? ""}${selected ? " separation-answer" : ""}`} x={x} y={y} textAnchor={anchor}>{text}</text>;
 }
 
 export function ExerciseTextParts({parts,x,y,view}:{parts:DiagramTextPart[];x:number;y:number;view:ExerciseView}) {
-  const widths=parts.map(part=>Math.max(25,textWidth(part.text,18)));
-  const left=x-widths.reduce((sum,width)=>sum+width,0)/2;
-  return <g>{parts.map((part,i)=>{
-    const start=left+widths.slice(0,i).reduce((sum,width)=>sum+width,0);
-    return <ExerciseText key={part.id} fieldId={part.id} text={part.text} x={start} y={y} maxWidth={widths[i]-2} view={view}/>;
-  })}</g>;
+  return <ExerciseText fieldId={parts[0].id} text={parts.map(part=>part.text).join("")} x={x} y={y} anchor="middle" maxWidth={250} view={view}/>;
+}
+
+export function ExerciseHeading({fieldId,parts,x,y,view,hideHint=false}:{fieldId:string;parts:{prefix:string;answer:string;suffix:string};x:number;y:number;view:ExerciseView;hideHint?:boolean}) {
+  const width=90, prefixWidth=textWidth(parts.prefix,17), suffixWidth=textWidth(parts.suffix,17);
+  const start=x-(prefixWidth+width+suffixWidth)/2;
+  return <g className="separation-problem-heading" style={{fontSize:17}}>
+    <text x={start} y={y}>{parts.prefix}</text>
+    {hideHint && !view.showAnswers && !view.exercise.blankIds.includes(fieldId)
+      ? <path data-masked-hint={fieldId} d={`M${start+prefixWidth+4},${y+3} h${width-8}`} stroke="#304b6d" strokeWidth={1.5}/>
+      : <ExerciseText fieldId={fieldId} text={parts.answer} x={start+prefixWidth+width/2} y={y} anchor="middle" maxWidth={width-8} view={view}/>}
+    <text x={start+prefixWidth+width} y={y}>{parts.suffix}</text>
+  </g>;
 }
 
 export function HtmlExerciseField({ fieldId, text, view }: {fieldId:string; text:string; view:ExerciseView}) {

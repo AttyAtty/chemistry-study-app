@@ -4,7 +4,7 @@ import { useId, useState } from "react";
 import type { Diagram } from "@/data/separation/types";
 import { BenzeneStructure } from "./BenzeneStructure";
 import type { SeparationExercise } from "@/lib/separationExercise";
-import { ExerciseText, ExerciseTextParts, HtmlExerciseField, type ExerciseView } from "./ExerciseField";
+import { ExerciseHeading, ExerciseText, ExerciseTextParts, HtmlExerciseField, type ExerciseView } from "./ExerciseField";
 
 export function SeparationDiagram({ diagram, exercise, showAnswers=false }: { diagram: Diagram; exercise?: SeparationExercise; showAnswers?: boolean }) {
   const [detailed, setDetailed] = useState(false);
@@ -38,7 +38,9 @@ export function SeparationDiagram({ diagram, exercise, showAnswers=false }: { di
             ?? (sameRow ? `M${startX},${startY} H${endX}` : `M${startX},${startY} V${bendY} H${endX} V${endY}`);
           return <g key={edge.id} data-edge-id={edge.id}>
             <path className="separation-edge" d={path} markerEnd={edge.to && !byId.get(edge.to)?.display?.hidden ? `url(#${uid}-arrow)` : undefined} />
-            {!edge.display?.hideLabel && (edge.display?.instructions ? <g>
+            {!edge.display?.hideLabel && (view && edge.display?.problemPhrases ? <g>
+              {edge.display.problemPhrases.map(phrase=><ExerciseText key={phrase.id} fieldId={phrase.id} kind="phrase" text={phrase.text} x={phrase.x} y={phrase.y} maxWidth={phrase.width} fontSize={15} className="separation-instruction separation-problem-phrase" view={view}/>)}
+            </g> : edge.display?.instructions ? <g>
               {edge.display.instructions.map((instruction,i)=><ExerciseText key={`${instruction.fieldId}-${i}`}
                 fieldId={instruction.fieldId} kind={instruction.kind} text={instruction.text} view={view}
                 className={`separation-instruction ${instruction.kind === "reagent" ? "separation-reagent" : "separation-operation"} tone-${instruction.kind === "reagent" ? edge.display?.tone ?? "default" : "default"}`}
@@ -60,12 +62,12 @@ export function SeparationDiagram({ diagram, exercise, showAnswers=false }: { di
             <title>{exercise && node.kind !== "mixture" ? "分離段階" : [node.label,node.formula,...node.lines].join("。")}</title>
             {!compact?.unboxed && <rect x={node.x} y={node.y} width={node.width} height={node.height} rx="0" />}
             {compounds ? <>
-              {layer && <text className={`separation-layer layer-${layer.kind}${node.kind === "product" ? " recovered-layer" : ""}`} x={node.x + (layer.kind === "aqueous" || node.kind === "product" ? 4 : node.width - 4)} y={node.y-10} textAnchor={layer.kind === "aqueous" || node.kind === "product" ? "start" : "end"}>{layer.kind === "aqueous" ? "水層" : "エーテル層"}</text>}
+              {layer && !(view && !showAnswers && !exercise!.blankIds.includes(`${node.id}:layer`) && compounds.some(compound=>exercise!.blankIds.includes(`${node.id}:compound:${compound.id}`))) && <ExerciseText fieldId={`${node.id}:layer`} className={`separation-layer layer-${layer.kind}${node.kind === "product" ? " recovered-layer" : ""}`} x={node.x + (layer.kind === "aqueous" || node.kind === "product" ? 4 : node.width - 4)} y={node.y-10} anchor={layer.kind === "aqueous" || node.kind === "product" ? "start" : "end"} text={layer.kind === "aqueous" ? "水層" : "エーテル層"} view={view}/>}
               {compounds.map((compound,i)=><BenzeneStructure key={compound.id} compound={compound}
                 x={node.x+node.width*(i+.5)/compounds.length} y={node.y+66}
                 fieldId={`${node.id}:compound:${compound.id}`} showName={compact?.showCompoundNames} view={view} slotWidth={node.width/compounds.length} />)}
             </> : <>
-              {(compact?.label ?? node.label) && <ExerciseText fieldId={`${node.id}:label`} text={compact?.label ?? node.label} className={`separation-node-title tone-${compact?.tone ?? "default"}`} x={node.x+node.width/2} y={node.y+26} anchor="middle" maxWidth={node.width-20} fontSize={19} view={view}/>}
+              {view && compact?.headingParts ? <ExerciseHeading fieldId={`${node.id}:label`} parts={compact.headingParts} hideHint={!!compact.lineParts?.some(parts=>exercise!.blankIds.includes(parts[0].id))} x={node.x+node.width/2} y={node.y+26} view={view}/> : (compact?.label ?? node.label) && <ExerciseText fieldId={`${node.id}:label`} text={compact?.label ?? node.label} className={`separation-node-title tone-${compact?.tone ?? "default"}`} x={node.x+node.width/2} y={node.y+26} anchor="middle" maxWidth={node.width-20} fontSize={19} view={view}/>}
               {(compact?.lines ?? node.lines).map((line,i) => view && compact?.lineParts?.[i]
                 ? <ExerciseTextParts key={i} parts={compact.lineParts[i]} x={node.x+node.width/2} y={node.y+58+i*29} view={view}/>
                 : <ExerciseText fieldId={`${node.id}:line:${i}`} text={line} x={node.x+node.width/2} y={node.y+(compact?.label === "" ? 35 : 58)+i*29} anchor="middle" maxWidth={node.width-20} view={view} key={i}/>)}

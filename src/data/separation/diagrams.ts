@@ -321,4 +321,44 @@ for(const [id,rows] of Object.entries(precipitateParts)) m[id].display!.linePart
   {id:`${id}:line:${i}`,text:species,blankCategory:"species",blankable:true},
   {id:`${id}:line:${i}:result`,text:result,blankCategory:"result",blankable:true},
 ]);
+// Practice presentation uses complete phrases; the ordinary diagram retains its authored labels.
+function phrases(e: SeparationEdge, rows: [string, string, number, number, number, string[]?][]) {
+  e.display!.problemPhrases = rows.map(([key,text,x,y,width,sourceIds])=>({
+    id:`${e.id}:phrase:${key}`, text,x,y,width,blankCategory:"operation",
+    sourceIds:sourceIds ?? [e.reagent?.id,e.condition?.id,e.operation?.id,e.operation?.amount?.id,
+      ...e.operation!.actions.filter(a=>!a.practiceSupplement || a.id.endsWith("-shake")).map(a=>a.id)].filter((id): id is string=>!!id),
+  }));
+}
+phrases(hcl,[["add","希HClを加える",hcl.labelX,hcl.labelY,205]]);
+for(const index of [2,6]) {
+  const e=inorganicEdges[index];
+  phrases(e,[["pass-gas",index===2 ? "H₂Sを酸性条件で十分に通じる" : "H₂Sを塩基性条件で通じる",e.labelX,e.labelY,245]]);
+}
+phrases(nh3,[
+  ["boil","① 煮沸してH₂Sを除去する",nh3.labelX,nh3.labelY,275,[action(nh3,"boil").id]],
+  ["oxidize","② HNO₃で再酸化する",nh3.labelX,nh3.labelY+26,275,[action(nh3,"oxidize").id]],
+  ["add","③ NH₃水を過剰に加えて塩基性にする",nh3.labelX,nh3.labelY+52,305,
+    [nh3.reagent!.id,nh3.condition!.id,nh3.operation!.amount!.id,action(nh3,"add").id]],
+]);
+phrases(carbonate,[["add","(NH₄)₂CO₃水溶液を加える",carbonate.labelX,carbonate.labelY,235]]);
+phrases(hotWaterEdge,[["heat","熱水を加えて加熱する",155,460,220]]);
+organicStages.forEach((_,i)=>{
+  const e=organicEdges[i*3], r=organicEdges[i*3+2];
+  const position=e.display!.conditionPosition!;
+  phrases(e,[
+    ["extract",["希HClを加えて振とうする","NaHCO₃水溶液を少量ずつ加えて振とうする","NaOH水溶液を加えて振とうする"][i],e.labelX,e.labelY-13,i===2 ? 245 : 320],
+    ["separate","静置して分液する",e.labelX,e.labelY+10,220,[action(e,"separate").id]],
+    ...(i===1 ? [["gas","CO₂を遊離させる",position.x,position.y,210,[e.operation!.notes[0].id]] as [string,string,number,number,number,string[]]] : []),
+  ]);
+  phrases(r,[
+    ["add",["NaOH水溶液を加えて塩基性にする","HClを加えて酸性にする","HClを加えて酸性にする"][i],r.labelX,r.labelY,i===2 ? 250 : 265],
+    ["release",i===0 ? "弱塩基を遊離させる" : "弱酸を遊離させる",r.labelX,r.labelY+24,210,[action(r,"recover").id]],
+  ]);
+});
+for(const e of aromaticSeparation.edges.filter(e=>e.id.startsWith("organic-distill-") && !e.display?.hideLabel))
+  phrases(e,[["distill","加熱して分留する",e.labelX,e.labelY,160]]);
+for(const [id,answer] of [["chlorides","塩化物"],["copper","硫化物"],["hydroxides","水酸化物"],["zinc","硫化物"],["carbonates","炭酸塩"]]) {
+  const index=["chlorides","copper","hydroxides","zinc","carbonates"].indexOf(id)+1;
+  m[id].display!.headingParts={prefix:`第${index}属：`,answer,suffix:"沈殿"};
+}
 export const separationDiagrams = [metalAnalysis, aromaticSeparation];
