@@ -1,4 +1,5 @@
 import { learningRow } from "@/data/learningContentIds";
+import { FARADAY_DISPLAY } from "@/lib/formulaCalculations";
 import { inorganicComplexesUnit } from "@/data/inorganicComplexes";
 import { expandedOrganicQuestions } from "@/data/organicReactionMaps";
 import { gasUnit } from "@/data/gasUnit";
@@ -523,7 +524,7 @@ export const chemistryUnits: ChemistryUnit[] = [
           },
           { learningId: "電気量と物質量",
             title: "電気量と物質量",
-            body: "電気量 Q = It。電子の物質量 n(e⁻) = Q/F（F ≈ 9.65×10⁴ C/mol）。半反応式の電子係数から、電極の質量変化や気体量へ換算します。",
+            body: `電気量 Q = It。電子の物質量 n(e⁻) = Q/F（F ≈ ${FARADAY_DISPLAY} C/mol）。半反応式の電子係数から、電極の質量変化や気体量へ換算します。`,
             equation: "Q = It = n(e⁻)F",
           },
           { learningId: "直列-並列",

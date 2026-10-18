@@ -6,6 +6,8 @@ import { createTheoryExercise, theoryModes } from "@/lib/theoryModels";
 import { SolubilityLesson, VaporLesson, HenryLesson } from "./TheoryDiagrams";
 import { AcidBaseLesson, TitrationLesson, IndicatorLesson, BufferLesson } from "./AcidBaseDiagrams";
 import { EquilibriumLesson, KineticsLesson } from "./EquilibriumKineticsDiagrams";
+import {ThermochemistryLesson} from "./ThermochemistryDiagrams";
+import {FormulaSection} from "./FormulaSection";
 
 export function TheoryLesson({slug,notes=[]}:{slug:TheorySlug;notes?:string[]}) {
  const [mode,setMode]=useState("learn"),[showAnswers,setShowAnswers]=useState(false),[zoom,setZoom]=useState(false),[preview,setPreview]=useState(false);
@@ -28,6 +30,8 @@ export function TheoryLesson({slug,notes=[]}:{slug:TheorySlug;notes?:string[]}) 
    {slug==="buffers"&&<BufferLesson view={view}/>}
    {slug==="equilibrium"&&<EquilibriumLesson view={view} added={added} onAdded={setAdded} notes={notes}/>}
    {slug==="kinetics"&&<KineticsLesson view={view}/>}
+   {slug==="thermochemistry"&&<ThermochemistryLesson view={view}/>}
+   <FormulaSection lesson={slug} view={view}/>
   </div><details className="illustrated-sources no-print"><summary>数値・図の扱いと確認資料</summary><p>図・粒子数は模式表現。溶解度A・蒸気圧B・ヘンリーの定数とエネルギー図は説明用の模式値です。滴定などの計算は各図に温度・濃度・近似条件を明記しています。指示薬の変色域は代表値です。資料へのリンクを開かずに操作・出題・印刷できます。</p>{theorySources.map(s=><p key={s.url}><a href={s.url} target="_blank" rel="noreferrer">{s.title}</a></p>)}</details>
  </>;
 }

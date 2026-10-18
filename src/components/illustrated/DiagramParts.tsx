@@ -12,6 +12,6 @@ export function Arrow({x1,y1,x2,y2}:{x1:number;y1:number;x2:number;y2:number}) {
   return <g className="illustrated-arrow"><line x1={x1} y1={y1} x2={x2-ux*10} y2={y2-uy*10}/>
     <polygon points={`${x2},${y2} ${x2-ux*12-uy*5},${y2-uy*12+ux*5} ${x2-ux*12+uy*5},${y2-uy*12-ux*5}`}/></g>;
 }
-export function Sheet({title,children,className=""}:{title:string;children:ReactNode;className?:string}) {
-  return <section className={`illustrated-sheet ${className}`} data-print-sheet="true"><h2>{title}</h2>{children}</section>;
+export function Sheet({title,children,className="",id}:{title:string;children:ReactNode;className?:string;id?:string}) {
+  return <section id={id} className={`illustrated-sheet ${className}`} data-print-sheet="true"><h2>{title}</h2>{children}</section>;
 }

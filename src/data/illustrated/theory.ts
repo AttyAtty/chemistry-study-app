@@ -1,7 +1,9 @@
 import { field } from "./types";
+import {thermoSources} from "../thermochemistry";
 import { advancedTheoryLessons, advancedTheoryFields } from "./theoryAdvanced";
 export const theoryLessons=[
  ...advancedTheoryLessons,
+ {slug:"thermochemistry",title:"熱化学・エンタルピーを図で理解",description:"発熱・吸熱、係数、ヘスの法則、結合エネルギーをつなぐ。"},
  {slug:"solubility",title:"溶解度・再結晶を図で理解",description:"溶ける限界、温度による変化、析出量の計算をつなげる。"},
  {slug:"vapor-pressure",title:"蒸気圧と沸騰を図で理解",description:"蒸発と凝縮から動的平衡、外圧と沸点へ。"},
  {slug:"henry",title:"ヘンリーの法則を図で理解",description:"気体の分圧と溶解量を、粒子・グラフ・炭酸飲料で見る。"},
@@ -10,6 +12,7 @@ export type TheorySlug=typeof theoryLessons[number]["slug"];
 // All numerical curves are deliberately schematic, not measured substance data.
 export const solubilityPoints=[[0,20],[20,30],[40,45],[60,60],[80,80],[100,105]] as const;
 export const theoryFields={
+ thermochemistry:{sign:field("thermo:sign","発熱はΔH < 0、吸熱はΔH > 0","concept"),definition:field("thermo:definition","反応エンタルピーは生成物と反応物のHの差","concept"),formation:field("thermo:formation","係数を掛けた標準生成エンタルピーを、生成物側 − 反応物側で計算","calculation"),hess:field("thermo:hess","ヘスの法則：反応式の逆転・倍加・加算に合わせ、ΔHも操作する","concept"),bonds:field("thermo:bonds","結合の切断は吸熱、形成は発熱。概算は切断の合計 − 形成の合計","calculation")},
  ...advancedTheoryFields,
  solubility:{
   basis:field("solubility:basis","水（溶媒）100 gが基準。溶液100 gではない","concept"),
@@ -39,6 +42,7 @@ export const theoryFields={
  },
 };
 export const theorySources=[
+ ...thermoSources,
  {title:"OpenStax：滴定と指示薬",url:"https://openstax.org/books/chemistry-2e/pages/14-7-acid-base-titrations"},
  {title:"OpenStax：緩衝液",url:"https://openstax.org/books/chemistry-2e/pages/14-6-buffers"},
  {title:"OpenStax：平衡移動",url:"https://openstax.org/books/chemistry-2e/pages/13-3-shifting-equilibria-le-chateliers-principle"},

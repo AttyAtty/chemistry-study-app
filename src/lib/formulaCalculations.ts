@@ -1,0 +1,26 @@
+/** Teaching approximations match the existing electrochemistry lesson. Use values given in each question. */
+export const FARADAY=9.65e4;
+export const FARADAY_DISPLAY=`${(FARADAY/1e4).toFixed(2)}×10⁴`;
+export const GAS_R_KPA_L=8.31;
+const positive=(n:number)=>{if(!Number.isFinite(n)||n<=0)throw new RangeError("A finite positive value is required");return n;};
+export const mlToL=(ml:number)=>ml/1000;
+export const celsiusToKelvin=(c:number)=>{const k=c+273.15;return positive(k);};
+export const molesFromMass=(mass:number,molarMass:number)=>mass/positive(molarMass);
+export const concentration=(moles:number,litres:number)=>moles/positive(litres);
+export const idealGasVolume=(n:number,temperatureK:number,pressureKPa:number)=>n*GAS_R_KPA_L*positive(temperatureK)/positive(pressureKPa);
+export const partialPressure=(total:number,moleFraction:number)=>{if(moleFraction<0||moleFraction>1)throw new RangeError("Invalid mole fraction");return total*moleFraction;};
+export const henryScale=(n1:number,p1:number,p2:number)=>n1*p2/positive(p1);
+export const solubilityMass=(solubility:number,waterMass:number)=>solubility*waterMass/100;
+export const precipitatedMass=(hot:number,cold:number,waterMass:number)=>Math.max(0,solubilityMass(hot-cold,waterMass));
+export const phFromConcentration=(c:number)=>-Math.log10(positive(c));
+export const neutralizationVolume=(acidValence:number,acidC:number,acidV:number,baseValence:number,baseC:number)=>positive(acidValence)*acidC*acidV/(positive(baseValence)*positive(baseC));
+export const equilibriumConstant=(products:{concentration:number;coefficient:number}[],reactants:{concentration:number;coefficient:number}[])=>products.reduce((a,s)=>a*positive(s.concentration)**s.coefficient,1)/reactants.reduce((a,s)=>a*positive(s.concentration)**s.coefficient,1);
+export const reactionRate=(initial:number,final:number,seconds:number,coefficient=1,reactant=false)=>(reactant?-1:1)*(final-initial)/(positive(seconds)*positive(coefficient));
+export const reactionEnthalpy=(products:{coefficient:number;formation:number}[],reactants:{coefficient:number;formation:number}[])=>products.reduce((a,s)=>a+s.coefficient*s.formation,0)-reactants.reduce((a,s)=>a+s.coefficient*s.formation,0);
+export const hessSum=(terms:{enthalpy:number;multiplier:number}[])=>terms.reduce((sum,t)=>sum+t.enthalpy*t.multiplier,0);
+export const bondEstimate=(broken:number[],formed:number[])=>broken.reduce((a,b)=>a+b,0)-formed.reduce((a,b)=>a+b,0);
+export const charge=(amperes:number,seconds:number)=>amperes*seconds;
+export const electronMoles=(coulombs:number)=>coulombs/FARADAY;
+export const productMoles=(electronAmount:number,electronCoefficient:number,productCoefficient=1)=>electronAmount*positive(productCoefficient)/positive(electronCoefficient);
+export const depositMass=(amperes:number,seconds:number,electrons:number,molarMass:number)=>productMoles(electronMoles(charge(amperes,seconds)),electrons)*molarMass;
+export const cellPotential=(positiveReduction:number,negativeReduction:number)=>positiveReduction-negativeReduction;

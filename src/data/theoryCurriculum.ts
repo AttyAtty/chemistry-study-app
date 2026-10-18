@@ -1,0 +1,7 @@
+export const theoryCurriculum=[
+ {id:"states",title:"物質の状態・気体・溶液",topics:"状態変化／気体／濃度／溶解度／蒸気圧／ヘンリー／コロイド",units:[{title:"三態・状態変化",href:"/units/chemistry-basic-composition#states"},{title:"物質量・濃度",href:"/units/chemistry-basic-mole-reactions#mole"},{title:"気体の性質・捕集",href:"/units/laboratory-gases"},{title:"溶解度・水和物",href:"#solubility"},{title:"コロイド",href:"#colloids"}],diagrams:["solubility","vapor-pressure","henry","gases"],formulaCategory:"mole-gas"},
+ {id:"thermo",title:"熱化学・エンタルピー",topics:"発熱・吸熱／熱化学方程式／生成エンタルピー／ヘス／結合エネルギー",units:[{title:"熱化学の図と反応式",href:"/illustrated/thermochemistry"}],diagrams:["thermochemistry"],formulaCategory:"thermo"},
+ {id:"rate-equilibrium",title:"反応速度・化学平衡",topics:"反応速度／活性化エネルギー／平衡定数／ルシャトリエ",units:[{title:"化学平衡の基本",href:"#equilibrium"},{title:"平衡移動の代表例",href:"#equilibrium-examples"},{title:"電離平衡・溶解度積の接続",href:"#equilibrium-family"}],diagrams:["kinetics","equilibrium"],formulaCategory:"rate-equilibrium"},
+ {id:"acid-base",title:"酸・塩基",topics:"酸塩基／pH／中和／滴定／指示薬／電離平衡／緩衝液",units:[{title:"酸塩基・電離・中和",href:"/units/chemistry-basic-acid-base-redox#acid-base"},{title:"中和の量的関係",href:"/units/chemistry-basic-acid-base-redox#neutralization"}],diagrams:["acid-base","titration","indicators","buffers"],formulaCategory:"acid-base"},
+ {id:"electro",title:"電気化学",topics:"電池／電気分解／電極反応／電子数／ファラデーの法則",units:[{title:"電池・電気分解の全教材",href:"/units/batteries-electrolysis"},{title:"起電力・電気量の計算",href:"/units/batteries-electrolysis#battery-principles"}],diagrams:["electrochemistry"],formulaCategory:"electro"},
+] as const;

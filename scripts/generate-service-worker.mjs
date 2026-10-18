@@ -9,6 +9,8 @@ for(const route of ["/","/home","/quiz","/search","/progress","/settings/data","
  if(!routes.includes(route))throw new Error("Required offline route is not prerendered: "+route);
 for(const route of ["/illustrated/solubility","/illustrated/vapor-pressure","/illustrated/henry","/illustrated/acid-base","/illustrated/titration","/illustrated/indicators","/illustrated/buffers","/illustrated/equilibrium","/illustrated/kinetics"])
  if(!routes.includes(route))throw new Error("Required theory route is not prerendered: "+route);
+for(const route of ["/theory/formulas","/illustrated/thermochemistry"])
+ if(!routes.includes(route))throw new Error("Required formula route is not prerendered: "+route);
 function walk(folder){return fs.readdirSync(folder,{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?walk(path.join(folder,entry.name)):[path.join(folder,entry.name)]);}
 const assets=walk(".next/static").filter(file=>/\.(js|css|woff2?|png|svg)$/.test(file)).map(file=>"/"+file.replaceAll("\\","/").replace(/^\.next/,"_next"));
 assets.push("/site.webmanifest","/favicon.ico",...walk("public/icons").map(file=>"/"+file.replaceAll("\\","/").slice(7)));

@@ -4,12 +4,12 @@ import { theoryCoverageQuestions } from "@/data/coverageExpansionQuestions";
 
 export const theoryChemistryUnit: ChemistryUnit = {
   slug:"theory-chemistry",
-  title:"理論化学：溶液・平衡・コロイド",
+  title:"理論化学：全体像・図解・公式計算",
   shortTitle:"理論化学",
   icon:"⚖️",
-  summary:"濃度、溶解度、化学平衡、コロイド、界面活性剤を、計算の意味と具体的な化学反応を結んで学びます。",
+  summary:"物質の状態・気体・溶液、熱化学、反応速度・平衡、酸塩基、電気化学を、既存単元・図解・公式計算から横断して学びます。",
   level:"高校化学",
-  keywords:["質量パーセント濃度","溶解度","再結晶","化学平衡","ルシャトリエ","コロイド","セッケン","界面活性剤"],
+  keywords:["物質量・気体","溶液・コロイド","熱化学・エンタルピー","反応速度・化学平衡","酸・塩基","電池・電気分解"],
   sections:[
     {id:"mass-percent",title:"質量パーセント濃度",description:"分母は溶媒ではなく、溶質と溶媒を合わせた溶液全体です。",kind:"cards",entries:[
       { learningId: "溶質-溶媒-溶液", title:"溶質・溶媒・溶液",body:"溶かされている物質が溶質、溶かす側が溶媒、両者を合わせた均一な混合物が溶液です。溶液の質量＝溶質の質量＋溶媒の質量。"},

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "@/components/separation/separation.css";
 import "@/components/illustrated/illustrated.css";
 import { IllustratedLessonLinks } from "@/components/illustrated/IllustratedLessonLinks";
+import {TheoryCurriculum} from "@/components/illustrated/TheoryCurriculum";
 import { StudyLink as Link } from "@/components/StudyLink";
 import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/PrintButton";
@@ -60,7 +61,7 @@ export default async function UnitPage({ params }: { params: Promise<{ slug: str
       </details>
       <div id="unit-material" />
       {unit.slug === "organic-reactions" && <IllustratedLessonLinks/>}
-      {unit.slug === "theory-chemistry" && <IllustratedLessonLinks theory/>}
+      {unit.slug === "theory-chemistry" && <TheoryCurriculum/>}
       {["inorganic-reactions","colors-and-tests","complex-ions-qualitative-analysis","laboratory-gases","batteries-electrolysis"].includes(unit.slug) && <IllustratedLessonLinks inorganic/>}
       {["inorganic-reactions", "complex-ions-qualitative-analysis", "colors-and-tests", "organic-reactions"].includes(unit.slug) && <section className="separation-entry">
         <p className="eyebrow">SEPARATION / ANALYSIS</p>
