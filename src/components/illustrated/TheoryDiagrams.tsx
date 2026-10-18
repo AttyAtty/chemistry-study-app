@@ -52,9 +52,10 @@ function VaporGraph({temperature,pressure}:{temperature:number;pressure:number})
   <CartesianPlot spec={vaporSpec} points={Array.from({length:111},(_,i)=>[20+i,vaporPressureAt(20+i)])}>
    <line x1={135} y1={y(101.325)} x2={970} y2={y(101.325)} className="plot-reference"/><text x={150} y={y(101.325)-10}>1 atm = 101.325 kPa</text>
    <line data-external-pressure={pressure} x1={135} y1={y(pressure)} x2={970} y2={y(pressure)} className="plot-external"/>
-   <line x1={x(bp)} y1={y(pressure)} x2={x(bp)} y2={345} className="plot-guide"/><circle cx={x(bp)} cy={y(pressure)} r={7} className="plot-intersection"/>
+   <line x1={x(bp)} y1={y(pressure)} x2={x(bp)} y2={345} className="plot-guide"/><rect data-boiling-intersection={bp.toFixed(1)} x={x(bp)-9} y={y(pressure)-9} width={18} height={18} className="plot-intersection"/>
    <circle data-vapor-point="true" data-temperature={temperature} data-vapor-pressure={p.toFixed(1)} cx={x(temperature)} cy={y(p)} r={7} className="plot-point"/>
-   <text x={970} y={55} textAnchor="end">実線：外圧 ／ 交点：沸点</text>
+   <text x={970} y={55} textAnchor="end">● 現在温度の平衡値 ／ ─ 外圧 ／ ■ 沸点</text>
+   <text x={x(bp)} y={435} textAnchor="middle">沸点 {bp.toFixed(1)} ℃</text>
   </CartesianPlot>
  </Canvas>;
 }
@@ -70,7 +71,14 @@ export function VaporLesson({view,temperature,pressure,onTemperature,onPressure}
   <p className="illustrated-caption">同じ温度、液体が残る密閉容器。粒子数は定性的な記号です。封入直後は理想化した初期状態。平衡でも粒子の往復は止まりません。</p>
   {show&&<p className="illustrated-caption">蒸気＝気相にあるその物質。蒸気圧＝その蒸気が示す圧力（混合気体では分圧）。飽和蒸気圧＝液体と平衡にあるときの値で、純液体では温度で決まります。密閉しても液体が全て気化した場合は飽和に達するとは限りません。</p>}
  </Sheet><Sheet title="2. 温度・蒸気圧・外圧の交点が沸点を決める">
-  <div className="theory-controls no-print"><label htmlFor="vapor-temperature">温度 [℃]</label><input id="vapor-temperature" type="range" min={20} max={130} value={temperature} onChange={e=>onTemperature(Number(e.target.value))}/><output data-vapor-output="true">{temperature} ℃：{vaporPressureAt(temperature).toFixed(1)} kPa</output><label htmlFor="vapor-external">外圧 [kPa]</label><input id="vapor-external" type="range" min={30} max={200} step="any" value={pressure} onChange={e=>onPressure(Number(e.target.value))}/><output data-boiling-output="true">外圧{pressure.toFixed(3)} kPa：沸点{boilingTemperature(pressure).toFixed(1)} ℃</output></div>
+  <div className="vapor-control-grid no-print">
+   <section className="theory-controls"><h3>① この温度での飽和蒸気圧を見る</h3><p id="vapor-temperature-help">温度を変えて、曲線上の青い丸●を追います。外圧と比べて沸騰する条件か考えましょう。</p><label htmlFor="vapor-temperature">温度 [℃]</label><input id="vapor-temperature" aria-describedby="vapor-temperature-help" type="range" min={20} max={130} value={temperature} onChange={e=>onTemperature(Number(e.target.value))}/><output data-vapor-output="true">{temperature} ℃：飽和蒸気圧 {vaporPressureAt(temperature).toFixed(1)} kPa</output>
+    {!isMasked(view,f.boiling)&&<p data-vapor-comparison="true" aria-live="polite">現在の外圧 {pressure.toFixed(3)} kPa。{vaporPressureAt(temperature).toFixed(1)} {Math.abs(vaporPressureAt(temperature)-pressure)<.05?"≈":vaporPressureAt(temperature)<pressure?"＜":"＞"} {pressure.toFixed(3)} → {Math.abs(vaporPressureAt(temperature)-pressure)<.05?"沸騰開始の条件":vaporPressureAt(temperature)<pressure?"まだ沸騰しない":"沸点を超える条件。実際には沸騰・気化が進む"}</p>}
+   </section>
+   <section className="theory-controls"><h3>② この外圧での沸点を見る</h3><p id="vapor-pressure-help">温度はそのまま、赤い水平線─を動かします。曲線との交点■から沸点を読み取ります。</p><label htmlFor="vapor-external">外圧 [kPa]</label><input id="vapor-external" aria-describedby="vapor-pressure-help" type="range" min={30} max={200} step="any" value={pressure} onChange={e=>onPressure(Number(e.target.value))}/><output data-boiling-output="true">外圧{pressure.toFixed(3)} kPa：沸点{boilingTemperature(pressure).toFixed(1)} ℃</output>
+    <div className="theory-presets">{[["1 atm",101.325],["高山（低圧の例）",60],["圧力鍋（高圧の例）",150]].map(([label,p])=><button className="button" key={label} onClick={()=>onPressure(Number(p))}>{label}</button>)}</div><small>外圧は絶対圧の例。高度・器具の仕様を固定した値ではありません。曲線は模式液体Bです。</small>
+   </section>
+  </div>
   <InteractivePrintPair interactive={<VaporGraph temperature={temperature} pressure={pressure}/>} printable={<VaporGraph temperature={100} pressure={101.325}/>}/>
   <p className="illustrated-caption">模式液体Bの説明用曲線。実在物質の実測値・物性推算式ではありません。青点は指定温度での平衡値で、常にその状態で液体を保てるという意味ではありません。印刷は100 ℃・1 atm。</p>
   <SvgAnswer field={f.boiling} view={view}/>

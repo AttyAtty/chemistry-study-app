@@ -4,6 +4,9 @@
 .is-a4-preview .theory-interactive {display:none;}.is-a4-preview .theory-print-only {display:block;}
 .illustrated-diagram text.theory-stage-caption {font-size:16px;}
 .theory-answer-line .separation-html-blank {width:100%;min-width:0;min-height:1.5em;}
+.vapor-control-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}.theory-controls h3,.theory-controls p,.theory-controls small {width:100%;margin:0;}.theory-controls h3 {font-size:16px;}.theory-controls p,.theory-controls small {font-size:13px;line-height:1.7;}.theory-presets {display:flex;flex-wrap:wrap;gap:8px;}.theory-entry-group {margin:20px 0;}.theory-entry-group h3 {font-size:17px;}.illustrated-diagram .ion-symbol {font:12px system-ui,sans-serif;}.buffer-curve {fill:none;stroke:#9c5265;stroke-width:3;stroke-dasharray:8 5;}.catalyst-curve {fill:none;stroke:#617c58;stroke-width:2;stroke-dasharray:2 5;}
+@media(max-width:700px){.vapor-control-grid {grid-template-columns:1fr;}}
+@media print{.vapor-control-grid {display:none!important;}}
 .inorganic-box { fill:#fff; stroke:#b9cbd8; stroke-width:2; }
 .inorganic-glass { fill:none; stroke:currentColor; stroke-width:3; }
 .inorganic-tube { fill:none; stroke:#6d7782; stroke-width:5; stroke-linejoin:round; }
