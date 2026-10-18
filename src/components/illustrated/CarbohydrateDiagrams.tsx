@@ -1,13 +1,15 @@
 import { sugarCategoryLabels } from "@/data/illustrated/carbohydrates";
-import type { Sugar, SugarUnit } from "@/data/illustrated/types";
+import { defaultSugarStructureOptions, selectedSugarRing, sugarCyclicStructures } from "@/data/illustrated/sugarRings";
+import type { Sugar, SugarStructureOptions, SugarUnit } from "@/data/illustrated/types";
 import type { BlankView } from "@/components/separation/ExerciseField";
 import { Arrow, Canvas } from "./DiagramParts";
 import { isMasked, SvgField } from "./LessonField";
+import { SugarRingSkeleton, SugarRingStructure } from "./SugarRingStructure";
 
 const unitNames:Record<SugarUnit,string>={glucose:"G",fructose:"F",galactose:"Gal"};
 export function SugarUnitIcon({unit,x,y,hidden=false}:{unit:SugarUnit;x:number;y:number;hidden?:boolean}) {
   return <g className={`sugar-unit unit-${hidden ? "masked" : unit}`}>
-    <circle cx={x} cy={y} r={26}/>{!hidden && <text x={x} y={y+7} textAnchor="middle">{unitNames[unit]}</text>}
+    <SugarRingSkeleton ring={sugarCyclicStructures[unit].primary} x={x} y={y} hidden={hidden}/>{!hidden && <text x={x} y={y+7} textAnchor="middle">{unitNames[unit]}</text>}
   </g>;
 }
 export function Fischer({sugar:s,x=0,y=0,scale=1}:{sugar:Sugar;x?:number;y?:number;scale?:number}) {
@@ -24,7 +26,7 @@ export function Fischer({sugar:s,x=0,y=0,scale=1}:{sugar:Sugar;x?:number;y?:numb
     <text x={160} y={318} textAnchor="middle">CH₂OH</text>
   </g>;
 }
-export function SugarClassification({items,view}:{items:Sugar[];view:BlankView}) {
+export function SugarClassification({items,view,options=defaultSugarStructureOptions}:{items:Sugar[];view:BlankView;options?:SugarStructureOptions}) {
   return <Canvas title="糖類の分類と単位数" height={810}>
     <rect className="diagram-panel" x={470} y={10} width={160} height={60}/><text x={550} y={48} textAnchor="middle">糖類</text>
     <path className="classification-line" d="M550 70 V105 H185 V135 M550 105 V135 M550 105 H915 V135"/>
@@ -36,7 +38,7 @@ export function SugarClassification({items,view}:{items:Sugar[];view:BlankView})
         <path className="classification-line" d={`M${20+col*365} ${305+row*195} H${30+col*365}`}/>
         <rect className="diagram-panel" x={30+col*365} y={215+row*195} width={310} height={180}/>
         <SvgField field={s.name} x={185+col*365} y={247+row*195} width={285} view={view}/>
-        {s.fischer ? <Fischer sugar={s} x={115+col*365} y={257+row*195} scale={.42}/> : <>
+        {s.cyclic ? <SugarRingStructure sugar={s} x={65+col*365} y={250+row*195} width={240} height={140} compact options={{...options,showCarbonNumbers:false,showDifferenceHints:false}} view={view}/> : <>
           <path className="classification-line" d={`M${110+col*365} ${310+row*195} H${260+col*365}`}/>
           {(s.category==="di" ? s.units : ["glucose","glucose","glucose"] as SugarUnit[]).map((unit,i)=><SugarUnitIcon key={i} unit={unit} x={s.category==="di" ? 140+col*365+i*90 : 115+col*365+i*70} y={310+row*195} hidden={isMasked(view,s.composition)||isMasked(view,s.name)} />)}
           <text className="diagram-small" x={185+col*365} y={367+row*195} textAnchor="middle">{s.category==="di" ? "単糖が2個連結" : "多数の単糖が連結"}</text>
@@ -45,13 +47,33 @@ export function SugarClassification({items,view}:{items:Sugar[];view:BlankView})
     </g>)}
   </Canvas>;
 }
-export function MonosaccharideStructures({items,view}:{items:Sugar[];view:BlankView}) {
-  return <Canvas title="D系列の単糖：鎖状Fischer投影の比較" height={450}>
-    {items.map((s,i)=><g key={s.id}>
-      <rect className="diagram-panel" x={15+i*365} y={10} width={340} height={425}/>
+export function MonosaccharideStructures({items,view,options=defaultSugarStructureOptions}:{items:Sugar[];view:BlankView;options?:SugarStructureOptions}) {
+  const ordered=[...items].sort((a,b)=>["glucose","galactose","fructose"].indexOf(a.id)-["glucose","galactose","fructose"].indexOf(b.id));
+  return <Canvas title="六炭糖の環状構造と差異の比較" height={620}>
+    {ordered.map((s,i)=>{
+      const ring=selectedSugarRing(s,options.fructoseRing)!;
+      const labelMasked=ring.groups.some(g=>g.answer&&isMasked(view,g.answer));
+      return <g key={s.id} data-ring-comparison={s.id}>
+      <rect className="diagram-panel" x={15+i*365} y={10} width={340} height={595}/>
       <SvgField field={s.name} x={185+i*365} y={45} width={300} view={view}/>
-      <Fischer sugar={s} x={25+i*365} y={65}/>
-      <text className="diagram-small" x={185+i*365} y={420} textAnchor="middle">{s.formula} ／ OHの左右を比較</text>
+      <text className="diagram-small" x={185+i*365} y={78} textAnchor="middle">{ring.anomer}-D体 ／ {ring.ringSize}員環の例</text>
+      <SugarRingStructure sugar={s} x={15+i*365} y={85} width={340} height={335} options={options} view={view}/>
+      <SvgField field={s.composition} x={185+i*365} y={450} width={300} view={view}/>
+      <text className="diagram-small" x={35+i*365} y={495}>アノマー炭素：</text><SvgField field={s.cyclic!.anomericPosition} x={275+i*365} y={495} width={95} view={view}/>
+      {(options.showDifferenceHints || view.exercise.blankIds.includes(s.cyclic!.configuration.id)) && (!labelMasked || view.exercise.blankIds.includes(s.cyclic!.configuration.id))
+        ? <SvgField field={s.cyclic!.configuration} x={185+i*365} y={545} width={300} view={view}/>
+        : <text className="diagram-small" x={185+i*365} y={545} textAnchor="middle">結合と置換基の向きを比較</text>}
+      <text className="diagram-small" x={185+i*365} y={583} textAnchor="middle">炭素数6 ／ {s.formula}</text>
+    </g>;})}
+  </Canvas>;
+}
+export function FischerComparison({items,view}:{items:Sugar[];view:BlankView}) {
+  const ordered=[...items].sort((a,b)=>["glucose","galactose","fructose"].indexOf(a.id)-["glucose","galactose","fructose"].indexOf(b.id));
+  return <Canvas title="補助図：環状構造に対応するD系列の鎖状Fischer投影" height={360}>
+    {ordered.map((s,i)=><g key={s.id}>
+      <rect className="diagram-panel" x={15+i*365} y={5} width={340} height={350}/>
+      <SvgField field={s.name} x={185+i*365} y={35} width={300} view={view}/>
+      <Fischer sugar={s} x={57+i*365} y={45} scale={.8}/>
     </g>)}
   </Canvas>;
 }

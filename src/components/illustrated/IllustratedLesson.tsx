@@ -2,19 +2,22 @@
 
 import { useState } from "react";
 import { StudyLink } from "@/components/StudyLink";
-import { illustratedLessons, type LessonSlug } from "@/data/illustrated/types";
+import { illustratedLessons, type LessonSlug, type SugarStructureOptions } from "@/data/illustrated/types";
+import { defaultSugarStructureOptions } from "@/data/illustrated/sugarRings";
 import { polymers, polymerNotes, polymerSources } from "@/data/illustrated/polymers";
 import { sugars, sugarNotes, sugarSources } from "@/data/illustrated/carbohydrates";
 import { collectLessonFields, createLessonExercise, lessonModes } from "@/lib/illustratedExercise";
 import type { BlankView } from "@/components/separation/ExerciseField";
 import { PolymerMechanisms, PolymerRows, CondensationMap } from "./PolymerDiagrams";
-import { SugarClassification, MonosaccharideStructures, DisaccharideHydrolysis, PolysaccharideComparison } from "./CarbohydrateDiagrams";
+import { SugarClassification, MonosaccharideStructures, FischerComparison, DisaccharideHydrolysis, PolysaccharideComparison } from "./CarbohydrateDiagrams";
 import { PolymerTable, SugarTable } from "./LessonTables";
 import { Sheet } from "./DiagramParts";
 
 export function IllustratedLesson({slug}:{slug:LessonSlug}) {
   const [mode,setMode]=useState("learn"),[showAnswers,setShowAnswers]=useState(false);
   const [zoom,setZoom]=useState(false),[preview,setPreview]=useState(false);
+  const [structureOptions,setStructureOptions]=useState<SugarStructureOptions>(defaultSugarStructureOptions);
+  const [showFischer,setShowFischer]=useState(false);
   const lesson=illustratedLessons.find(l=>l.slug===slug)!;
   const exercise=createLessonExercise(collectLessonFields(slug==="polymers" ? polymers : sugars),slug,mode);
   const view:BlankView={exercise,showAnswers};
@@ -22,6 +25,7 @@ export function IllustratedLesson({slug}:{slug:LessonSlug}) {
   const sources=slug==="polymers" ? polymerSources : sugarSources;
   const addition=polymers.filter(p=>p.family==="addition"),condensation=polymers.filter(p=>p.family==="condensation");
   const mono=sugars.filter(s=>s.category==="mono"),di=sugars.filter(s=>s.category==="di"),poly=sugars.filter(s=>s.category==="poly");
+  const hideSugarNames=!showAnswers&&sugars.some(s=>exercise.blankIds.includes(s.name.id));
   return <>
     <StudyLink className="back-link" href="/units/organic-reactions">← 有機化学の反応系統</StudyLink>
     <header className="unit-content-heading"><p className="eyebrow">VISUAL CHEMISTRY / ORGANIC</p><h1>{lesson.title}</h1><p>{lesson.description}</p></header>
@@ -33,9 +37,17 @@ export function IllustratedLesson({slug}:{slug:LessonSlug}) {
       <button type="button" className="button" aria-pressed={zoom} onClick={()=>setZoom(!zoom)}>{zoom ? "全体を表示" : "図を拡大"}</button>
       <button type="button" className="button" aria-pressed={preview} onClick={()=>setPreview(!preview)}>{preview ? "通常表示に戻す" : "A4印刷プレビュー"}</button>
       <button type="button" className="button" onClick={()=>window.print()}>印刷</button>
-      <p role="status">{mode==="learn" ? "図 → 比較表 → 補足の順に確認できます。" : `空欄 ${exercise.blankIds.length} 種類。同じ番号は同じ答えです。構造式はヒントとして残します。`}</p>
+      <p role="status">{mode==="learn" ? "図 → 比較表 → 補足の順に確認できます。" : `空欄 ${exercise.blankIds.length} 種類。同じ番号は同じ答えです。構造の骨格はヒントとして残します。`}</p>
       {mode!=="learn" && <p>{slug==="carbohydrates" ? "構成単糖と加水分解生成物は答えが重なるため、両方を連動して隠します。" : "モノマー名・高分子名・重合形式を、図と表で共通の番号にしています。"}補足にある直接的なヒントも問題表示では伏せます。</p>}
       <p>スマホでは全体を縮小表示します。拡大した図と比較表は横にスクロールできます。印刷では現在の問題／解答を出力します。</p>
+      {slug==="carbohydrates" && <fieldset className="sugar-display-options"><legend>糖の構造表示</legend>
+        <label><input type="checkbox" checked={structureOptions.showCarbonNumbers} onChange={e=>setStructureOptions({...structureOptions,showCarbonNumbers:e.target.checked})}/>炭素番号を表示</label>
+        <label><input type="checkbox" checked={structureOptions.showDifferenceHints} onChange={e=>setStructureOptions({...structureOptions,showDifferenceHints:e.target.checked})}/>差異を強調</label>
+        <label><input type="checkbox" checked={showFischer} onChange={e=>setShowFischer(e.target.checked)}/>Fischer投影も表示（補助図）</label>
+        <label htmlFor="fructose-ring-form">フルクトースの環状形</label><select id="fructose-ring-form" value={structureOptions.fructoseRing} onChange={e=>setStructureOptions({...structureOptions,fructoseRing:e.target.value as SugarStructureOptions["fructoseRing"]})}>
+          <option value="furanose">五員環（β-D体の例）</option><option value="pyranose">六員環（β-D体の例）</option>
+        </select>
+      </fieldset>}
     </div>
     <div className={`illustrated-print-area${zoom ? " is-zoomed" : ""}${preview ? " is-a4-preview" : ""}`} data-lesson-id={slug}>
       <div className="illustrated-print-title">Chemica ／ {lesson.title} ／ {mode==="learn" ? "教材" : showAnswers ? "解答" : "問題"}</div>
@@ -49,12 +61,13 @@ export function IllustratedLesson({slug}:{slug:LessonSlug}) {
         <Sheet title="7. 高分子比較表② ― 官能基でつなぐ・網目にする"><PolymerTable items={polymers.slice(6,11)} view={view}/></Sheet>
         <Sheet title="8. 高分子比較表③ ― 繊維とゴム"><PolymerTable items={polymers.slice(11)} view={view}/></Sheet>
       </> : <>
-        <Sheet title="1. 糖の分類 ― 単位数で全体を見る"><SugarClassification items={sugars} view={view}/><p className="illustrated-caption">丸は単糖単位の模式記号で、実際の環の形ではありません。G＝グルコース、F＝フルクトース、Gal＝ガラクトース。</p></Sheet>
-        <Sheet title="2. 単糖の構造を比べる"><MonosaccharideStructures items={mono} view={view}/><p className="illustrated-caption">D系列の鎖状Fischer投影。横の結合は手前、縦の結合は奥を向く。水溶液中では主に環状構造をとります。</p>
-          <div className="illustrated-concept-flow"><span>鎖状のカルボニル基</span><b> ⇄ </b><span>環状構造</span><b> → </b><span>開環・異性化の可否が還元性に関係</span></div>
-          {(mode==="learn"||showAnswers) && <p>グルコースとガラクトースはC4のOH配置が異なります。フルクトースはケトースですが、塩基性条件で異性化するため銀鏡・フェーリング反応で陽性になります。</p>}
+        <Sheet title="1. 糖の分類 ― 単位数で全体を見る"><SugarClassification items={sugars} options={structureOptions} view={view}/><p className="illustrated-caption">単糖は環状構造で表示。二糖・多糖の小さな環は単糖単位の骨格記号で、置換基と立体配置を省略しています。{!hideSugarNames&&"G＝グルコース、F＝フルクトース、Gal＝ガラクトース。"}</p></Sheet>
+        <Sheet title="2. 環状構造を比べる ― 似た形・異なる配置"><MonosaccharideStructures items={mono} options={structureOptions} view={view}/><p className="illustrated-caption">Haworth投影の一例。太い辺は手前側の結合、枠と太い置換基結合は比較する部分、破線の丸はアノマー炭素。環員数にはOを含み、3種とも炭素数6の六炭糖です。</p>
+          {(mode==="learn"||showAnswers) && structureOptions.showDifferenceHints && <p className="illustrated-caption">左の2種は同じα-D体で比較するとC4のOH配置だけが異なります。右はβ-D体の例。フルクトースには五員環・六員環の両方があり、水溶液中で平衡をなします。</p>}
+          {showFischer && <><h3 className="fischer-supplement-title">補助図：鎖状形との対応</h3><FischerComparison items={mono} view={view}/><p className="illustrated-caption">Fischer投影の横の結合は手前、縦は奥。アルドース／ケトースは鎖状形のカルボニル基で分類します。</p></>}
+          <div className="illustrated-concept-flow"><span>分類</span><b> → </b><span>環状構造・OHの差</span><b> → </b><span>二糖・多糖とのつながり</span><b> → </b><span>穴埋めで確認</span></div>
         </Sheet>
-        <Sheet title="3. 二糖を分ける ― 構成単糖と還元性"><DisaccharideHydrolysis items={di} view={view}/><p className="illustrated-caption">矢印は加水分解。逆向きに脱水して結合する関係も確認できます。還元性は加水分解前の糖について示しています。</p></Sheet>
+        <Sheet title="3. 二糖を分ける ― 構成単糖と還元性"><DisaccharideHydrolysis items={di} view={view}/><p className="illustrated-caption">小環は単糖骨格の記号で、完全な二糖構造式ではありません。{!hideSugarNames&&"スクロース中のFは五員環形。"}矢印は加水分解、還元性は加水分解前の糖について示しています。</p></Sheet>
         <Sheet title="4. 多糖を比べる ― らせん・分岐・直鎖"><PolysaccharideComparison items={poly} view={view}/><p className="illustrated-caption">丸はグルコース単位、点線は鎖間の水素結合の模式図。分岐間隔・鎖長は実際の比率ではありません。</p></Sheet>
         <Sheet title="5. 糖類比較表① ― 単糖・二糖"><SugarTable items={sugars.slice(0,6)} view={view}/></Sheet>
         <Sheet title="6. 糖類比較表② ― 多糖"><SugarTable items={poly} view={view}/></Sheet>

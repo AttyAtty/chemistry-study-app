@@ -42,18 +42,55 @@ test("organic illustrated lessons: structures, diagrams, tables, masks, A4 and o
     await page.getByRole("button",{name:"通常表示に戻す",exact:true}).click();
     await page.getByRole("link",{name:"糖を図で理解",exact:true}).click();
     await expect(page.locator("[data-sugar-row]")).toHaveCount(9);
-    await expect(page.locator('[data-fischer-id="glucose"]')).toHaveCount(2);
+    await expect(page.locator('[data-fischer-id="glucose"]')).toHaveCount(0);
+    await expect(page.locator('[data-ring-comparison]')).toHaveCount(3);
+    expect(await page.locator('[data-ring-comparison]').evaluateAll(elements=>elements.map(el=>el.getAttribute("data-ring-comparison")))).toEqual(["glucose","galactose","fructose"]);
+    const glucoseRing=page.locator('[data-ring-comparison="glucose"]');
+    const galactoseRing=page.locator('[data-ring-comparison="galactose"]');
+    const fructoseRing=page.locator('[data-ring-comparison="fructose"]');
+    await expect(glucoseRing.locator('[data-group-id="c4-down"]')).toHaveAttribute("data-highlighted","true");
+    await expect(galactoseRing.locator('[data-group-id="c4-up"]')).toHaveAttribute("data-highlighted","true");
+    await expect(fructoseRing.locator('[data-ring-size]')).toHaveAttribute("data-ring-size","5");
+    await page.getByLabel("フルクトースの環状形",{exact:true}).selectOption("pyranose");
+    await expect(fructoseRing.locator('[data-ring-size]')).toHaveAttribute("data-ring-size","6");
+    await page.locator(".illustrated-sheet").nth(1).screenshot({path:info.outputPath("sugar-pyranose.png"),style:"header {visibility:hidden!important;}"});
+    await page.getByLabel("フルクトースの環状形",{exact:true}).selectOption("furanose");
+    await page.getByLabel("炭素番号を表示",{exact:true}).uncheck();
+    await expect(page.locator(".ring-carbon-number")).toHaveCount(0);
+    await page.getByLabel("炭素番号を表示",{exact:true}).check();
+    expect(await page.locator(".ring-carbon-number").count()).toBeGreaterThan(0);
+    await page.getByLabel("差異を強調",{exact:true}).uncheck();
+    await expect(page.locator(".structure-emphasis")).toHaveCount(0);
+    await page.getByLabel("差異を強調",{exact:true}).check();
+    await page.getByLabel("Fischer投影も表示（補助図）",{exact:true}).check();
+    await expect(page.locator('[data-fischer-id="glucose"]')).toHaveCount(1);
     await expect(page.locator('[data-sugar-row="sucrose"]')).toContainText("なし");
     await expect(page.locator('[data-sugar-row="fructose"]')).toContainText("あり");
-    for(const [index,name] of [[0,"sugar-classification"],[1,"sugar-fischer"],[2,"sugar-hydrolysis"],[3,"sugar-polysaccharides"]] as const)
+    for(const [index,name] of [[0,"sugar-classification"],[1,"sugar-rings-and-fischer"],[2,"sugar-hydrolysis"],[3,"sugar-polysaccharides"]] as const)
       await page.locator(".illustrated-sheet").nth(index).screenshot({path:info.outputPath(`${name}.png`),style:"header {visibility:hidden!important;}"});
     await printPages(page,info.outputPath("sugars-a4.pdf"));
-    for(const mode of ["sugar","composition","reducing","hydrolysis","all"]) {
+    for(const mode of ["sugar","carbonyl","configuration","structure","composition","reducing","hydrolysis","all"]) {
       await page.getByLabel("表示・問題形式",{exact:true}).selectOption(mode);
       const blanks=await page.locator("[data-blank-id]").count();expect(blanks).toBeGreaterThan(0);
       if(mode==="reducing") {
         await expect(page.locator('[data-sugar-row="sucrose"]')).not.toContainText("陰性");
         await expect(page.locator('[data-sugar-row="fructose"]')).not.toContainText("陽性");
+      }
+      if(mode==="carbonyl") {
+        await expect(page.locator('[data-sugar-row="glucose"]')).not.toContainText("アルドヘキソース");
+        await expect(fructoseRing).not.toContainText("ケトヘキソース");
+      }
+      if(mode==="configuration") {
+        await expect(glucoseRing).not.toContainText("C4のOHは下");
+        await expect(galactoseRing).not.toContainText("C4のOHは上");
+        await page.getByLabel("差異を強調",{exact:true}).uncheck();
+      }
+      if(mode==="structure") {
+        await page.getByLabel("差異を強調",{exact:true}).check();
+        await expect(glucoseRing.locator('[data-blank-id="glucose:group:c4-oh"]')).toHaveCount(1);
+        await expect(glucoseRing).not.toContainText("C4のOHは下");
+        await expect(fructoseRing.locator('[data-blank-id="fructose:anomeric-position"]')).toHaveCount(1);
+        await page.locator(".illustrated-sheet").nth(1).screenshot({path:info.outputPath("sugar-structure-problem.png"),style:"header {visibility:hidden!important;}"});
       }
       if(mode==="composition"||mode==="hydrolysis") {
         await expect(page.locator('[data-sugar-row="maltose"] [data-blank-id="maltose:composition"]')).toHaveCount(1);
@@ -61,6 +98,7 @@ test("organic illustrated lessons: structures, diagrams, tables, masks, A4 and o
       }
       await page.getByRole("button",{name:"答えを表示",exact:true}).click();
       await expect(page.locator("[data-blank-id]")).toHaveCount(0);
+      if(mode==="configuration")await expect(glucoseRing.locator('[data-revealed-id="glucose:configuration"]')).toHaveText("C4のOHは下");
       await page.getByRole("button",{name:"問題に戻す",exact:true}).click();
       expect(await page.locator("[data-blank-id]").count()).toBe(blanks);
     }

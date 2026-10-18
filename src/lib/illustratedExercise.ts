@@ -6,7 +6,13 @@ export function collectLessonFields(items:(Polymer|Sugar)[]):AnswerField[] {
   for(const item of items) {
     add(item.name);
     if("monomers" in item) {item.monomers.forEach(m=>add(m.name));add(item.method);}
-    else {add(item.composition);add(item.reducing);add(item.hydrolysis);}
+    else {
+      add(item.composition);add(item.reducing);add(item.hydrolysis);
+      if(item.cyclic) {
+        add(item.cyclic.configuration);add(item.cyclic.anomericPosition);
+        for(const group of item.cyclic.primary.groups)if(group.answer)add(group.answer);
+      }
+    }
   }
   return [...fields.values()];
 }
@@ -21,10 +27,13 @@ export const lessonModes:Record<LessonSlug,{id:string;label:string;categories:An
   carbohydrates:[
     {id:"learn",label:"学習表示",categories:[]},
     {id:"sugar",label:"糖名を答える",categories:["sugar","composition","hydrolysis"]},
+    {id:"carbonyl",label:"アルドース・ケトースを答える",categories:["carbonyl-type"]},
+    {id:"configuration",label:"OHの配置を答える（構造ヒントあり）",categories:["stereochemistry"]},
+    {id:"structure",label:"構造ラベル・アノマー位置を答える",categories:["structure-label","anomeric-position"]},
     {id:"composition",label:"構成単糖を答える",categories:["composition","hydrolysis"]},
     {id:"reducing",label:"還元性を答える",categories:["reducing"]},
     {id:"hydrolysis",label:"加水分解生成物を答える",categories:["hydrolysis","composition"]},
-    {id:"all",label:"まとめて穴埋め",categories:["sugar","composition","reducing","hydrolysis"]},
+    {id:"all",label:"まとめて穴埋め",categories:["sugar","composition","reducing","hydrolysis","carbonyl-type","stereochemistry","structure-label","anomeric-position"]},
   ],
 };
 /** Explicit categories, shared IDs across figures/tables; no string or chemical-name matching. */

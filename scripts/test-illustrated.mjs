@@ -15,6 +15,7 @@ function moduleUrl(file) {
 }
 const {polymers}=await import(moduleUrl("src/data/illustrated/polymers.ts"));
 const {sugars}=await import(moduleUrl("src/data/illustrated/carbohydrates.ts"));
+const {selectedSugarRing}=await import(moduleUrl("src/data/illustrated/sugarRings.ts"));
 const {collectLessonFields,createLessonExercise,lessonModes}=await import(moduleUrl("src/lib/illustratedExercise.ts"));
 
 test("all required polymer reactions are authored, with no false periodic network repeat",()=>{
@@ -96,4 +97,56 @@ test("composition and hydrolysis clues are masked together",()=>{
   assert.deepEqual(createLessonExercise(fields,"carbohydrates","composition").blankIds,createLessonExercise(fields,"carbohydrates","hydrolysis").blankIds);
   const reducing=createLessonExercise(fields,"carbohydrates","reducing");
   assert.ok(fields.filter(f=>reducing.blankIds.includes(f.id)).every(f=>f.blankCategory==="reducing"));
+});
+test("Haworth configurations agree with D-series Fischer projections and retain six carbons",()=>{
+  const get=id=>sugars.find(s=>s.id===id);
+  for(const s of sugars.filter(s=>s.cyclic))for(const ring of [s.cyclic.primary,s.cyclic.alternative].filter(Boolean)) {
+    assert.equal(ring.atoms.length,ring.ringSize);
+    assert.equal(ring.atoms.filter(a=>a.label==="O").length,1);
+    const carbonNumbers=[...ring.atoms.map(a=>a.carbonNumber),...ring.groups.map(g=>g.carbonNumber)].filter(Boolean).sort((a,b)=>a-b);
+    assert.deepEqual(carbonNumbers,[1,2,3,4,5,6],ring.id);
+    const ids=new Set(ring.atoms.map(a=>a.id));assert.equal(ids.size,ring.atoms.length);
+    assert.equal(new Set(ring.groups.map(g=>g.id)).size,ring.groups.length);
+    for(const g of ring.groups) {
+      assert.ok(ids.has(g.from));const atom=ring.atoms.find(a=>a.id===g.from);
+      assert.equal(g.direction,g.y<atom.y ? "up" : "down");
+      assert.ok(g.x>=30&&g.x<=350&&g.y>=25&&g.y<=335);
+    }
+    for(const carbon of ring.atoms.filter(a=>a.label==="C"))assert.equal(ring.groups.filter(g=>g.from===carbon.id).length,2);
+    const count=label=>ring.groups.filter(g=>g.label===label).length;
+    assert.equal(count("OH")+count("CH₂OH")+1,6,"five hydroxyl oxygens plus one ring oxygen");
+    assert.equal(count("H")+count("OH")+3*count("CH₂OH"),12,"substituent hydrogens preserve C6H12O6");
+    assert.ok(ids.has(ring.anomericAtomId));
+    for(const id of ring.highlightedAtoms)assert.ok(ids.has(id));
+    for(const id of ring.highlightedGroups)assert.ok(ring.groups.some(g=>g.id===id));
+    const expectedAnomeric=s.id==="fructose" ? 2:1;
+    assert.equal(ring.atoms.find(a=>a.id===ring.anomericAtomId).carbonNumber,expectedAnomeric);
+    for(let i=0;i<s.fischer.ohSides.length;i++) {
+      const carbon=i+(s.fischer.carbonyl==="ketone" ? 3:2);
+      const oh=ring.groups.find(g=>g.from===`c${carbon}`&&g.label==="OH");
+      if(oh)assert.equal(oh.direction,s.fischer.ohSides[i]==="right" ? "down":"up",`${ring.id}:C${carbon}`);
+    }
+  }
+  const directions=s=>Object.fromEntries(s.cyclic.primary.groups.filter(g=>g.label==="OH").map(g=>[g.from,g.direction]));
+  const g=directions(get("glucose")),gal=directions(get("galactose"));
+  assert.deepEqual(Object.keys(g).filter(k=>g[k]!==gal[k]),["c4"]);
+  assert.equal(g.c4,"down");assert.equal(gal.c4,"up");
+  assert.equal(selectedSugarRing(get("fructose"),"furanose").ringSize,5);
+  assert.equal(selectedSugarRing(get("fructose"),"pyranose").ringSize,6);
+  assert.equal(get("fructose").cyclic.primary.groups.find(g=>g.from==="c2"&&g.label==="OH").direction,"up");
+});
+test("structure questions use stable labels and phrases, including both fructose forms",()=>{
+  const fields=collectLessonFields(sugars);
+  for(const [mode,category] of [["carbonyl","carbonyl-type"],["configuration","stereochemistry"]]) {
+    const exercise=createLessonExercise(fields,"carbohydrates",mode);
+    assert.equal(exercise.blankIds.length,3);
+    assert.ok(fields.filter(f=>exercise.blankIds.includes(f.id)).every(f=>f.blankCategory===category));
+  }
+  const exercise=createLessonExercise(fields,"carbohydrates","structure");
+  assert.equal(exercise.blankIds.length,6);
+  assert.ok(exercise.blankIds.includes("glucose:group:c4-oh"));
+  const fructose=sugars.find(s=>s.id==="fructose");
+  assert.deepEqual(fructose.cyclic.primary.groups.find(g=>g.answer).answer,fructose.cyclic.alternative.groups.find(g=>g.answer).answer);
+  assert.equal(fields.find(f=>f.id==="glucose:composition").text,"アルドヘキソース");
+  assert.equal(fields.find(f=>f.id==="fructose:composition").text,"ケトヘキソース");
 });
