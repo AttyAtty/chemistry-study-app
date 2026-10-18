@@ -1,0 +1,32 @@
+import {test,expect,chromium,type Page} from "@playwright/test";
+async function slide(page:Page,id:string,value:string){await page.locator(`#${id}`).fill(value);}
+async function print(page:Page,path:string){await page.emulateMedia({media:"print"});const pdf=await page.pdf({path,preferCSSPageSize:true});expect(pdf.toString("latin1").match(/\/Type \/Page\b/g)?.length).toBe(2);expect(await page.locator(".theory-interactive").evaluateAll(els=>els.every(el=>getComputedStyle(el).display==="none"))).toBe(true);expect(await page.locator(".theory-print-only .illustrated-diagram").evaluateAll(els=>els.every(el=>el.getBoundingClientRect().width<720))).toBe(true);await page.emulateMedia({media:"screen"});}
+test("theory: sliders match plots, printable states, quizzes, mobile and offline",async({},info)=>{
+ const browser=await chromium.launch({channel:info.project.metadata.channel as string,headless:true}),context=await browser.newContext({baseURL:"http://127.0.0.1:3211",viewport:{width:1440,height:1000}});
+ try{const page=await context.newPage(),errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
+ await page.goto("/units/theory-chemistry");await expect(page.getByRole("heading",{name:"図で理解する理論化学",exact:true})).toBeVisible();
+ for(const slug of ["solubility","vapor-pressure","henry"]){await page.goto(`/illustrated/${slug}`);await expect(page.locator(".illustrated-diagram").first()).toBeVisible();
+  if(slug==="vapor-pressure")await expect(page.locator('#vapor-external')).toHaveValue('101.325');
+  if(slug==="solubility"){await slide(page,"sol-temperature","80");await expect(page.locator("[data-solubility-output]")).toContainText("80.0 g");await expect(page.locator('.theory-interactive [data-solubility-point]')).toHaveAttribute("data-solubility","80.0");await expect(page.locator('.illustrated-sheet').first().locator('[data-crystals="0"]').first()).toBeVisible();}
+  if(slug==="vapor-pressure"){await slide(page,"vapor-temperature","100");await expect(page.locator("[data-vapor-output]")).toContainText("101.3 kPa");await expect(page.locator('.theory-interactive [data-vapor-point]')).toHaveAttribute("data-vapor-pressure","101.3");await slide(page,"vapor-external","60");await expect(page.locator('[data-boiling-output]')).toContainText("84.3 ℃");const totals=await page.getByRole("img",{name:"密閉容器の時間経過：5段階",exact:true}).locator('.particle-vessel').evaluateAll(els=>els.map(el=>Number(el.getAttribute('data-liquid-particles'))+Number(el.getAttribute('data-gas-particles'))));expect(totals).toEqual([24,24,24,24,24]);}
+  if(slug==="henry"){await slide(page,"henry-pressure","4");await expect(page.locator("[data-henry-output]")).toContainText("8.0 mmol");await expect(page.locator('.theory-interactive [data-henry-point]')).toHaveAttribute("data-amount","8.0");await expect(page.locator('.theory-interactive [data-henry-particles] .particle-vessel')).toHaveAttribute('data-liquid-particles','16');}
+  await page.locator(".illustrated-sheet").first().screenshot({path:info.outputPath(`${slug}.png`),style:"header {visibility:hidden!important;}"});
+  await page.locator(".illustrated-sheet").nth(1).screenshot({path:info.outputPath(`${slug}-application.png`),style:"header {visibility:hidden!important;}"});
+  await print(page,info.outputPath(`${slug}-learn-a4.pdf`));
+  for(const mode of ["all","concepts","calculations"]){await page.getByLabel("表示・問題形式",{exact:true}).selectOption(mode);await expect(page.locator('[data-blank-id]').first()).toBeVisible();await page.getByRole('button',{name:'答えを表示',exact:true}).click();await expect(page.locator('[data-blank-id]')).toHaveCount(0);await expect(page.locator('[data-revealed-id]').first()).toBeVisible();await page.getByRole('button',{name:'問題に戻す',exact:true}).click();}
+  if(slug==="vapor-pressure"){
+   await expect(page.locator('[data-boiling-logic]')).not.toContainText('沸騰を開始');
+   await page.getByRole('button',{name:'答えを表示',exact:true}).click();await expect(page.locator('[data-boiling-logic]')).toContainText('沸騰を開始');await page.getByRole('button',{name:'問題に戻す',exact:true}).click();
+  }
+  await print(page,info.outputPath(`${slug}-problem-a4.pdf`));
+  await page.getByLabel('表示・問題形式',{exact:true}).selectOption('all');
+  expect(await page.locator('.theory-answer-line .separation-html-blank').first().evaluate(el=>el.getBoundingClientRect().width>=el.parentElement!.getBoundingClientRect().width*.95)).toBe(true);
+  await print(page,info.outputPath(`${slug}-all-a4.pdf`));
+  await page.locator('.illustrated-sheet').nth(1).screenshot({path:info.outputPath(`${slug}-all-problem.png`),style:'header {visibility:hidden!important;}'});
+  await page.getByRole('button',{name:'A4プレビュー',exact:true}).click();await expect(page.locator('.theory-print-only').first()).toBeVisible();await page.getByRole('button',{name:'A4プレビュー',exact:true}).click();
+  await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);await page.getByRole('button',{name:'拡大表示',exact:true}).click();expect(await page.locator('.illustrated-scroll').first().evaluate(el=>el.scrollWidth>el.clientWidth)).toBe(true);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);await page.setViewportSize({width:1440,height:1000});
+ }
+ await expect.poll(()=>page.evaluate(()=>new Promise<boolean>(resolve=>{const worker=navigator.serviceWorker.controller;if(!worker){resolve(false);return;}const c=new MessageChannel(),timer=setTimeout(()=>resolve(false),3000);c.port1.onmessage=e=>{clearTimeout(timer);c.port1.close();resolve(e.data.ready===true);};worker.postMessage({type:'CHEMICA_STATUS'},[c.port2]);})),{timeout:90000}).toBe(true);
+ await context.setOffline(true);for(const [slug,id,value] of [["solubility","sol-temperature","80"],["vapor-pressure","vapor-temperature","100"],["henry","henry-pressure","4"]]){await page.goto(`/illustrated/${slug}`);await slide(page,id,value);await page.getByLabel('表示・問題形式',{exact:true}).selectOption('all');await expect(page.locator('[data-blank-id]').first()).toBeVisible();await page.getByRole('button',{name:'答えを表示',exact:true}).click();await expect(page.locator('[data-revealed-id]').first()).toBeVisible();await print(page,info.outputPath(`${slug}-offline-a4.pdf`));await page.reload();await expect(page.locator('.illustrated-diagram').first()).toBeVisible();}expect(errors).toEqual([]);
+ }finally{await context.close();await browser.close();}
+});

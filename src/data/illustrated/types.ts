@@ -1,5 +1,5 @@
 export type LessonSlug = "polymers" | "carbohydrates";
-export type AnswerCategory = "monomer" | "polymer" | "polymerization" | "sugar" | "composition" | "reducing" | "hydrolysis" | "carbonyl-type" | "stereochemistry" | "structure-label" | "anomeric-position" | "element" | "color" | "range" | "species" | "reagent" | "collection" | "preparation" | "detection" | "electrode" | "electron" | "half-reaction" | "redox";
+export type AnswerCategory = "monomer" | "polymer" | "polymerization" | "sugar" | "composition" | "reducing" | "hydrolysis" | "carbonyl-type" | "stereochemistry" | "structure-label" | "anomeric-position" | "element" | "color" | "range" | "species" | "reagent" | "collection" | "preparation" | "detection" | "electrode" | "electron" | "half-reaction" | "redox" | "concept" | "calculation";
 export type AnswerField = { id: string; text: string; blankCategory: AnswerCategory; blankable: boolean };
 export function field(id: string, text: string, blankCategory: AnswerCategory): AnswerField {
   return { id, text, blankCategory, blankable: true };

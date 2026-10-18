@@ -60,6 +60,7 @@ export default async function UnitPage({ params }: { params: Promise<{ slug: str
       </details>
       <div id="unit-material" />
       {unit.slug === "organic-reactions" && <IllustratedLessonLinks/>}
+      {unit.slug === "theory-chemistry" && <IllustratedLessonLinks theory/>}
       {["inorganic-reactions","colors-and-tests","complex-ions-qualitative-analysis","laboratory-gases","batteries-electrolysis"].includes(unit.slug) && <IllustratedLessonLinks inorganic/>}
       {["inorganic-reactions", "complex-ions-qualitative-analysis", "colors-and-tests", "organic-reactions"].includes(unit.slug) && <section className="separation-entry">
         <p className="eyebrow">SEPARATION / ANALYSIS</p>
