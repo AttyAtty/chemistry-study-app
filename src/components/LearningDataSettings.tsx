@@ -74,9 +74,9 @@ export function LearningDataSettings() {
     </section>
     {archive && <section className="data-panel"><h2>復元前の退避データ</h2><p>直近の復元前データは端末内に保持されています。以前の退避データも自動削除しません。端末内の退避データはサイトデータ消去で失われるため、ファイルにも保存してください。</p><div className="data-actions"><button className="button secondary" type="button" onClick={() => { try { download(archive.backup, "before-restore"); } catch { setError(true); setMessage("ダウンロードを開始できませんでした。"); } }}>直近の復元前データを保存</button>{archive.pending && <button className="button primary" type="button" onClick={recover}>中断した復元を元に戻す</button>}</div></section>}
     <section className="data-panel" id="domain-migration"><h2>別ドメインへの移行</h2>
-      <p>ドメインが変わると、この端末の記録やログイン状態は自動で引き継がれません。正式URLはまだ未確定です。</p>
+      <p>正式サイトURLを https://chemica.app に移行する際も、端末内の記録・ログイン状態・PWAの保存データは自動では引き継がれません。移行前にJSONバックアップを保存してください。</p>
       <ol><li>旧サイトでJSONバックアップを保存し、ファイルを確認します。</li><li>新サイトのURLを確認して開き、この画面でバックアップを復元します。</li><li>記録・カードを確認してから、必要に応じて再ログインし、クラウド保存先を確認します。</li><li>新サイトをホーム画面に追加し直し、共有リンク・QRコードも新サイトで作り直します。</li></ol>
-      <p>現在、クラウドに保存した記録を新端末・新ドメインへ取り込む機能や、複数端末の統合はありません。移行にはJSONバックアップ・復元を使ってください。旧サイトの記録は移行確認まで残してください。</p>
+      <p>新URLを使う前に、本番環境のサイトURLとSupabase AuthのSite URL / Redirect URLsへ https://chemica.app を登録する作業が別途必要です。現在、クラウドに保存した記録を新端末・新ドメインへ取り込む機能や、複数端末の統合はありません。移行にはJSONバックアップ・復元を使ってください。旧サイトの記録は移行確認まで残してください。</p>
     </section>
     <section className="data-panel"><h2>アプリの更新</h2><div id="pwa-settings-controls" /></section>
     <details className="data-panel"><summary>保存の詳細・診断</summary><StorageBackendStatus /></details>

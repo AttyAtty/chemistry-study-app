@@ -145,9 +145,9 @@ export const chemistryUnits: ChemistryUnit[] = [
     title: "有機化学の反応系統",
     shortTitle: "有機反応",
     icon: "🧪",
-    summary: "官能基の変換、芳香族化合物、高分子までを反応の流れで整理します。",
+    summary: "基本反応から芳香族の系統分離、高分子・糖まで、構造と反応のつながりを学べます。",
     level: "高校化学",
-    keywords: ["有機", "官能基", "アルコール", "カルボン酸", "ベンゼン"],
+    keywords: ["有機", "基本反応", "芳香族", "系統分離", "高分子", "糖"],
     sections: [
       {
         id: "aliphatic-flow",
@@ -286,9 +286,9 @@ export const chemistryUnits: ChemistryUnit[] = [
     title: "無機化学の反応整理",
     shortTitle: "無機反応",
     icon: "⚗️",
-    summary: "気体発生、沈殿、両性元素、酸化還元を反応パターン別に整理します。",
+    summary: "元素各論に加え、イオン化傾向、炎色反応、沈殿・確認反応、気体、系統分析を整理します。電池・電気分解にも横断して進めます。",
     level: "高校化学",
-    keywords: ["無機", "気体", "沈殿", "両性", "酸化還元"],
+    keywords: ["無機", "イオン化傾向", "炎色反応", "沈殿", "気体", "系統分析", "電気化学"],
     sections: [
       {
         id: "inorganic-reaction-map-studio",

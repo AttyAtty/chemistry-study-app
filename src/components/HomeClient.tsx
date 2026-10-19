@@ -73,7 +73,9 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
     </section>
     <section className="section-block home-cross-tools" id="units">
       <div className="section-heading"><div><p className="eyebrow">FOCUSED TOOLS</p><h2>目的別・横断教材</h2><p>確認したいテーマへ直接移動できます。</p></div></div>
-      <div className="home-cross-grid">{crossUnits.map(unit=><article className="home-cross-card" key={unit.slug}>
+      <div className="home-cross-grid"><article className="home-cross-card home-diagram-hub-card">
+        <Link className="card-primary-link" href="/illustrated" aria-label="図で理解する教材を探す"/><span aria-hidden="true">▱</span><div><h3>図で理解する</h3><p>反応の流れ・構造・グラフを、分野をまたいで図から確認できます。</p></div><b aria-hidden="true">→</b>
+      </article>{crossUnits.map(unit=><article className="home-cross-card" key={unit.slug}>
         <Link className="card-primary-link" href={`/units/${unit.slug}`} aria-label={`${unit.title}を開く`}/><span aria-hidden="true">{unit.icon}</span><div><h3>{unit.shortTitle}</h3><p>{unit.summary}</p></div><b aria-hidden="true">→</b>
       </article>)}</div>
     </section>

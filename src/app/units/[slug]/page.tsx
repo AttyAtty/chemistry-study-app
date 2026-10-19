@@ -19,7 +19,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const unit = getUnit(slug);
-  return { title: unit ? unit.title : "単元" };
+  return { title: unit ? unit.title : "単元", alternates: { canonical: `/units/${slug}` }, openGraph: { url: `/units/${slug}` } };
 }
 
 export default async function UnitPage({ params }: { params: Promise<{ slug: string }> }) {

@@ -9,7 +9,7 @@ export const dynamicParams = false;
 export function generateStaticParams() { return separationDiagrams.map(diagram=>({slug:diagram.id})); }
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata> {
   const {slug}=await params;
-  return {title:separationDiagrams.find(diagram=>diagram.id===slug)?.title ?? "系統分離・系統分析"};
+  return { title: slug, alternates: { canonical: "/separation/" + slug }, openGraph: { url: "/separation/" + slug } };
 }
 export default async function SeparationPage({params}:{params:Promise<{slug:string}>}) {
   const {slug}=await params;

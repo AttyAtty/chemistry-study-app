@@ -16,8 +16,10 @@ import { StorageNotice } from "@/components/StorageNotice";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { Analytics } from "@vercel/analytics/next";
 import Link from "next/link";
+import { APP_ORIGIN } from "@/lib/siteConfig";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(APP_ORIGIN),
   title: { default: "Chemica", template: "%s | Chemica" },
   applicationName: "Chemica",
   manifest: "/site.webmanifest",
@@ -34,13 +36,14 @@ export const metadata: Metadata = {
     title: "Chemica",
     statusBarStyle: "default",
   },
-  description: "高校化学の反応・暗記・問題演習をまとめて学べる学習サイトです。",
-  openGraph: { title: "Chemica", description: "化学をもっとわかりやすく。高校化学の学習Webアプリです。", type: "website", locale: "ja_JP" },
+  description: "理論・無機・有機化学を、体系的な単元、図解、公式計算、問題演習から学べるサイトです。",
+  openGraph: { title: "Chemica", description: "理論・無機・有機化学を、単元・図解・公式計算から学ぶ高校化学Webアプリです。", type: "website", locale: "ja_JP" },
   twitter: { card: "summary", title: "Chemica", description: "化学をもっとわかりやすく。" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="ja"><head><meta name="chemica-build" content={PWA_BUILD_ID} /></head><body>
+  const websiteSchema = { "@context": "https://schema.org", "@type": "WebSite", name: "Chemica", url: APP_ORIGIN, inLanguage: "ja-JP" };
+  return <html lang="ja"><head><meta name="chemica-build" content={PWA_BUILD_ID} /><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema).replace(/</g, "\\u003c") }} /></head><body>
     <ChemicaAnimatedBackground />
     <Header />
     <StorageNotice />

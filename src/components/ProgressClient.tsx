@@ -11,6 +11,10 @@ import { readFlashcardProgress, type FlashcardProgressData } from "@/lib/flashca
 import { getLearningInsights, MIN_WEAK_UNIT_ATTEMPTED_QUESTIONS } from "@/lib/learningInsights";
 import { readProgress, type ProgressData } from "@/lib/progress";
 import { questionHistoryKey, readQuestionHistory, type QuestionHistory } from "@/lib/questionHistory";
+import { getTestCategoryForUnit, type TestCategory } from "@/lib/quizSelection";
+
+const progressCategoryOrder: TestCategory[] = ["theory", "inorganic", "organic", "other"];
+const progressCategoryTitles: Record<TestCategory, string> = { theory: "基礎・理論化学", inorganic: "無機化学", organic: "有機化学", other: "横断・実験教材" };
 
 export function ProgressClient() {
   const [progress,setProgress]=useState<ProgressData>({});
@@ -24,6 +28,7 @@ export function ProgressClient() {
   const basicReviewCount = chemistryBasicComprehensiveQuestions.filter(question => questionHistory[questionHistoryKey("chemistry-basic-comprehensive", question.id)]?.needsReview).length;
   const regularReviewCount = insights.reviewQuestions - basicReviewCount;
   const hasHistory=summary.attempts>0||insights.answeredQuestions>0||insights.knownCards+insights.reviewCards>0;
+  const progressUnits=[...chemistryUnits].sort((a,b)=>progressCategoryOrder.indexOf(getTestCategoryForUnit(a.slug))-progressCategoryOrder.indexOf(getTestCategoryForUnit(b.slug)));
 
 
   return <main className="page-container progress-page">
@@ -45,7 +50,7 @@ export function ProgressClient() {
     <section className="learning-status"><div className="section-heading"><div><p className="eyebrow">LEARNING STATUS</p><h2>学習状況</h2></div></div><div className="learning-status-grid"><div><span>解答した問題</span><strong>{insights.answeredQuestions}<small>問</small></strong></div><div><span>未出題</span><strong>{insights.unseenQuestions}<small>問</small></strong></div><div><span>復習が必要</span><strong>{insights.reviewQuestions}<small>問</small></strong></div><div><span>暗記カード</span><strong>{insights.knownCards}<small>枚 覚えた</small></strong><em>まだ {insights.reviewCards}枚</em></div></div></section>
 
     <section className="past-results"><div className="section-heading"><div><p className="eyebrow">RESULTS</p><h2>これまでの成績</h2></div><Link className="mini-button" href="/settings/data">バックアップ / 復元</Link></div><section className="summary-grid"><div><span>受験回数</span><strong>{summary.attempts}</strong></div><div><span>総正解数</span><strong>{summary.correct}</strong></div><div><span>これまでの出題数</span><strong>{summary.total}</strong></div><div><span>総合正答率</span><strong>{summary.total ? `${summary.percent}%` : "未受験"}</strong></div></section>
-      <div className="progress-list">{chemistryUnits.map(unit=>{const item=progress[unit.slug],performance=insights.unitPerformance.find(value=>value.unitSlug===unit.slug),accuracy=item?.total?Math.round(item.correct/item.total*100):0;return <article className="progress-item" key={unit.slug}><span className="unit-icon small" aria-hidden="true">{unit.icon}</span><div className="progress-item-main"><div><h3>{unit.shortTitle}</h3><span>{item?`${item.attempts}回受験`:"未受験"}</span></div><div className="progress-track slim" role="progressbar" aria-label={`${unit.shortTitle}の正答率`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item?.total ? accuracy : undefined} aria-valuetext={item?.total ? `${accuracy}%` : "未受験"}><span style={{width:`${accuracy}%`}}/></div></div><div className="progress-numbers"><strong>{item?.total ? `${accuracy}%` : "—"}</strong><small>{item?.attempts ? `最高 ${item.bestPercent}%` : "未受験"}</small></div><Link className="mini-button" href={performance?.needsReviewCount?`/quiz?unit=${unit.slug}&mode=review&count=all`:`/quiz?unit=${unit.slug}`}>{performance?.needsReviewCount?"復習":"解く"}</Link></article>;})}</div>
+      <div className="progress-list">{progressUnits.map((unit,index)=>{const item=progress[unit.slug],performance=insights.unitPerformance.find(value=>value.unitSlug===unit.slug),accuracy=item?.total?Math.round(item.correct/item.total*100):0;return <article className="progress-item" key={unit.slug}><span className="unit-icon small" aria-hidden="true">{unit.icon}</span><div className="progress-item-main"><div><h3>{unit.shortTitle}{(index === 0 || getTestCategoryForUnit(progressUnits[index-1].slug) !== getTestCategoryForUnit(unit.slug)) && <small className="progress-category-heading">{progressCategoryTitles[getTestCategoryForUnit(unit.slug)]}</small>}</h3><span>{item?`${item.attempts}回受験`:"未受験"}</span></div><div className="progress-track slim" role="progressbar" aria-label={`${unit.shortTitle}の正答率`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item?.total ? accuracy : undefined} aria-valuetext={item?.total ? `${accuracy}%` : "未受験"}><span style={{width:`${accuracy}%`}}/></div></div><div className="progress-numbers"><strong>{item?.total ? `${accuracy}%` : "—"}</strong><small>{item?.attempts ? `最高 ${item.bestPercent}%` : "未受験"}</small></div><Link className="mini-button" href={performance?.needsReviewCount?`/quiz?unit=${unit.slug}&mode=review&count=all`:`/quiz?unit=${unit.slug}`}>{performance?.needsReviewCount?"復習":"解く"}</Link></article>;})}</div>
     </section>
   </main>;
 }

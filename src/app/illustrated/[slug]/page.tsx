@@ -14,7 +14,7 @@ import "@/components/illustrated/illustrated.css";
 export const dynamicParams=false;
 export function generateStaticParams() {return [...illustratedLessons,...inorganicLessons,...theoryLessons].map(l=>({slug:l.slug}));}
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata> {
-  const {slug}=await params;return {title:[...illustratedLessons,...inorganicLessons,...theoryLessons].find(l=>l.slug===slug)?.title??"図で理解する化学"};
+  const {slug}=await params;return {title:[...illustratedLessons,...inorganicLessons,...theoryLessons].find(l=>l.slug===slug)?.title??"図で理解する化学",alternates:{canonical:`/illustrated/${slug}`},openGraph:{url:`/illustrated/${slug}`}};
 }
 export default async function IllustratedPage({params}:{params:Promise<{slug:string}>}) {
   const {slug}=await params;

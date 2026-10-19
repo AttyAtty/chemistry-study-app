@@ -5,8 +5,9 @@ import { gases } from "@/data/gases";
 import { organicCompounds, organicReactions } from "@/data/organicReactionMaps";
 import { inorganicReactions, inorganicSubstances } from "@/data/inorganicKnowledge";
 import { redoxProductPredictions } from "@/data/redoxProductPredictions";
+import { diagramHubEntries } from "@/data/illustrated/hub";
 
-export type SearchItemType = "unit" | "ion" | "compound" | "inorganic" | "reaction" | "precipitate" | "complex" | "gas" | "battery" | "industrial" | "basic";
+export type SearchItemType = "unit" | "ion" | "compound" | "inorganic" | "reaction" | "precipitate" | "complex" | "gas" | "battery" | "industrial" | "basic" | "illustrated";
 export type SearchItem = {
   id:string; type:SearchItemType; title:string; formula?:string; aliases?:string[]; keywords?:string[];
   description?:string; category?:string; unitId?:string; href:string; relatedIds?:string[];
@@ -53,6 +54,7 @@ const explicitRelations:Record<string,string[]>={
 };
 
 function buildBaseIndex():SearchItem[]{
+  const illustrated:SearchItem[]=diagramHubEntries.map(entry=>({id:`diagram-${entry.id}`,type:"illustrated",title:entry.title,description:entry.description,category:entry.categories.join(" / "),keywords:["図解", "図で理解する", ...entry.categories, ...(entry.searchTerms??[])],href:entry.href}));
   const units:SearchItem[]=chemistryUnits.map(unit=>({id:`unit-${unit.slug}`,type:"unit",title:unit.title,description:unit.summary,keywords:unit.keywords,unitId:unit.slug,href:`/units/${unit.slug}`}));
   const knowledge=chemistryUnits.filter(unit=>unit.slug!=="organic-reactions").flatMap(unit=>unit.sections.filter(section=>!section.id.startsWith("inorganic-")).flatMap(section=>sectionItems(unit.slug,section)));
   const compounds:SearchItem[]=organicCompounds.map(compound=>{const reactions=organicReactions.filter(reaction=>reaction.sourceId===compound.id||reaction.targetId===compound.id),neighborIds=reactions.map(reaction=>reaction.sourceId===compound.id?reaction.targetId:reaction.sourceId);return{id:`compound-${compound.id}`,type:"compound",title:compound.nameJa,formula:compound.formula,aliases:[compound.nameEn??"",...compound.aliases].filter(Boolean),keywords:compound.classifications,description:[compound.classifications.join("・"),compound.appearance].filter(Boolean).join(" / "),category:"有機化合物",unitId:"organic-reactions",href:`/units/organic-reactions#organic-reaction-map-studio`,relatedIds:[...new Set([...neighborIds.map(id=>`compound-${id}`),...compound.relatedReactionIds.map(id=>`reaction-${id}`)])]};});
@@ -64,7 +66,7 @@ function buildBaseIndex():SearchItem[]{
   const redoxProducts:SearchItem[]=redoxProductPredictions.map(item=>({id:item.id,type:"reaction",title:`${item.medium}：${item.reactant} の生成物予測`,formula:item.skeleton,description:`${item.productName}／${item.role}として自身は${item.direction}／${item.element} ${item.oxidationStateBefore} → ${item.oxidationStateAfter}`,keywords:[item.reactantName,item.product,item.productName,item.halfReaction,"酸化還元生成物予測"],category:"酸化還元 生成物予測",unitId:"ionic-equations",href:"/units/ionic-equations#redox-product-prediction"}));
   const glossary:SearchItem[]=chemistryBasicGlossary.map((entry,index)=>({id:`basic-glossary-${index}`,type:"basic",title:entry.term,description:entry.definition,category:entry.category,href:"/courses/chemistry-basic",keywords:[entry.category]}));
   const formulas:SearchItem[]=chemistryBasicFormulas.map((entry,index)=>({id:`basic-formula-${index}`,type:"basic",title:entry.title,formula:entry.formula,description:entry.meaning,category:"化学基礎・公式",href:"/courses/chemistry-basic",keywords:[entry.condition??""]}));
-  return [...units,...compounds,...reactions,...inorganicItems,...inorganicReactionItems,...redoxProducts,...gasItems,...batteries,...glossary,...formulas,...knowledge];
+  return [...units,...illustrated,...compounds,...reactions,...inorganicItems,...inorganicReactionItems,...redoxProducts,...gasItems,...batteries,...glossary,...formulas,...knowledge];
 }
 
 const searchable=(item:SearchItem)=>[item.title,item.formula,...(item.aliases??[])].filter((value):value is string=>Boolean(value)).map(normalizeChemicalSearchText);
@@ -89,4 +91,4 @@ export function searchKnowledge(query:string,limit=60){
   return searchIndex.map(item=>({item,score:score(item)})).filter(result=>result.score>0).sort((a,b)=>b.score-a.score||a.item.title.localeCompare(b.item.title,"ja")).slice(0,limit).map(result=>result.item);
 }
 export function getRelatedKnowledge(item:SearchItem,limit=8){const byId=new Map(searchIndex.map(candidate=>[candidate.id,candidate])),explicit:string[]=[];for(const [source,targets] of Object.entries(explicitRelations))if(searchable(item).includes(normalizeChemicalSearchText(source)))for(const target of targets){const match=findExact(searchIndex,target);if(match)explicit.push(match.id);}return [...new Set([...explicit,...(item.relatedIds??[])])].map(id=>byId.get(id)).filter((candidate):candidate is SearchItem=>candidate!==undefined&&candidate.id!==item.id).slice(0,limit);}
-export const searchTypeLabels:Record<SearchItemType,string>={unit:"単元",ion:"イオン",compound:"有機化合物",inorganic:"無機物質",reaction:"反応",precipitate:"沈殿",complex:"錯イオン",gas:"気体",battery:"電池・電気分解",industrial:"工業的反応",basic:"重要事項"};
+export const searchTypeLabels:Record<SearchItemType,string>={unit:"単元",ion:"イオン",compound:"有機化合物",inorganic:"無機物質",reaction:"反応",precipitate:"沈殿",complex:"錯イオン",gas:"気体",battery:"電池・電気分解",industrial:"工業的反応",basic:"重要事項",illustrated:"図解教材"};

@@ -566,6 +566,15 @@ button.puzzle-slot { cursor: pointer; font: inherit; }
 .progress-item { display: grid; grid-template-columns: auto 1fr auto auto; gap: 18px; align-items: center; padding: 18px; border: 1px solid var(--line); border-radius: 18px; background: white; }
 .progress-item-main > div:first-child { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; }
 .progress-item h3 { margin: 0; }
+.progress-category-heading { display:block; margin-top:4px; color:var(--primary-dark); font-size:11px; font-weight:800; }
+.quiz-loading { min-height:50vh; display:grid; align-content:center; }
+.quiz-loading-panel { width:min(620px,100%); margin:auto; padding:24px; border:1px solid var(--line); border-radius:20px; background:var(--surface); box-shadow:var(--shadow-card); }
+.quiz-loading-panel [role="status"] { font-weight:800; }
+.quiz-loading-skeletons { display:grid; gap:10px; margin:18px 0; }
+.quiz-loading-skeletons i { display:block; height:48px; border-radius:12px; background:linear-gradient(100deg,#edf1f8 25%,#f8faff 45%,#edf1f8 65%); background-size:220% 100%; animation:quiz-loading-shimmer 1.6s ease-in-out infinite; }
+.quiz-loading-note { color:var(--muted); font-size:13px; }
+@keyframes quiz-loading-shimmer { to { background-position-x:-220%; } }
+@media(prefers-reduced-motion:reduce) { .quiz-loading-skeletons i { animation:none; } }
 .progress-item span, .progress-item small { color: var(--muted); }
 .progress-numbers { min-width: 80px; text-align: right; }
 .progress-numbers strong, .progress-numbers small { display: block; }

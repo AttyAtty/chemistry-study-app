@@ -7,7 +7,7 @@ import { theoryGroups } from "@/data/illustrated/theoryAdvanced";
 export function IllustratedLessonLinks({inorganic=false,theory=false}:{inorganic?:boolean;theory?:boolean}) {
   const title=`図で理解する${theory?"理論":inorganic?"無機":"有機"}化学`;
   return <section className="illustrated-entry no-print" aria-label={title}>
-    <p className="eyebrow">VISUAL CHEMISTRY</p><h2>{title}</h2>
+    <p className="eyebrow">VISUAL CHEMISTRY</p><h2>{title}</h2><p><StudyLink href="/illustrated">すべての図解教材を見る →</StudyLink></p>
     {theory?theoryGroups.map(group=><section key={group.title} className="theory-entry-group"><h3>{group.title}</h3><div className="illustrated-entry-grid">{group.slugs.map(slug=>{const lesson=theoryLessons.find(l=>l.slug===slug)!;return <StudyLink key={slug} href={`/illustrated/${slug}`}><strong>{lesson.title} →</strong><p>{lesson.description}</p><small>模式図・グラフ・穴埋め・A4印刷</small></StudyLink>;})}</div></section>):<div className="illustrated-entry-grid">{(inorganic?inorganicLessons:illustratedLessons).map(lesson=><StudyLink key={lesson.slug} href={`/illustrated/${lesson.slug}`}>
       <span aria-hidden="true">{theory?"↗":lesson.slug==="polymers" ? "⌁" : "⬡"}</span><strong>{lesson.title} →</strong><p>{lesson.description}</p><small>{theory?"模式図・グラフ・数値例":"構造図・比較表"}・穴埋め・A4印刷</small>
     </StudyLink>)}</div>}

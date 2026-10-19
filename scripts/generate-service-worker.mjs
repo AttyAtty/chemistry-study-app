@@ -5,7 +5,7 @@ const buildSource=fs.readFileSync("src/lib/pwaBuild.ts","utf8");
 if(!buildSource.includes(JSON.stringify(version)))throw new Error("PWA/Next build ID mismatch");
 const prerender=JSON.parse(fs.readFileSync(".next/prerender-manifest.json","utf8"));
 const routes=Object.keys(prerender.routes).filter(route=>!route.startsWith("/_") && !route.startsWith("/api/") && route!=="/auth" && !route.startsWith("/auth/") && fs.existsSync(path.join(".next/server/app",route==="/"? "index.html":route.slice(1)+".html"))).sort();
-for(const route of ["/","/home","/quiz","/search","/progress","/settings/data","/offline","/courses/chemistry-basic","/tools/memory-quiz","/flashcards/review","/separation/practice","/illustrated/polymers","/illustrated/carbohydrates","/illustrated/ionization","/illustrated/flame-tests","/illustrated/precipitates","/illustrated/gases","/illustrated/electrochemistry"])
+for(const route of ["/","/home","/quiz","/search","/progress","/settings/data","/offline","/courses/chemistry-basic","/tools/memory-quiz","/flashcards/review","/separation/practice","/illustrated","/illustrated/polymers","/illustrated/carbohydrates","/illustrated/ionization","/illustrated/flame-tests","/illustrated/precipitates","/illustrated/gases","/illustrated/electrochemistry"])
  if(!routes.includes(route))throw new Error("Required offline route is not prerendered: "+route);
 for(const route of ["/illustrated/solubility","/illustrated/vapor-pressure","/illustrated/henry","/illustrated/acid-base","/illustrated/titration","/illustrated/indicators","/illustrated/buffers","/illustrated/equilibrium","/illustrated/kinetics"])
  if(!routes.includes(route))throw new Error("Required theory route is not prerendered: "+route);

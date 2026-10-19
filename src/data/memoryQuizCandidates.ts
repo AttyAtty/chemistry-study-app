@@ -94,7 +94,7 @@ function categoryPrompt(card: Flashcard) {
 
 function adaptFlashcard(card: Flashcard, category: TestCategory, unitTitle: string): MemoryQuizQuestion[] {
   if (/確認・性質/.test(card.front)) return [];
-  const fields = splitFields(card.back).filter((field) => !vagueField.test(field.label) && !/代表例・性質|生成定数|^K$/.test(field.label) && supportedField.test(field.label));
+  const fields = splitFields(card.back).filter((field) => !/^(?:—|–|-|空欄|未設定)$/.test(field.value) && !vagueField.test(field.label) && !/代表例・性質|生成定数|^K$/.test(field.label) && supportedField.test(field.label));
   const base = { category, categoryLabel: categoryLabels[category], sourceUnit: unitTitle };
   if (fields.length) return fields.slice(0, 4).flatMap((field, index) => {
     const element = splitFields(card.back).find(item => /注目元素|対象元素/.test(item.label))?.value;
