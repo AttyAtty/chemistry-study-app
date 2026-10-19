@@ -34,6 +34,7 @@
 .illustrated-diagram { display:block; width:100%; min-width:0; height:auto; background:white; color:#152e42; }
 .is-zoomed .illustrated-diagram { width:150%; min-width:1100px; max-width:none; }
 .illustrated-diagram text { fill:#142d40; font:19px "Yu Gothic",Meiryo,system-ui,sans-serif; }.illustrated-diagram .diagram-small { font-size:16px; }.illustrated-diagram .formula { font:24px Georgia,"Yu Gothic",serif; }
+.formula-block .formula-expression{display:block;max-width:100%;font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:clamp(22px,2.8vw,32px);font-weight:600;line-height:1.5}.formula-expression mfrac{font-size:1.05em}.formula-expression mtext,.formula-expression mi{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif}.math-blank{letter-spacing:.08em}.formula-summary .formula-block{min-height:0;padding:6px;margin:6px 0}.formula-summary .formula-block .formula-expression{font-size:21px}.formula-summary-calculation math{display:block;margin:4px 0;font-size:1.08em;line-height:1.55}.formula-example math{font-size:1.12em;line-height:1.6}.practice-formula-block math{display:block;margin:0 auto;font-size:1.15em;line-height:1.6}.practice-card section>math{display:block;margin:4px 0 8px}.energy-map-material .illustrated-diagram{min-width:1100px}.energy-group-label{font:700 14px system-ui,"Yu Gothic",Meiryo,sans-serif;fill:#496274}.energy-panel-title{font:700 18px system-ui,"Yu Gothic",Meiryo,sans-serif;fill:#17364d}.energy-state-label,.energy-step-label{font:600 14px/1.45 system-ui,"Yu Gothic",Meiryo,sans-serif;color:#17364d}.energy-state-label{text-align:center;white-space:nowrap}.energy-inline-label{font:600 14px system-ui,"Yu Gothic",Meiryo,sans-serif;fill:#17364d}
 .diagram-panel { fill:#fff; stroke:#c3d4df; stroke-width:1.4; }.product-panel { fill:#f6fafc; }.category-band { fill:#e9f2f6; stroke:#9db8c9; }
 .illustrated-arrow line,.classification-line,.network-scheme path,.helix-scheme,.polysaccharide-chain path { stroke:#365c72; stroke-width:2; fill:none; }.illustrated-arrow polygon { fill:#365c72; }
 .molecular-drawing line,.molecular-drawing path { stroke:#152d3d; stroke-width:1.6; fill:none; }.molecular-drawing text { font:21px Georgia,"Yu Gothic",serif; fill:#152d3d; }
@@ -58,6 +59,8 @@
 .illustrated-print-area.is-a4-preview { width:210mm; max-width:none; margin:24px auto; background:#e2e8ee; }.illustrated-page:has(.is-a4-preview) { overflow-x:auto; }.is-a4-preview .illustrated-print-title { display:block; padding:8mm 10mm; background:white; color:#142d40; }.is-a4-preview .illustrated-sheet { box-sizing:border-box; width:210mm; min-height:277mm; margin:0 0 16px; padding:10mm; border-radius:0; background:white; color:#142d40; }.is-a4-preview .illustrated-diagram { width:100%; min-width:0; }.is-a4-preview .illustrated-table { min-width:0; font-size:11px; }.is-a4-preview .illustrated-table th,.is-a4-preview .illustrated-table td { padding:6px; }.is-a4-preview .illustrated-table-scroll { overflow:visible; }
 @media(max-width:620px) { .illustrated-entry-grid { grid-template-columns:1fr; }.illustrated-sheet { padding:12px; }.illustrated-sheet>h2 { font-size:19px; }.illustrated-tools { padding:14px; }.illustrated-tools label { flex-basis:100%; }.illustrated-tools select { width:100%; } }
 @page illustrated-material { size:A4 portrait; margin:10mm; }
+@page energy-map-landscape { size:A4 landscape; margin:8mm; }
+.illustrated-print-area[data-lesson-id="energy-map"].is-a4-preview{width:297mm;max-width:none;margin:24px auto}.illustrated-print-area[data-lesson-id="energy-map"].is-a4-preview .illustrated-sheet{width:281mm;min-height:0;padding:8mm}
 @media print {
   body:has(.illustrated-print-area)>:not(.illustrated-page) { display:none!important; }
   .illustrated-page { width:190mm; max-width:none; margin:0!important; padding:0!important; overflow:visible!important; }
@@ -72,4 +75,9 @@
   .illustrated-print-area .illustrated-diagram { width:190mm!important; min-width:0!important; max-width:190mm!important; height:auto; }
   .illustrated-table { width:190mm!important; min-width:0!important; font-size:10px; }.illustrated-table th,.illustrated-table td { padding:5px; }.illustrated-table small { font-size:9px; }.illustrated-table caption { font-size:11px; }.illustrated-table .molecular-drawing { height:45px; }.illustrated-table tr { break-inside:avoid; }.illustrated-table .separation-html-blank { height:6mm; }
   .illustrated-notes { font-size:12px; }.illustrated-sources { display:none; }.illustrated-sheet .no-print { display:none!important; }
+  body:has(.theory-material[data-lesson-id="energy-map"]) .illustrated-page{width:281mm;max-width:none}
+  .illustrated-print-area[data-lesson-id="energy-map"]{page:energy-map-landscape}
+  .theory-material[data-lesson-id="energy-map"]{width:281mm!important;max-width:none!important;page:energy-map-landscape}
+  .theory-material[data-lesson-id="energy-map"] .illustrated-sheet{width:281mm!important;max-width:none!important;padding:0}
+  .theory-material[data-lesson-id="energy-map"] .illustrated-diagram{width:281mm!important;min-width:0!important;max-width:281mm!important}
 }

@@ -33,5 +33,13 @@ test("energy map has stable, separately blankable state and enthalpy targets",()
  assert.equal(new Set(ids).size,ids.length);assert.ok(ids.length>=20);
  const exerciseIds=models.createTheoryExercise("energy-map","all").blankIds;for(const id of ids)assert.ok(exerciseIds.includes(id));
  assert.ok(fields.some(x=>x.id==="energy-map:lattice-reverse"));
+ for(const id of ["energy-map:born-standard","energy-map:born-na-gas","energy-map:born-atoms","energy-map:born-cation","energy-map:born-gas-ions","energy-map:born-crystal","energy-map:cl-atom-electron","energy-map:cl-anion"])assert.ok(exerciseIds.includes(id),`missing state blank ${id}`);
  for(const id of ["formation","hess","bond-energy"])assert.ok(formulas.some(f=>f.id===id));
+});
+
+test("fraction-bearing equilibrium and weak-acid formulas remain authored for MathML layout",()=>{
+ const kc=formulas.find(f=>f.id==="kc"),ka=formulas.find(f=>f.id==="ka"),buffer=formulas.find(f=>f.id==="buffer");
+ assert.match(kc.rhs.text,/\//);assert.match(kc.rhs.text,/\^[cd]/);
+ assert.match(ka.rhs.text,/Cα\^2\/\(1−α\)/);assert.match(ka.rhs.text,/√\(Ka\/C\)/);
+ assert.match(buffer.rhs.text,/\[A⁻\]\/\[HA\]/);
 });

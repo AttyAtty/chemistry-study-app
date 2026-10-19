@@ -3,16 +3,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { formulaChoiceQuestions, practiceQuestions, workedExamples } from "@/data/theoryPractice";
 import { formulas } from "@/data/illustrated/formulas";
+import { MathText } from "./MathExpression";
 
 function WorkedCard({item}:{item:(typeof workedExamples)[number]}) {
  const [variant,setVariant]=useState(-1); const v=variant<0?undefined:item.variants?.[variant];
  return <article id={item.id} className="practice-card worked-card"><p className="practice-eyebrow">典型例題・{item.topic}</p><h3>{item.title}</h3>
   <section><h4>問題</h4><p>{v?.problem??item.problem}</p></section>
-  <section><h4>何を使う？</h4><p>{v?.formula??item.choose}</p></section>
+  <section><h4>何を使う？</h4><p>{item.choose}</p></section>
   <section><h4>考え方</h4><p>{item.thinking}</p></section>
-  <div className="practice-formula-block"><small>式</small><strong>{v?.formula??item.formula}</strong></div>
-  <section><h4>代入</h4><p>{v?.substitution??item.substitution}</p></section>
-  <section><h4>答え</h4><strong>{v?.answer??item.answer}</strong></section>
+  <div className="practice-formula-block"><small>式</small><MathText text={v?.formula??item.formula} display/></div>
+  <section><h4>代入</h4><MathText text={v?.substitution??item.substitution}/></section>
+  <section><h4>答え</h4><MathText text={v?.answer??item.answer}/></section>
   <section><h4>この問題のポイント</h4><p>{item.point}</p></section><section><h4>条件が変わると？</h4><p>{item.variation}</p></section>
   <nav className="practice-links no-print"><Link href={`/theory/formulas#formula-${item.formulaId}`}>公式を確認する →</Link><Link href="/illustrated/thermochemistry">図解教材へ →</Link></nav>
   {item.variants?.length&&<button className="button secondary no-print" type="button" onClick={()=>setVariant((variant+1)%item.variants!.length)}>数値を変えた類題</button>}

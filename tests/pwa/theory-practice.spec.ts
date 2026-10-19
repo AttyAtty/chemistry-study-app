@@ -12,13 +12,13 @@ test("theory practice, formula blocks, corrected litmus, energy map, changelog a
   await page.getByRole("button",{name:"PV = nRT"}).click();await expect(page.locator("#choose-gas")).toContainText("正解");
   await page.locator("#gas-law").getByRole("button",{name:"数値を変えた類題"}).click();await expect(page.locator("#gas-law")).toContainText("12.5 L");
   await page.locator("#practice-p-kc details summary").click();await expect(page.locator("#practice-p-kc details")).toContainText("0.75 L/mol");
-  await page.goto("/theory/formulas");await expect(page.locator(".formula-block").first()).toBeVisible();
+  await page.goto("/theory/formulas");await expect(page.locator(".formula-block").first()).toBeVisible();await expect(page.locator(".formula-block math mfrac").first()).toBeVisible();await expect(page.locator(".formula-block math msup").first()).toBeVisible();await expect(page.locator(".formula-block math msub").first()).toBeVisible();
   await expect(page.getByRole("link",{name:/典型例題・練習問題/}).first()).toHaveAttribute("href","/theory/practice");
   await page.goto("/units/chemistry-basic-acid-base-redox#indicators");
   await expect(page.getByText("リトマス",{exact:true}).first()).toBeVisible();
   await expect(page.locator("tr").filter({hasText:"リトマス"}).first()).toContainText("紫");
   await page.goto("/illustrated/energy-map");await expect(page.getByRole("heading",{name:/エネルギー変化の総まとめ図/})).toBeVisible();
-  await expect(page.locator(".energy-map-material .illustrated-diagram")).toHaveCount(3);
+  await expect(page.locator(".energy-map-material .illustrated-diagram")).toHaveCount(4);await expect(page.locator(".energy-map-material .energy-map-level line")).toHaveCount(24);
   await page.getByLabel("表示・問題形式").selectOption("all");await expect(page.locator('[data-blank-id="energy-map:lattice"]')).toBeVisible();
   await page.getByRole("button",{name:"答えを表示"}).click();await expect(page.locator('[data-blank-id="energy-map:lattice"]')).toHaveCount(0);
   await page.emulateMedia({media:"print"});const pdf=await page.pdf({path:info.outputPath("energy-map-a4.pdf"),preferCSSPageSize:true});expect(pdf.toString("latin1").match(/\/Type \/Page\b/g)?.length).toBeGreaterThanOrEqual(4);await page.emulateMedia({media:"screen"});
