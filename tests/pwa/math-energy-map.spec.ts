@@ -13,7 +13,7 @@ test("MathML formula fractions and the energy-level diagrams render and print",a
  await page.emulateMedia({media:"print"});
  const pdf=await page.pdf({path:info.outputPath("energy-map-landscape.pdf"),preferCSSPageSize:true});
  const pdfText=pdf.toString("latin1");
- expect(pdfText).toContain("/MediaBox"); expect(pdf.length).toBeGreaterThan(5000);
+ expect(pdfText).toMatch(/MediaBox\s*\[\s*0\s+0\s+841\.\d+\s+594\.\d+\s*\]/); expect(pdf.length).toBeGreaterThan(5000);
  await page.emulateMedia({media:"screen"});
  await page.setViewportSize({width:390,height:844});
  await expect(page.locator(".energy-map-material .illustrated-diagram").first()).toBeVisible();
