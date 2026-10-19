@@ -64,6 +64,8 @@ for (const question of memory) {
   if (!question.prompt?.trim()) errors.push(`memory-quiz/${question.id}: empty question`);
   if (!question.answer?.trim() || /^(?:—|–|-|空欄|未設定)$/.test(question.answer.trim())) errors.push(`memory-quiz/${question.id}: empty or placeholder answer`);
 }
+const neutralLitmus = memory.find((question) => question.prompt.includes("中性") && question.prompt.includes("リトマス"));
+if (!neutralLitmus || neutralLitmus.answer !== "紫") errors.push("memory-quiz/litmus-neutral: expected the corrected printable answer 紫");
 const hubIds = new Set();
 const knownHubTargets = new Set([
   ...[...theoryLessons, ...inorganicLessons, ...illustratedLessons].map((lesson) => `/illustrated/${lesson.slug}`),

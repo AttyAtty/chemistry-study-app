@@ -1,0 +1,50 @@
+export type PracticeVariant = { problem: string; formula: string; substitution: string; answer: string };
+export type WorkedExample = {
+  id: string; topic: string; title: string; problem: string; choose: string; thinking: string;
+  formula: string; substitution: string; answer: string; point: string; variation: string;
+  formulaId: string; href: string; variants?: PracticeVariant[];
+};
+export type PracticeQuestion = {
+  id: string; topic: string; level: "基本" | "標準" | "応用"; problem: string;
+  choose: string; answer: string; explanation: string; formulaId: string;
+};
+
+export const workedExamples: WorkedExample[] = [
+ {id:"moles-mass",topic:"物質量",title:"質量から物質量へ",problem:"水 9.00 g は何 mol か。M(H₂O)=18.0 g/mol。",choose:"質量とモル質量が与えられているので n=m/M。",thinking:"質量をモル質量で割ると、粒子のまとまりをmolで数えられる。",formula:"n = m / M",substitution:"9.00 / 18.0",answer:"0.500 mol",point:"g ÷ (g/mol) で mol になる。",variation:"水 18.0 gなら1.00 mol。",formulaId:"mole",href:"/theory/formulas#formula-mole"},
+ {id:"particle-moles",topic:"物質量",title:"粒子数からmolへ",problem:"酸素分子 3.01×10²³ 個は何 mol か。Nₐ=6.02×10²³ mol⁻¹。",choose:"粒子数とアボガドロ定数の関係 n=N/Nₐ。",thinking:"1 molあたりの粒子数で全粒子数を割る。",formula:"n = N / Nₐ",substitution:"3.01×10²³ / 6.02×10²³",answer:"0.500 mol",point:"分子の個数なので、酸素原子数ではなくO₂分子数を数える。",variation:"粒子数が2倍なら物質量も2倍。",formulaId:"mole",href:"/theory/formulas#formula-mole"},
+ {id:"molarity",topic:"モル濃度",title:"溶液体積から濃度",problem:"溶液 250 mL に溶質 0.0500 mol を含む。モル濃度は何 mol/L か。",choose:"溶質のmolと溶液の体積が分かるので c=n/V。",thinking:"まず体積をLに直す。",formula:"c = n / V",substitution:"0.0500 mol / 0.250 L",answer:"0.200 mol/L",point:"分母は溶媒ではなく溶液の体積。mLのまま代入しない。",variation:"同じmolを500 mLに溶かせば濃度は半分。",formulaId:"molarity",href:"/theory/formulas#formula-molarity",variants:[{problem:"溶液 100 mL に溶質 0.0200 mol。濃度は？",formula:"c=n/V",substitution:"0.0200/0.100",answer:"0.200 mol/L"},{problem:"溶液 400 mL に溶質 0.100 mol。濃度は？",formula:"c=n/V",substitution:"0.100/0.400",answer:"0.250 mol/L"}]},
+ {id:"dilution",topic:"モル濃度",title:"希釈後の濃度",problem:"1.00 mol/L の溶液 20.0 mL を水で全量100 mLにした。希釈後の濃度は？",choose:"希釈前後で溶質の物質量は一定。c₁V₁=c₂V₂。",thinking:"体積が5倍になったので濃度は1/5。",formula:"c₁V₁ = c₂V₂",substitution:"1.00×20.0 = c₂×100",answer:"0.200 mol/L",point:"両体積を同じ単位で使えばよい。",variation:"体積を3倍にすれば濃度は1/3。",formulaId:"molarity",href:"/theory/formulas#formula-molarity"},
+ {id:"gas-law",topic:"気体",title:"気体の体積と単位換算",problem:"27.0 ℃、100 kPaで気体1.00 molの体積を求めよ。R=8.31 kPa·L/(mol·K)。",choose:"P,V,n,Tの関係を問うのでPV=nRT。",thinking:"温度をKにし、PとRの圧力単位をkPaでそろえる。",formula:"V = nRT / P",substitution:"1.00×8.31×300.15 / 100",answer:"24.9 L",point:"27.0 ℃は300.15 K。",variation:"圧力が2倍なら、他条件一定で体積は半分。",formulaId:"ideal-gas",href:"/theory/formulas#formula-ideal-gas",variants:[{problem:"0.500 mol、300 K、100 kPaの気体体積。",formula:"V=nRT/P",substitution:"0.500×8.31×300/100",answer:"12.5 L"},{problem:"2.00 mol、273.15 K、100 kPaの気体体積。",formula:"V=nRT/P",substitution:"2.00×8.31×273.15/100",answer:"45.4 L"}]},
+ {id:"solubility-crystals",topic:"溶解度・再結晶",title:"冷却で析出する質量",problem:"溶解度が80 ℃で80 g、20 ℃で30 g。水50 gの飽和溶液を80 ℃から20 ℃に冷却すると何g析出するか。",choose:"高温と低温で溶ける量をそれぞれ水量に比例換算し、その差を取る。",thinking:"溶解度は水100 g基準。水50 gでは高温40 g、低温15 gまで溶ける。",formula:"m析出 = (S高温 − S低温) × m水 / 100",substitution:"(80−30)×50/100",answer:"25 g",point:"水が蒸発しない前提の再結晶。",variation:"水を100 gにすれば50 g析出。",formulaId:"recrystallization",href:"/theory/formulas#formula-recrystallization",variants:[{problem:"S(60 ℃)=60 g、S(20 ℃)=20 g。水150 gで冷却。析出量は？",formula:"(S高温−S低温)m水/100",substitution:"(60−20)×150/100",answer:"60 g"}]},
+ {id:"ph-strong-acid",topic:"pH",title:"強酸のpH",problem:"完全電離する0.010 mol/L HClのpHを求めよ。",choose:"一価強酸なので[H⁺]=c。pH=-log₁₀[H⁺]。",thinking:"[H⁺]=1.0×10⁻² mol/L。",formula:"pH = −log₁₀[H⁺]",substitution:"−log₁₀(1.0×10⁻²)",answer:"2.00",point:"強酸でも濃度とは別概念。ここでは完全電離を仮定。",variation:"濃度が1/10ならpHは1大きくなる。",formulaId:"ph",href:"/theory/formulas#formula-ph"},
+ {id:"ph-strong-base",topic:"pH",title:"強塩基とpOH",problem:"25 ℃の0.0010 mol/L NaOH水溶液のpHを求めよ。",choose:"[OH⁻]からpOHを求め、25 ℃でpH+pOH=14を使う。",thinking:"NaOHは一価強塩基。[OH⁻]=1.0×10⁻³ mol/LなのでpOH=3。",formula:"pOH=−log[OH⁻],  pH=14−pOH",substitution:"14−3",answer:"11.00",point:"pH+pOH=14は25 ℃での関係。",variation:"[OH⁻]が10倍ならpOHは1小さくなる。",formulaId:"kw",href:"/theory/formulas#formula-kw"},
+ {id:"neutralization",topic:"中和",title:"多価酸の中和",problem:"0.100 mol/L H₂SO₄ 10.0 mLを中和する0.100 mol/L NaOHは何mL必要か。",choose:"H₂SO₄ 1 molからH⁺が2 mol。n(H⁺)=n(OH⁻)で立式。",thinking:"酸のH⁺は0.100×0.0100×2=0.00200 mol。",formula:"価数酸 c酸 V酸 = 価数塩基 c塩基 V塩基",substitution:"2×0.100×10.0 = 1×0.100×V",answer:"20.0 mL",point:"体積の単位を左右で統一すれば比例式として扱える。",variation:"同濃度の1価酸なら必要体積は10.0 mL。",formulaId:"neutralization",href:"/theory/formulas#formula-neutralization"},
+ {id:"equilibrium-kc",topic:"化学平衡",title:"係数が指数になる平衡定数",problem:"N₂+3H₂⇄2NH₃で、平衡時[N₂]=1.0、[H₂]=2.0、[NH₃]=2.0 mol/L。Kcを求めよ。",choose:"濃度平衡定数。反応式係数を各濃度の指数にする。",thinking:"生成物を分子、反応物を分母に置く。",formula:"Kc=[NH₃]² / ([N₂][H₂]³)",substitution:"2.0² / (1.0×2.0³)",answer:"0.50",point:"平衡濃度が互いに等しい必要はない。",variation:"反応式を逆に書けば平衡定数は逆数。",formulaId:"kc",href:"/theory/formulas#formula-kc"},
+ {id:"reaction-rate",topic:"反応速度",title:"反応物の減少から速度",problem:"Aの濃度が10 sで0.80から0.50 mol/Lに減少した。平均反応速度はいくらか。",choose:"反応物濃度の減少量を正の速度にするため −Δ[A]/Δt。",thinking:"濃度変化は−0.30 mol/L。符号を反転して時間で割る。",formula:"v = −Δ[A] / Δt",substitution:"−(0.50−0.80)/10",answer:"0.030 mol/(L·s)",point:"生成物なら濃度増加をそのまま正に取れる。",variation:"半分の時間で同じ変化なら平均速度は2倍。",formulaId:"rate",href:"/theory/formulas#formula-rate"},
+ {id:"formation-enthalpy",topic:"熱化学",title:"生成エンタルピーから反応熱",problem:"C(黒鉛)+O₂→CO₂。ΔHf°(CO₂)=−393.5 kJ/mol、単体の標準生成エンタルピーは0。反応ΔHは？",choose:"生成物の係数付き生成エンタルピー合計−反応物側合計。",thinking:"生成物CO₂が1 mol、反応物は標準状態の単体。",formula:"ΔH° = ΣνΔHf°(生成物) − ΣνΔHf°(反応物)",substitution:"(−393.5) − (1×0 + 1×0)",answer:"−393.5 kJ/mol（発熱）",point:"反応式係数を必ず掛ける。標準状態の単体は0。",variation:"反応を逆向きにすれば符号は+393.5 kJ/mol。",formulaId:"formation",href:"/theory/formulas#formula-formation"},
+ {id:"hess",topic:"熱化学",title:"逆反応と2倍を使うヘスの法則",problem:"C+O₂→CO₂：ΔH=−393.5 kJ。2CO+O₂→2CO₂：ΔH=−566.0 kJ。C+½O₂→COを求めよ。",choose:"目的式に合うよう第2式を逆向きにし、第1式と加える。",thinking:"第2式を半分にして逆向き: CO₂→CO+½O₂, ΔH=+283.0。第1式を加えると目的式。",formula:"ΔH目的 = −393.5 + (566.0/2)",substitution:"−393.5 + 283.0",answer:"−110.5 kJ/mol",point:"式を逆にすると符号反転、2倍ならΔHも2倍。",variation:"反応式を2倍した目的式では求めたΔHも2倍。",formulaId:"hess",href:"/theory/formulas#formula-hess"},
+ {id:"bond-energy",topic:"熱化学",title:"結合エネルギーの概算",problem:"H₂+Cl₂→2HCl。E(H−H)=436、E(Cl−Cl)=243、E(H−Cl)=432 kJ/mol。ΔHを概算せよ。",choose:"切断する結合の合計−形成する結合の合計。",thinking:"H−HとCl−Clを切り、H−Clを2本作る。",formula:"ΔH ≈ ΣE(切断) − ΣE(形成)",substitution:"(436+243)−2×432",answer:"−185 kJ/mol（概算・発熱）",point:"結合切断は吸熱、形成は発熱。平均結合エネルギーなので概算。",variation:"生成する結合が強いほど、発熱側へ寄りやすい。",formulaId:"bond-energy",href:"/theory/formulas#formula-bond-energy"},
+ {id:"faraday",topic:"電気分解",title:"電流から銅の析出質量まで",problem:"Cu²⁺+2e⁻→Cu。2.00 Aの電流を965 s流す。析出Cuの質量を求めよ。F=96500 C/mol、M(Cu)=63.5 g/mol。",choose:"Q=Itから電子molを出し、半反応式の2e⁻:1Cuで換算。",thinking:"Q=1930 C、n(e⁻)=0.0200 mol、Cuは0.0100 mol。",formula:"Q=It;  n(e⁻)=Q/F;  n(Cu)=n(e⁻)/2",substitution:"2.00×965 / 96500 / 2 ×63.5",answer:"0.635 g",point:"電気量→電子mol→反応式の係数比→質量の順に進む。",variation:"同じ電流を2倍の時間流せば析出質量も2倍。",formulaId:"faraday",href:"/theory/formulas#formula-faraday"},
+];
+
+export const practiceQuestions: PracticeQuestion[] = [
+ {id:"p-mass",topic:"物質量",level:"基本",problem:"Mg 12.0 g（M=24.3 g/mol）の物質量を求めよ。",choose:"n=m/M",answer:"0.494 mol",explanation:"12.0/24.3=0.494 mol。",formulaId:"mole"},
+ {id:"p-dilute",topic:"モル濃度",level:"標準",problem:"2.0 mol/Lを10.0 mL取り、100 mLまで希釈。濃度は？",choose:"c₁V₁=c₂V₂",answer:"0.20 mol/L",explanation:"2.0×10.0=c₂×100より0.20 mol/L。",formulaId:"molarity"},
+ {id:"p-gas",topic:"気体",level:"基本",problem:"0.250 molの気体を27 ℃、100 kPaに置く。体積は？ R=8.31。",choose:"PV=nRT、T=300 K",answer:"6.23 L",explanation:"V=0.250×8.31×300/100=6.23 L。",formulaId:"ideal-gas"},
+ {id:"p-solubility",topic:"溶解度・再結晶",level:"標準",problem:"溶解度が水100 gあたり50 gから20 gへ低下。水80 gでは何g析出？",choose:"(S高−S低)m水/100",answer:"24 g",explanation:"(50−20)×80/100=24 g。",formulaId:"recrystallization"},
+ {id:"p-ph",topic:"pH",level:"基本",problem:"完全電離する0.0010 mol/L HNO₃のpHは？",choose:"一価強酸なので[H⁺]=c",answer:"3.00",explanation:"−log₁₀(10⁻³)=3。",formulaId:"ph"},
+ {id:"p-neutral",topic:"中和",level:"標準",problem:"0.20 mol/L Ca(OH)₂ 15 mLを中和する0.30 mol/L HClは何mL？",choose:"酸の価数×cV=塩基の価数×cV",answer:"20 mL",explanation:"2×0.20×15=1×0.30×VよりV=20 mL。",formulaId:"neutralization"},
+ {id:"p-kc",topic:"化学平衡",level:"標準",problem:"2A⇄Bで[A]=2 mol/L、[B]=3 mol/L。Kcを求めよ。",choose:"Kc=[B]/[A]²",answer:"0.75 L/mol",explanation:"3/(2²)=0.75。濃度表現では単位が残る場合がある。",formulaId:"kc"},
+ {id:"p-rate",topic:"反応速度",level:"基本",problem:"生成物濃度が5 sで0.10から0.35 mol/Lに増えた。平均速度は？",choose:"生成物のΔ濃度/Δt",answer:"0.050 mol/(L·s)",explanation:"(0.35−0.10)/5=0.050。",formulaId:"rate"},
+ {id:"p-formation",topic:"熱化学",level:"標準",problem:"2H₂+O₂→2H₂O(l)、ΔHf°[H₂O(l)]=−286 kJ/mol。ΔHは？",choose:"生成物−反応物、係数を掛ける",answer:"−572 kJ",explanation:"2×(−286)−0=−572 kJ。",formulaId:"formation"},
+ {id:"p-hess",topic:"熱化学",level:"応用",problem:"A→BのΔH=+12 kJ。B→Cの式を逆にして2倍した反応のΔHは？",choose:"逆向きで符号反転し、2倍",answer:"−24 kJ",explanation:"B→Cを逆にするとC→Bで−12、さらに2倍して−24 kJ。",formulaId:"hess"},
+ {id:"p-bond",topic:"熱化学",level:"標準",problem:"切断に合計600 kJ、形成に合計720 kJ必要な結合がある。ΔH概算は？",choose:"切断−形成",answer:"−120 kJ",explanation:"600−720=−120 kJ。",formulaId:"bond-energy"},
+ {id:"p-faraday",topic:"電気分解",level:"標準",problem:"Cu²⁺+2e⁻→Cu。0.020 molの電子から析出するCuは何mol？",choose:"電子:Cu=2:1",answer:"0.010 mol",explanation:"0.020/2=0.010 mol。",formulaId:"faraday"},
+];
+
+export const formulaChoiceQuestions = [
+ {id:"choose-gas",prompt:"圧力・体積・物質量・絶対温度を結びつける式は？",choices:["n=m/M","PV=nRT","Q=It","pH=−log[H⁺]"],answer:"PV=nRT",reason:"気体の状態方程式を使います。"},
+ {id:"choose-dilution",prompt:"溶質の物質量を変えずに水を加えた後の濃度を求める式は？",choices:["c₁V₁=c₂V₂","Kc=[生成物]/[反応物]","ΔH=H反応物−H生成物","Q=It"],answer:"c₁V₁=c₂V₂",reason:"希釈前後で溶質molが一定です。"},
+ {id:"choose-hess",prompt:"既知反応式の向き・係数を変えて目的反応を作るとき使う考え方は？",choices:["ヘンリーの法則","ヘスの法則","ファラデーの法則","理想気体の状態方程式"],answer:"ヘスの法則",reason:"反応式の加減とΔHの加減を対応させます。"},
+ {id:"choose-electrolysis",prompt:"電流と時間から電気量を求める式は？",choices:["Q=It","PV=nRT","n=m/M","pH+pOH=14"],answer:"Q=It",reason:"電気量[C]=電流[A]×時間[s]です。"},
+];

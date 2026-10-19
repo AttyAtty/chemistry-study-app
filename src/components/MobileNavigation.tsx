@@ -34,6 +34,7 @@ export function MobileNavigation() {
       <SharePanel /><InstallPrompt />
       <Link href="/feedback" onClick={() => setMoreOpen(false)}>お問い合わせ</Link>
       <Link href="/privacy" onClick={() => setMoreOpen(false)}>プライバシーポリシー</Link>
+      <Link href="/about/changelog" onClick={() => setMoreOpen(false)}>更新履歴</Link>
       <span>{CHEMICA_VERSION_LABEL}</span>
     </div>}
     <nav className="mobile-bottom-nav" aria-label="モバイルメインナビゲーション">

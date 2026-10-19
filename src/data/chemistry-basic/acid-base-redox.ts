@@ -70,7 +70,7 @@ export const chemistryBasicAcidBaseRedox = makeBasicUnit({
       { learningId: "電離式",  title: "電離式", body: "HCl→H⁺+Cl⁻、CH₃COOH⇄H⁺+CH₃COO⁻、NaOH→Na⁺+OH⁻、NH₃+H₂O⇄NH₄⁺+OH⁻。一方向矢印と平衡矢印を区別します。" },
     ]),
     table("indicators", "pHと指示薬", "常温で[H⁺][OH⁻]=1.0×10⁻¹⁴、pH+pOH=14です。", ["指示薬", "酸性", "中性", "塩基性・変色域"], [
-      learningRow("リトマス", ["リトマス", "赤", "—", "青"]), learningRow("BTB", indicatorLegacyCells("btb")), learningRow("フェノールフタレイン", indicatorLegacyCells("phenolphthalein")), learningRow("メチルオレンジ", indicatorLegacyCells("methyl-orange")), learningRow("万能指示薬", ["万能指示薬", "赤〜黄", "緑", "青〜紫"]),
+      learningRow("リトマス", ["リトマス", "赤", "紫", "青"]), learningRow("BTB", indicatorLegacyCells("btb")), learningRow("フェノールフタレイン", indicatorLegacyCells("phenolphthalein")), learningRow("メチルオレンジ", indicatorLegacyCells("methyl-orange")), learningRow("万能指示薬", ["万能指示薬", "赤〜黄", "緑", "青〜紫"]),
     ]),
     cards("neutralization", "中和と量的関係", "価数を含むH⁺とOH⁻の物質量を等しくします。", [
       { learningId: "基本反応",  title: "基本反応", body: "H⁺+OH⁻→H₂O。HCl+NaOH→NaCl+H₂O、H₂SO₄+2NaOH→Na₂SO₄+2H₂O、2HCl+Ca(OH)₂→CaCl₂+2H₂O。" },

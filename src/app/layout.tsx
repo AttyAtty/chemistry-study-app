@@ -59,7 +59,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <small>高校化学を、図・カード・問題演習で学べるサイト</small>
       <small className="beta-note">Chemicaは現在Beta版です。教材内容の誤りや使いづらい点があれば、お問い合わせからお知らせください。</small>
       <nav className="footer-links" aria-label="サポート"><FeedbackLink /><Link href="/privacy">プライバシーポリシー</Link><DataSettingsLink>ログイン・データ保存</DataSettingsLink><SharePanel /><InstallPrompt /></nav>
-      <small className="site-version">{CHEMICA_VERSION_LABEL}</small>
+      <small className="site-version"><Link href="/about/changelog">{CHEMICA_VERSION_LABEL} · 更新履歴</Link></small>
       <span className="site-credit">Designed &amp; Created by <strong>Atty</strong></span>
     </footer>
     <Analytics />
