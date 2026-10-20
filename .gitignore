@@ -50,3 +50,6 @@ next-env.d.ts
 
 # Safe, empty environment template only
 !/.env.local.example
+
+# Local release-check probes and rendered print reviews
+/tmp/

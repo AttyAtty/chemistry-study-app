@@ -18,7 +18,7 @@ Preview環境はVercelのデプロイホストを使うため、Productionとは
 
 1. ドメインの管理権限を確認し、Vercelプロジェクトへ `chemica.app` と必要な `www` ドメインを追加します。Vercelが案内するDNSレコードを設定し、HTTPS証明書とProductionデプロイの応答を確認します。
 2. VercelのProduction環境変数 `NEXT_PUBLIC_APP_URL` を `https://chemica.app` に設定して再デプロイします。`/robots.txt`、`/sitemap.xml`、canonical、Open GraphのURLが新originを使うことを確認します。
-3. Supabase AuthenticationのSite URLを新originへ更新し、必要なRedirect URLsに `https://chemica.app/**` を追加します。現在のメールOTPは `emailRedirectTo` を指定せず、SupabaseのSite URLを使います。切替期間は既存originも必要な範囲で許可リストに残します。
+3. Supabase AuthenticationのSite URLを新originへ更新し、Redirect URLsは本番で実際に使う完全一致URL（`https://chemica.app/`）を許可します。本番での包括的な `/**` は避け、別の認証リダイレクトを実装した場合だけ該当パスを追加します。現在のメールOTPは `emailRedirectTo` を指定せず、SupabaseのSite URLを使います。切替期間は既存originも必要な範囲で許可リストに残します。
 4. Resendの送信元ドメインを使っている場合は、新ドメインのDNS認証と送信者設定が必要か確認します。既存のResend APIキーやSupabase秘密情報を `NEXT_PUBLIC_*` に設定しないでください。
 5. 新originのブラウザーで、メールOTP、共有リンク、フィードバック、PWAインストール、オフライン再表示を確認します。旧originでも利用者がデータを書き出す時間を確保してから、移行案内や旧サイトの扱いを決めます。
 

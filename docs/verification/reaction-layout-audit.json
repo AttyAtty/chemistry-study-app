@@ -24,7 +24,7 @@
       "width": 3510,
       "height": 2624
     },
-    "ms": 1126
+    "ms": 1653
   },
   {
     "id": "toluene",
@@ -32,7 +32,7 @@
     "nodes": 29,
     "edges": 30,
     "before": {
-      "ee": 9,
+      "ee": 6,
       "nn": 0,
       "nl": 0,
       "ll": 0,
@@ -51,7 +51,7 @@
       "width": 1238,
       "height": 4704
     },
-    "ms": 665
+    "ms": 984
   },
   {
     "id": "phenol",
@@ -59,7 +59,7 @@
     "nodes": 20,
     "edges": 21,
     "before": {
-      "ee": 3,
+      "ee": 0,
       "nn": 0,
       "nl": 0,
       "ll": 0,
@@ -78,7 +78,7 @@
       "width": 3176,
       "height": 1901
     },
-    "ms": 682
+    "ms": 667
   },
   {
     "id": "phenol",
@@ -86,7 +86,7 @@
     "nodes": 20,
     "edges": 21,
     "before": {
-      "ee": 16,
+      "ee": 6,
       "nn": 0,
       "nl": 0,
       "ll": 0,
@@ -105,7 +105,7 @@
       "width": 1200,
       "height": 3727
     },
-    "ms": 377
+    "ms": 406
   },
   {
     "id": "formaldehyde",
@@ -132,7 +132,7 @@
       "width": 2564,
       "height": 1707
     },
-    "ms": 133
+    "ms": 199
   },
   {
     "id": "formaldehyde",
@@ -159,7 +159,7 @@
       "width": 1214,
       "height": 2495
     },
-    "ms": 91
+    "ms": 140
   },
   {
     "id": "ethylene",
@@ -167,7 +167,7 @@
     "nodes": 22,
     "edges": 23,
     "before": {
-      "ee": 3,
+      "ee": 1,
       "nn": 0,
       "nl": 0,
       "ll": 0,
@@ -186,7 +186,7 @@
       "width": 3618,
       "height": 2624
     },
-    "ms": 621
+    "ms": 810
   },
   {
     "id": "ethylene",
@@ -194,7 +194,7 @@
     "nodes": 22,
     "edges": 23,
     "before": {
-      "ee": 10,
+      "ee": 8,
       "nn": 0,
       "nl": 0,
       "ll": 0,
@@ -213,7 +213,7 @@
       "width": 1163,
       "height": 3778
     },
-    "ms": 263
+    "ms": 349
   },
   {
     "id": "ethanol",
@@ -240,7 +240,7 @@
       "width": 2336,
       "height": 2577
     },
-    "ms": 201
+    "ms": 163
   },
   {
     "id": "ethanol",
@@ -267,7 +267,7 @@
       "width": 1231,
       "height": 3194
     },
-    "ms": 102
+    "ms": 103
   },
   {
     "id": "benzene",
@@ -275,7 +275,7 @@
     "nodes": 22,
     "edges": 23,
     "before": {
-      "ee": 1,
+      "ee": 0,
       "nn": 0,
       "nl": 0,
       "ll": 0,
@@ -294,7 +294,7 @@
       "width": 2707,
       "height": 1849
     },
-    "ms": 561
+    "ms": 616
   },
   {
     "id": "benzene",
@@ -302,7 +302,7 @@
     "nodes": 22,
     "edges": 23,
     "before": {
-      "ee": 7,
+      "ee": 13,
       "nn": 0,
       "nl": 0,
       "ll": 0,
@@ -321,7 +321,7 @@
       "width": 1227,
       "height": 3583
     },
-    "ms": 425
+    "ms": 474
   },
   {
     "id": "acetylene",
@@ -329,7 +329,7 @@
     "nodes": 34,
     "edges": 33,
     "before": {
-      "ee": 2,
+      "ee": 1,
       "nn": 0,
       "nl": 0,
       "ll": 0,
@@ -348,7 +348,7 @@
       "width": 4204,
       "height": 2608
     },
-    "ms": 2005
+    "ms": 2184
   },
   {
     "id": "acetylene",
@@ -356,7 +356,7 @@
     "nodes": 34,
     "edges": 33,
     "before": {
-      "ee": 21,
+      "ee": 13,
       "nn": 0,
       "nl": 0,
       "ll": 0,
@@ -375,7 +375,7 @@
       "width": 1297,
       "height": 5984
     },
-    "ms": 962
+    "ms": 1070
   },
   {
     "id": "aniline",
@@ -383,7 +383,7 @@
     "nodes": 12,
     "edges": 14,
     "before": {
-      "ee": 1,
+      "ee": 0,
       "nn": 0,
       "nl": 0,
       "ll": 0,
@@ -402,7 +402,7 @@
       "width": 2277,
       "height": 1245
     },
-    "ms": 158
+    "ms": 238
   },
   {
     "id": "aniline",
@@ -410,7 +410,7 @@
     "nodes": 12,
     "edges": 14,
     "before": {
-      "ee": 5,
+      "ee": 2,
       "nn": 0,
       "nl": 0,
       "ll": 0,
@@ -429,7 +429,7 @@
       "width": 1150,
       "height": 2148
     },
-    "ms": 156
+    "ms": 136
   },
   {
     "id": "calcium",
@@ -456,7 +456,7 @@
       "width": 2564,
       "height": 1424
     },
-    "ms": 84
+    "ms": 71
   },
   {
     "id": "calcium",
@@ -483,7 +483,7 @@
       "width": 1266,
       "height": 1886
     },
-    "ms": 60
+    "ms": 57
   },
   {
     "id": "iron",
@@ -510,7 +510,7 @@
       "width": 2564,
       "height": 3169
     },
-    "ms": 184
+    "ms": 196
   },
   {
     "id": "iron",
@@ -518,7 +518,7 @@
     "nodes": 16,
     "edges": 14,
     "before": {
-      "ee": 1,
+      "ee": 0,
       "nn": 0,
       "nl": 0,
       "ll": 0,
@@ -537,7 +537,7 @@
       "width": 1138,
       "height": 3250
     },
-    "ms": 116
+    "ms": 126
   },
   {
     "id": "nitrogen",
@@ -564,7 +564,7 @@
       "width": 2314,
       "height": 1518
     },
-    "ms": 62
+    "ms": 68
   },
   {
     "id": "nitrogen",
@@ -591,7 +591,7 @@
       "width": 1263,
       "height": 2110
     },
-    "ms": 45
+    "ms": 48
   },
   {
     "id": "sodium",
@@ -618,7 +618,7 @@
       "width": 1406,
       "height": 1424
     },
-    "ms": 32
+    "ms": 35
   },
   {
     "id": "sodium",
@@ -645,7 +645,7 @@
       "width": 1258,
       "height": 1480
     },
-    "ms": 26
+    "ms": 28
   },
   {
     "id": "phosphorus",
@@ -672,7 +672,7 @@
       "width": 1275,
       "height": 1707
     },
-    "ms": 16
+    "ms": 17
   },
   {
     "id": "phosphorus",
@@ -699,7 +699,7 @@
       "width": 935,
       "height": 1700
     },
-    "ms": 17
+    "ms": 19
   },
   {
     "id": "silicon",
@@ -726,7 +726,7 @@
       "width": 1368,
       "height": 1379
     },
-    "ms": 34
+    "ms": 37
   },
   {
     "id": "silicon",
@@ -753,7 +753,7 @@
       "width": 1134,
       "height": 1978
     },
-    "ms": 24
+    "ms": 27
   },
   {
     "id": "sulfur",
@@ -780,7 +780,7 @@
       "width": 2305,
       "height": 1989
     },
-    "ms": 43
+    "ms": 48
   },
   {
     "id": "sulfur",
@@ -807,7 +807,7 @@
       "width": 1105,
       "height": 2119
     },
-    "ms": 35
+    "ms": 40
   },
   {
     "id": "tin",
@@ -834,7 +834,7 @@
       "width": 828,
       "height": 1119
     },
-    "ms": 2
+    "ms": 3
   },
   {
     "id": "tin",
@@ -861,7 +861,7 @@
       "width": 771,
       "height": 948
     },
-    "ms": 2
+    "ms": 3
   },
   {
     "id": "chlorine-hypochlorite",
@@ -942,7 +942,7 @@
       "width": 1325,
       "height": 721
     },
-    "ms": 5
+    "ms": 4
   },
   {
     "id": "manganese-redox",
@@ -969,7 +969,7 @@
       "width": 876,
       "height": 994
     },
-    "ms": 4
+    "ms": 5
   },
   {
     "id": "chromium-redox",

@@ -53,7 +53,7 @@ backup restore前はcloudを停止しneedsReviewを記録し、ownerを変更し
 3. Authentication > Sign In / Providers > Email：Email sign-inとsignupを有効。メールOTP方式なのでEmail+PasswordやGoogle設定は不要。
 4. Authentication > Email Templates > Magic Link：メール本文に {{ .Token }} を入れ、確認コード入力の案内に変更。デフォルトのリンクだけのテンプレートでは今回のUIを利用できません。
 5. Authentication > Email / SMTP（Dashboardの表示名に応じてEmail settings）：送信元とSMTPを設定。標準の送信環境では送信対象や回数に制約があるため、一般利用前にcustom SMTP・到達確認が必要。SMTP secretはDashboardにのみ設定しコード・報告書へ書かないでください。
-6. Authentication > URL Configuration：Site URLは実際のChemica本番origin。本番URLは未提示なので推測しません。今回のOTPはredirect/callbackを使用しません。localhost/Vercel Preview用OAuth redirectは不要です。
+6. Authentication > URL Configuration：Site URLは `https://chemica.app`。Redirect URLsは完全一致の `https://chemica.app/` を基本にします。今回のOTPはredirect/callbackを使用しません。localhost/Vercel Preview用OAuth redirectは不要です。
 7. デプロイ後Chrome/Edge/PWAで実メール認証・reload・logout・offline/onlineを確認。
 8. 検証専用の別々の2アカウントでloginし、各自のaccess tokenをローカルの一時環境変数CHEMICA_RLS_USER_A_TOKEN / CHEMICA_RLS_USER_B_TOKENへ設定して npm run check:phase4:rls。
    トークンはチャット・git・ログへ貼らないでください。scriptはPublishable keyと普通のuser tokenのみ利用し、専用UUID付きテストrowだけ作成・更新・削除します。既存learning bindingを変更しません。使用後は一時環境変数を消してください。

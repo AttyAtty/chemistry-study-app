@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formulaChoiceQuestions, practiceQuestions, workedExamples } from "@/data/theoryPractice";
 import { formulas } from "@/data/illustrated/formulas";
@@ -21,6 +21,23 @@ function WorkedCard({item}:{item:(typeof workedExamples)[number]}) {
 }
 
 export function TheoryPractice(){
+ // Closed native details may hide their contents even when print CSS sets display.
+ // Open answers only for printing, then restore the reader's original choices.
+ useEffect(()=>{
+  let printing=false;
+  let closed:HTMLDetailsElement[]=[];
+  const before=()=>{
+   if(printing)return;
+   printing=true;
+   closed=[...document.querySelectorAll<HTMLDetailsElement>(".practice-question-card details:not([open])")];
+   closed.forEach(element=>{element.open=true;});
+  };
+  const after=()=>{closed.forEach(element=>{element.open=false;});closed=[];printing=false;};
+  window.addEventListener("beforeprint",before);
+  window.addEventListener("afterprint",after);
+  return()=>{window.removeEventListener("beforeprint",before);window.removeEventListener("afterprint",after);after();};
+ },[]);
+
  const [choiceAnswers,setChoiceAnswers]=useState<Record<string,boolean>>({});
  return <main className="page-container theory-practice-page"><header className="unit-content-heading"><p className="eyebrow">THEORY / WORKED EXAMPLES &amp; PRACTICE</p><h1>理論化学 典型例題・練習問題</h1><p>問題の条件から使う関係を選び、単位をそろえ、式・計算へ進みます。例題を読むだけでは学習記録に加算されません。</p><nav className="illustrated-lesson-nav"><Link href="/theory/formulas">重要公式まとめへ</Link><Link href="/units/theory-chemistry">理論化学の単元へ</Link><Link href="/illustrated/energy-map">エネルギー変化の総まとめ図へ</Link></nav></header>
   <section className="practice-choice-section"><h2>まず、使う公式を選ぶ</h2><p>条件を見て、解法を始める前に必要な関係を判断します。</p><div className="practice-choice-grid">{formulaChoiceQuestions.map(q=><article key={q.id}><h3>{q.prompt}</h3><div>{q.choices.map(choice=><button key={choice} type="button" className="button secondary" onClick={()=>setChoiceAnswers(s=>({...s,[q.id]:choice===q.answer}))}>{choice}</button>)}</div>{q.id in choiceAnswers&&<p role="status">{choiceAnswers[q.id]?"正解。":"確認："}{q.answer} — {q.reason}</p>}</article>)}</div></section>

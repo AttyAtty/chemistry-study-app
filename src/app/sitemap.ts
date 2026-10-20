@@ -6,7 +6,7 @@ import { illustratedLessons } from "@/data/illustrated/types";
 import { absoluteAppUrl } from "@/lib/siteConfig";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const publicPaths = ["/", "/home", "/illustrated", "/courses/chemistry-basic", "/search", "/theory/formulas", "/privacy"];
+  const publicPaths = ["/", "/home", "/illustrated", "/courses/chemistry-basic", "/search", "/theory/formulas", "/theory/practice", "/about/changelog", "/privacy"];
   const contentPaths = [
     ...chemistryUnits.map((unit) => `/units/${unit.slug}`),
     ...[...theoryLessons, ...inorganicLessons, ...illustratedLessons].map((lesson) => `/illustrated/${lesson.slug}`),

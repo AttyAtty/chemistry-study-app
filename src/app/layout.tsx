@@ -63,6 +63,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <small className="site-version"><Link href="/about/changelog">{CHEMICA_VERSION_LABEL} · 更新履歴</Link></small>
       <span className="site-credit">Designed &amp; Created by <strong>Atty</strong></span>
     </footer>
-    <Analytics />
+    {process.env.VERCEL === "1" && <Analytics />}
   </body></html>;
 }

@@ -91,6 +91,7 @@ for(const initialWaiting of [true,false]){
         candidate.state="installed";reg.waiting=candidate;reg.installing=null;candidate.dispatchEvent(new Event("statechange"));
       },changeController(){container.dispatchEvent(new Event("controllerchange"));}});
     },{initialWaiting});
+    await context.addInitScript(() => { localStorage.setItem("chemica-tutorial", JSON.stringify({ tutorialStatus: "completed", tutorialVersion: "0.7.0" })); });
     const page=await context.newPage();await page.goto("/home");
     await expect(page.getByRole("button",{name:"更新を確認",exact:true})).toHaveCount(0);
     await expect(page.locator(".pwa-status")).toHaveCount(0);

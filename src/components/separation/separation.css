@@ -84,3 +84,12 @@
 .separation-supplement-grid h4 { margin-top:0; overflow-wrap:anywhere; }
 .separation-html-blank { display:inline-block; min-width:min(100%,240px); max-width:100%; border-bottom:1px solid var(--text); vertical-align:baseline; }
 .separation-html-blank small { padding:0 5px; }
+
+@media print{
+ .separation-page:not(:has(.separation-print-area)),.separation-page:not(:has(.separation-print-area)) *{visibility:visible}
+ .separation-page:not(:has(.separation-print-area)){width:190mm;max-width:none;margin:0;padding:0}
+ .separation-page:not(:has(.separation-print-area)) .separation-controls,.separation-page:not(:has(.separation-print-area)) .separation-practice-entry,.separation-page:not(:has(.separation-print-area)) .back-link{display:none!important}
+ .separation-page:not(:has(.separation-print-area)) .separation-viewer{padding:0;border:0;box-shadow:none}
+ .separation-page:not(:has(.separation-print-area)) .separation-scroll{overflow:visible;padding:0;border:0}
+ .separation-page:not(:has(.separation-print-area)) .separation-svg{width:190mm;min-width:0;max-width:190mm;max-height:245mm;height:auto}
+}

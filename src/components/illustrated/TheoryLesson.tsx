@@ -21,7 +21,7 @@ export function TheoryLesson({slug,notes=[]}:{slug:TheorySlug;notes?:string[]}) 
   <div className="illustrated-tools"><label htmlFor="theory-mode">表示・問題形式</label><select id="theory-mode" value={mode} onChange={e=>{setMode(e.target.value);setShowAnswers(false);}}>{theoryModes.map(m=><option key={m.id} value={m.id}>{m.label}</option>)}</select>
    <button className="button" disabled={mode==="learn"} onClick={()=>setShowAnswers(!showAnswers)}>{showAnswers?"問題に戻す":"答えを表示"}</button><button className="button" aria-pressed={zoom} onClick={()=>setZoom(!zoom)}>{zoom?"全体表示":"拡大表示"}</button><button className="button" aria-pressed={preview} onClick={()=>setPreview(!preview)}>A4プレビュー</button><button className="button" onClick={()=>window.print()}>印刷</button>
    <p aria-live="polite">{mode==="learn"?"現象 → グラフ → 説明 → 数値例。模式図と条件を指定した計算モデルを区別して学びます。":`${view.exercise.blankIds.length}項目を意味のある句で出題します。`}</p>
-  </div><div className={`illustrated-print-area theory-material ${zoom?"is-zoomed":""} ${preview?"is-a4-preview":""}`}>
+  </div><div className={`illustrated-print-area theory-material ${zoom?"is-zoomed":""} ${preview?"is-a4-preview":""}`} data-lesson-id={slug}>
    {slug==="solubility"&&<SolubilityLesson view={view} temperature={solTemperature} onTemperature={setSolTemperature} notes={notes}/>}
    {slug==="vapor-pressure"&&<VaporLesson view={view} temperature={vaporTemperature} pressure={externalPressure} onTemperature={setVaporTemperature} onPressure={setExternalPressure}/>}
    {slug==="henry"&&<HenryLesson view={view} pressure={henryPressure} onPressure={setHenryPressure}/>}

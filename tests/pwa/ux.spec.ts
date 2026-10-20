@@ -21,6 +21,7 @@ async function setup(info: TestInfo, width: number, suppressInstall = true) {
   const context = await browser.newContext({ baseURL: "http://127.0.0.1:3211", viewport: { width, height: 900 }, serviceWorkers: "block" });
   await context.route("**/*", route => new URL(route.request().url()).hostname === "127.0.0.1" ? route.continue() : route.abort());
   if (suppressInstall) await context.addInitScript(() => { localStorage.setItem("chemica-install-offered", "1"); });
+  await context.addInitScript(() => { localStorage.setItem("chemica-tutorial", JSON.stringify({ tutorialStatus: "completed", tutorialVersion: "0.7.0" })); });
   const page = await context.newPage();
   return { page, browser };
 }

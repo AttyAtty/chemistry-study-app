@@ -1,3 +1,5 @@
+export const PRODUCTION_APP_ORIGIN = "https://chemica.app";
+
 function originFrom(value: string): string {
   const candidate = value.startsWith("http://") || value.startsWith("https://") ? value : `https://${value}`;
   const url = new URL(candidate);

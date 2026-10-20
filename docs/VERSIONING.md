@@ -6,4 +6,6 @@ Chemica is in beta. Keep the package version and user-facing version label in sy
 - `0.x.y-beta`: a bug fix or small improvement.
 - `1.0.0`: first stable public release.
 
-The current baseline is `0.6.0-beta`. A formal domain cutover may be a `0.7.0-beta` milestone. Add a user-facing `CHANGELOG.md` entry for each release. Create local Git tags only after reviewing the release; publishing tags is a separate explicit action.
+The current release is `0.7.2-beta`. `package.json` is the source of truth for application, footer, menu, feedback and backup version labels. Historical release headings in CHANGELOG and the release-notes page intentionally keep their original versions.
+
+The tutorial version remains `0.7.0`: patch fixes must not replay the guide for completed or dismissed users. Add a user-facing CHANGELOG entry for each release. Do not create or push Git tags during automated release checks; tag creation and publication are manual release actions.

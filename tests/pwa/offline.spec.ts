@@ -35,6 +35,7 @@ async function waitReady(page:Page){
  })),{timeout:90000}).toBe(true);
 }
 async function prepare(context:BrowserContext){
+ await context.addInitScript(() => { localStorage.setItem("chemica-tutorial", JSON.stringify({ tutorialStatus: "completed", tutorialVersion: "0.7.0" })); });
  const page=context.pages()[0]??await context.newPage();
  await page.goto(base+"/home");
  await waitReady(page);
