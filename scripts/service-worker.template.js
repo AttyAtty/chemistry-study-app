@@ -54,7 +54,15 @@ async function navigation(request) {
     if(response.ok && CONFIG.routes.includes(path) && response.headers.get("content-type")?.includes("text/html")
        && buildMatches(await response.clone().text()))await (await caches.open(PRECACHE)).put(path,response.clone());
     return response;
-  }catch { return await (await caches.open(PRECACHE)).match(path) ?? fallback(); }
+  }catch {
+    const cache=await caches.open(PRECACHE);
+    const hit=await cache.match(path);
+    if(hit)return hit;
+    const destination=CONFIG.navigationFallbacks?.[path];
+    // Redirect the document as well as its HTML, so Next hydrates /home at /home.
+    if(destination && await cache.match(destination))return Response.redirect(new URL(destination,origin).href,307);
+    return fallback();
+  }
 }
 async function asset(request) {
   const path=new URL(request.url).pathname;

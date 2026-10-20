@@ -16,7 +16,8 @@ class Cache {
 class Channels {
  constructor(){this.port1={onmessage:null,close(){}};this.port2={postMessage:data=>queueMicrotask(()=>this.port1.onmessage?.({data})),close(){}};}
 }
-function harness(){
+function harness(overrides={}){
+ const workerConfig={...config,...overrides};
  const buckets=new Map(),listeners=new Map();
  const state={offline:false,failPath:null,calls:[],windows:[],claimed:false,skipped:false,htmlVersion:config.version};
  const caches={async open(name){if(!buckets.has(name))buckets.set(name,new Cache());return buckets.get(name);},async keys(){return [...buckets.keys()];},async delete(name){return buckets.delete(name);}};
@@ -26,7 +27,7 @@ function harness(){
   if(state.offline||state.failPath===path)throw new Error("Network offline");
   return new Response(config.routes.includes(path)?'<meta name="chemica-build" content="'+state.htmlVersion+'"><h1>'+path+'</h1>':"asset",{headers:{"Content-Type":config.routes.includes(path)?"text/html":"text/javascript"}});
  };
- vm.runInNewContext("const CONFIG="+JSON.stringify(config)+";\n"+fs.readFileSync("scripts/service-worker.template.js","utf8"),{self,caches,fetch,Response,Request,URL,Headers,AbortController,MessageChannel:Channels,setTimeout,clearTimeout,console});
+ vm.runInNewContext("const CONFIG="+JSON.stringify(workerConfig)+";\n"+fs.readFileSync("scripts/service-worker.template.js","utf8"),{self,caches,fetch,Response,Request,URL,Headers,AbortController,MessageChannel:Channels,setTimeout,clearTimeout,console});
  async function event(name,details={}){
   const waits=[];let response;
   listeners.get(name)({...details,waitUntil:promise=>waits.push(promise),respondWith:promise=>{response=promise;}});
@@ -104,3 +105,16 @@ test("new network HTML is served online but cannot overwrite the cached edition"
 });
 
 test("Auth callback, Authorization requests and Supabase data never enter runtime caches",async()=>{const h=harness();await h.event("install");for(const request of [h.request("/auth/callback"),h.request("/auth"),h.request("/home","navigate",{Authorization:"Bearer test"}),{...h.request("/rest/v1/flashcard_progress","cors"),url:"https://project.supabase.co/rest/v1/flashcard_progress"}])assert.equal(await h.event("fetch",{request}),undefined);});
+
+ test("non-prerendered root redirects offline to the guaranteed home without caching root",async()=>{
+ const h=harness({navigationFallbacks:{"/":"/home"}});await h.event("install");h.state.offline=true;
+ const response=await h.event("fetch",{request:h.request("/?source=pwa")});
+ assert.equal(response.status,307);assert.equal(response.headers.get("location"),origin+"/home");
+ const home=await h.event("fetch",{request:h.request("/home")});assert.match(await home.text(),/<h1>\/home/);
+ assert.equal((await h.status()).ready,true);
+ });
+ test("root fallback does not redirect when its home cache is missing",async()=>{
+ const h=harness({navigationFallbacks:{"/":"/home"}});await h.event("install");
+ await (await h.caches.open(prefix+config.version+":precache")).delete("/home");h.state.offline=true;
+ const response=await h.event("fetch",{request:h.request("/")});assert.equal(response.status,200);assert.match(await response.text(),/\/offline/);
+ });

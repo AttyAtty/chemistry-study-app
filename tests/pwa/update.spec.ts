@@ -136,3 +136,25 @@ for(const initialWaiting of [true,false]){
   }finally{await context.close();}
  });
 }
+
+for(const rootMode of ["server-rendered","redirect"])test("offline root reaches cached home: "+rootMode,async({},info)=>{
+ const config={version:"root-fallback",routes:["/home","/offline"],assets:[],fallback:"/offline",navigationFallbacks:{"/":"/home"}};
+ const server=http.createServer((req,res)=>{
+  if(req.url==="/sw.js") {res.setHeader("Content-Type","application/javascript");res.end("const CONFIG="+JSON.stringify(config)+";\n"+workerTemplate);return;}
+  if(req.url==="/"&&rootMode==="redirect") {res.writeHead(307,{Location:"/home"});res.end();return;}
+  res.setHeader("Content-Type","text/html");res.end('<meta name="chemica-build" content="root-fallback"><h1>'+ (req.url==="/home"?"Home":req.url==="/offline"?"Offline":"Welcome")+'</h1>');
+ });
+ await new Promise<void>(resolve=>server.listen(0,"127.0.0.1",resolve));
+ const address=server.address();if(!address||typeof address==="string")throw new Error("Missing server address");
+ const base="http://127.0.0.1:"+address.port;
+ const browser=await chromium.launch({channel:info.project.metadata.channel as string,headless:true});
+ const context=await browser.newContext();
+ try {
+  const page=await context.newPage();await page.goto(base+"/");
+  await page.evaluate(async()=>{await navigator.serviceWorker.register("/sw.js");await navigator.serviceWorker.ready;});
+  await expect.poll(()=>page.evaluate(()=>Boolean(navigator.serviceWorker.controller))).toBe(true);
+  await context.setOffline(true);await page.goto(base+"/?source=pwa");
+  await expect(page).toHaveURL(base+"/home");await expect(page.locator("h1")).toHaveText("Home");
+  await page.reload();await expect(page.locator("h1")).toHaveText("Home");
+ } finally {await browser.close();server.closeAllConnections();await new Promise<void>((resolve,reject)=>server.close(error=>error?reject(error):resolve()));}
+});

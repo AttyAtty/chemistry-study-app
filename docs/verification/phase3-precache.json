@@ -1,5 +1,5 @@
 {
-  "version": "0fe724de-051f-4798-87ff-e78581447611",
+  "version": "6492a83d-62c3-4bd7-a7ed-adf37d4c1fe5",
   "routes": [
     "/",
     "/about/changelog",
@@ -50,10 +50,11 @@
     "/units/organic-reactions",
     "/units/theory-chemistry"
   ],
+  "navigationFallbacks": {},
   "assets": [
-    "/_next/static/0fe724de-051f-4798-87ff-e78581447611/_buildManifest.js",
-    "/_next/static/0fe724de-051f-4798-87ff-e78581447611/_clientMiddlewareManifest.js",
-    "/_next/static/0fe724de-051f-4798-87ff-e78581447611/_ssgManifest.js",
+    "/_next/static/6492a83d-62c3-4bd7-a7ed-adf37d4c1fe5/_buildManifest.js",
+    "/_next/static/6492a83d-62c3-4bd7-a7ed-adf37d4c1fe5/_clientMiddlewareManifest.js",
+    "/_next/static/6492a83d-62c3-4bd7-a7ed-adf37d4c1fe5/_ssgManifest.js",
     "/_next/static/chunks/0-ye25xheccjj.js",
     "/_next/static/chunks/00-01x92wle41.css",
     "/_next/static/chunks/02m9crkia2mzs.js",
@@ -78,7 +79,7 @@
     "/_next/static/chunks/2ewmp3spkanok.js",
     "/_next/static/chunks/2hreaydvrpkcb.js",
     "/_next/static/chunks/2khxl0v1q4i6n.js",
-    "/_next/static/chunks/2mu4hsm6brja9.js",
+    "/_next/static/chunks/2ro6j3s9d8g9a.js",
     "/_next/static/chunks/2soccguqgasdm.css",
     "/_next/static/chunks/2xjt16e43kbq1.js",
     "/_next/static/chunks/34uusxs20cc8d.js",
