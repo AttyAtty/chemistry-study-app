@@ -1,4 +1,5 @@
 "use client";
+import { TutorialLink } from "./Tutorial";
 import { DataSettingsLink } from "@/components/DataSettingsLink";
 
 import { StudyLink as Link } from "@/components/StudyLink";
@@ -31,7 +32,7 @@ export function MobileNavigation() {
   return <div className="mobile-nav-shell" ref={menuRef}>
     {moreOpen && <div className="mobile-more-menu" id="mobile-more-menu">
       <DataSettingsLink onClick={() => setMoreOpen(false)}>ログイン・データ保存</DataSettingsLink>
-      <SharePanel /><InstallPrompt />
+      <TutorialLink onClick={() => setMoreOpen(false)} /><SharePanel /><InstallPrompt />
       <Link href="/feedback" onClick={() => setMoreOpen(false)}>お問い合わせ</Link>
       <Link href="/privacy" onClick={() => setMoreOpen(false)}>プライバシーポリシー</Link>
       <Link href="/about/changelog" onClick={() => setMoreOpen(false)}>更新履歴</Link>

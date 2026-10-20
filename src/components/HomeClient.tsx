@@ -53,6 +53,12 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
 
     <section className="section-block home-main-fields" id="fields">
       <div className="section-heading"><div><p className="eyebrow">MAIN FIELDS</p><h2>主要4分野から学ぶ</h2><p>初めてなら化学基礎、目的が決まっていれば分野を直接選べます。</p></div></div>
+      <nav className="home-field-shortcuts" aria-label="分野への入口">
+        <Link href="/courses/chemistry-basic">化学基礎</Link>
+        <Link href="/units/theory-chemistry">理論化学</Link>
+        <Link href="/units/inorganic-reactions">無機化学</Link>
+        <Link href="/units/organic-reactions">有機化学</Link>
+      </nav>
       <div className="home-main-field-grid">
         <article className="unit-card home-unit-card chemistry-basic-entry">
           <Link className="card-primary-link" href="/courses/chemistry-basic" aria-label="化学基礎コースを見る" />

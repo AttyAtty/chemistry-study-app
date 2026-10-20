@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.7.0-beta — 2026-10-20
+
+### Added
+- 初回チュートリアル / 使い方ガイド（7ステップ）
+- その他・フッターからのガイド再表示
+- 学習データから独立したtutorialStatus・tutorialVersion管理
+
+### Improved
+- 初めて使うユーザー向けの導線と主要機能の発見性
+- キーボード・スマートフォン・オフラインに対応したガイド
+
+
 ## v0.6.0-beta — 2026-10-19
 
 First consolidated release history. Earlier point releases were not reconstructed.

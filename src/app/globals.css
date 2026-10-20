@@ -1138,3 +1138,23 @@ body.quiz-in-session .page-container { padding-top:20px; }
   .separation-print-area .separation-supplement article { break-inside:avoid; }
   .separation-print-area .separation-viewer { padding:0; border:0; background:white; }
 }
+
+/* Local, offline-capable coach marks. The shadow dims without changing target stacking. */
+.tutorial-layer{position:fixed;inset:0;z-index:10000;isolation:isolate;overscroll-behavior:contain}
+.tutorial-shade{position:absolute;inset:0;background:rgba(0,0,0,.67)}
+.tutorial-spotlight{position:fixed;border:3px solid #8de1cf;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.67);pointer-events:none}
+.tutorial-card{position:fixed;box-sizing:border-box;max-height:calc(100dvh - 112px);overflow:auto;background:#142b33;color:#f5fbfc;border:1px solid #8de1cf;border-radius:16px;padding:20px;box-shadow:0 12px 40px #0008;outline-offset:3px}
+.tutorial-card h2{font-size:1.15rem;margin:8px 0 12px;color:#fff}
+.tutorial-card p{line-height:1.7;margin:0 0 14px;overflow-wrap:anywhere}
+.tutorial-card .tutorial-position{font-size:.8rem;color:#a9e9db;margin:0}
+.tutorial-actions{display:flex;gap:8px;justify-content:space-between;margin-top:10px}
+.tutorial-actions button{min-height:44px;padding:9px 12px;border:1px solid #90aeb5;border-radius:8px;background:#203f49;color:#fff;font:inherit;cursor:pointer}
+.tutorial-actions button:disabled{opacity:.45;cursor:default}
+.tutorial-actions .tutorial-primary{background:#b0efde;color:#102d30;border-color:#b0efde;min-width:92px;font-weight:700}
+.tutorial-card :focus-visible{outline:3px solid #fce396;outline-offset:3px}
+@media print{.tutorial-layer{display:none!important}}
+@media(prefers-reduced-motion:reduce){.tutorial-layer *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+.home-field-shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:16px}
+.home-field-shortcuts a{display:grid;place-items:center;min-height:48px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--chemica-navy);font-weight:750}
+.home-field-shortcuts a:focus-visible{outline:3px solid #608bdb;outline-offset:3px}
+@media(max-width:620px){.home-field-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}}
