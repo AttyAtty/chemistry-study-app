@@ -4,8 +4,17 @@ const version=fs.readFileSync(".next/BUILD_ID","utf8").trim();
 const buildSource=fs.readFileSync("src/lib/pwaBuild.ts","utf8");
 if(!buildSource.includes(JSON.stringify(version)))throw new Error("PWA/Next build ID mismatch");
 const prerender=JSON.parse(fs.readFileSync(".next/prerender-manifest.json","utf8"));
-// Keep both guarantees: manifest registration and an actual static HTML artifact.
-// Report them separately so deployment-only failures can be diagnosed safely.
+// Next 16 records complete static HTML in the prerender manifest. Deployment
+// platforms need not retain that HTML at the local server/app path.
+// Older manifests still require a local HTML artifact as evidence.
+function isStaticPage(route, entry) {
+ if(!entry || entry.initialRevalidateSeconds!==false)return false;
+ const classification=["routeType","response","compute","htmlSize"];
+ if(classification.some(key=>Object.hasOwn(entry,key)))
+  return entry.routeType==="page" && entry.response==="complete" && entry.compute==="static"
+   && Number.isSafeInteger(entry.htmlSize) && entry.htmlSize>0;
+ return fs.existsSync(path.join(".next/server/app",route==="/"?"index.html":route.slice(1)+".html"));
+}
 function reportMissingRoute(route) {
  const html=path.join(".next/server/app",route==="/"?"index.html":route.slice(1)+".html");
  const details={route,manifestEntry:prerender.routes[route]??null,htmlPath:html,htmlExists:fs.existsSync(html),
@@ -14,7 +23,7 @@ function reportMissingRoute(route) {
   registeredRoutes:Object.keys(prerender.routes),dynamicRoutes:Object.keys(prerender.dynamicRoutes??{})};
  console.error("Offline prerender diagnostics:",JSON.stringify(details,null,2));
 }
-const routes=Object.keys(prerender.routes).filter(route=>!route.startsWith("/_") && !route.startsWith("/api/") && route!=="/auth" && !route.startsWith("/auth/") && fs.existsSync(path.join(".next/server/app",route==="/"? "index.html":route.slice(1)+".html"))).sort();
+const routes=Object.entries(prerender.routes).filter(([route,entry])=>!route.startsWith("/_") && !route.startsWith("/api/") && route!=="/auth" && !route.startsWith("/auth/") && isStaticPage(route,entry)).map(([route])=>route).sort();
 for(const route of ["/home","/quiz","/search","/progress","/settings/data","/offline","/courses/chemistry-basic","/tools/memory-quiz","/flashcards/review","/separation/practice","/illustrated","/illustrated/polymers","/illustrated/carbohydrates","/illustrated/ionization","/illustrated/flame-tests","/illustrated/precipitates","/illustrated/gases","/illustrated/electrochemistry"])
  if(!routes.includes(route)){reportMissingRoute(route);throw new Error("Required offline route is not prerendered: "+route);}
 for(const route of ["/illustrated/solubility","/illustrated/vapor-pressure","/illustrated/henry","/illustrated/acid-base","/illustrated/titration","/illustrated/indicators","/illustrated/buffers","/illustrated/equilibrium","/illustrated/kinetics"])
@@ -24,8 +33,7 @@ for(const route of ["/theory/formulas","/theory/practice","/about/changelog","/i
 function walk(folder){return fs.readdirSync(folder,{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?walk(path.join(folder,entry.name)):[path.join(folder,entry.name)]);}
 const assets=walk(".next/static").filter(file=>/\.(js|css|woff2?|png|svg)$/.test(file)).map(file=>"/"+file.replaceAll("\\","/").replace(/^\.next/,"_next"));
 assets.push("/site.webmanifest","/favicon.ico",...walk("public/icons").map(file=>"/"+file.replaceAll("\\","/").slice(7)));
-// The welcome screen may be server-rendered on the deployment platform.
-// Only cache it when static HTML exists; /home remains mandatory.
+// Only cache the welcome screen when it has proven static output; /home remains mandatory.
 const navigationFallbacks=routes.includes("/")?{}:{"/":"/home"};
 const config={version,routes,navigationFallbacks,assets:[...new Set(assets)].sort(),fallback:"/offline"};
 const source=fs.readFileSync("scripts/service-worker.template.js","utf8");

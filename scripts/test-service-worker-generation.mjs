@@ -6,7 +6,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 const source=fs.readFileSync("scripts/generate-service-worker.mjs","utf8");
 const required=[...source.matchAll(/for\(const route of (\[[^\]]+\])/g)].flatMap(match=>JSON.parse(match[1]));
-function generate({root=true,rootHtml=true,missing,missingHtml}={}) {
+function generate({root=true,rootHtml=true,missing,missingHtml,entry}={}) {
  const folder=fs.mkdtempSync(path.join(os.tmpdir(),"chemica-sw-test-"));
  try {
   for(const dir of [".next/server/app",".next/static","src/lib","scripts","public/icons","node_modules/next"])fs.mkdirSync(path.join(folder,dir),{recursive:true});
@@ -14,7 +14,7 @@ function generate({root=true,rootHtml=true,missing,missingHtml}={}) {
   fs.writeFileSync(path.join(folder,"src/lib/pwaBuild.ts"),'export const id="fixture-build";');
   fs.writeFileSync(path.join(folder,"node_modules/next/package.json"),JSON.stringify({version:"fixture-next"}));
   const routes=[...required,...(root?["/"]:[])].filter(route=>route!==missing);
-  fs.writeFileSync(path.join(folder,".next/prerender-manifest.json"),JSON.stringify({routes:Object.fromEntries(routes.map(route=>[route,{}]))}));
+  fs.writeFileSync(path.join(folder,".next/prerender-manifest.json"),JSON.stringify({routes:Object.fromEntries(routes.map(route=>[route,entry??{initialRevalidateSeconds:false}]))}));
   for(const route of routes) {
    if((route==="/"&&!rootHtml)||route===missingHtml)continue;
    const html=path.join(folder,".next/server/app",route==="/"?"index.html":route.slice(1)+".html");
@@ -42,7 +42,25 @@ test("generator distinguishes an absent manifest entry from missing HTML",()=>{
  assert.match(absent.stderr,/"htmlExists": false/);
  const noHtml=generate({missingHtml:"/home"});
  assert.notEqual(noHtml.status,0);
- assert.match(noHtml.stderr,/"manifestEntry": \{\}/);
+ assert.match(noHtml.stderr,/"initialRevalidateSeconds": false/);
  assert.match(noHtml.stderr,/"htmlExists": false/);
  assert.match(noHtml.stderr,/not prerendered: \/home/);
+});
+
+const staticEntry={initialRevalidateSeconds:false,routeType:"page",response:"complete",compute:"static",htmlSize:439394};
+test("Next 16 complete static output does not require a platform-specific HTML path",()=>{
+ const result=generate({missingHtml:"/home",entry:staticEntry});
+ assert.equal(result.status,0,result.stderr);
+ assert.ok(result.config.routes.includes("/home"));
+});
+for(const override of [{compute:"resuming"},{response:"streaming"},{routeType:"route"},{htmlSize:0},{htmlSize:-1},{htmlSize:null},{initialRevalidateSeconds:0},{initialRevalidateSeconds:60},{compute:undefined}])
+ test("reject unproven or request-dependent output "+JSON.stringify(override),()=>{
+  const result=generate({entry:{...staticEntry,...override}});
+  assert.notEqual(result.status,0);
+  assert.match(result.stderr,/not prerendered: \/home/);
+ });
+test("a required route absent from the manifest is rejected even with modern classification",()=>{
+ const result=generate({entry:staticEntry,missing:"/home"});
+ assert.notEqual(result.status,0);
+ assert.match(result.stderr,/not prerendered: \/home/);
 });
