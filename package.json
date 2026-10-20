@@ -1,6 +1,6 @@
 {
   "name": "chemistry-study-app",
-  "version": "0.7.0-beta",
+  "version": "0.7.1-beta",
   "private": true,
   "scripts": {
     "test:separation": "node --test scripts/test-separation.mjs scripts/test-separation-exercise.mjs",

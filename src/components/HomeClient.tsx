@@ -35,14 +35,14 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
   return <>
     <section className="hero home-hero home-dashboard-hero">
       <div className="home-brand-center"><ChemicaLogo variant="hero" showTagline /></div>
-      <section className="home-quick-start" aria-labelledby="quick-start-title">
+      <section className="home-quick-start" data-tutorial="quick-start" aria-labelledby="quick-start-title">
         <div><p className="eyebrow">QUICK START</p><h1 id="quick-start-title">今日の学習</h1></div>
         <form className="home-dashboard-search" action="/search"><label htmlFor="home-knowledge-search">Chemica全体検索</label><div><input id="home-knowledge-search" name="q" type="search" placeholder="Fe³⁺、KMnO₄、ベンゼン…"/><button type="submit">検索</button></div></form>
         <HomeStudyActions /><DataSettingsLink className="home-account-entry">ログイン・データ保存 →</DataSettingsLink>
       </section>
     </section>
 
-    <section className="home-daily-section" aria-labelledby="daily-title">
+    <section className="home-daily-section" data-tutorial="daily-questions" aria-labelledby="daily-title">
       <div className="section-heading"><div><p className="eyebrow">TODAY</p><h2 id="daily-title">今日の3問</h2></div><Link className="text-link" href="/flashcards/review?flashcards=due">今日の復習へ →</Link></div>
       <div className="daily-chemistry-grid">
         <DailyQuestionCard id="daily-ion" title="今日のイオン" tone={featuredIon.tone} searchQuery={featuredIon.formula} className="daily-color-question" prompt={<><strong><ColoredChemText>{featuredIon.formula}</ColoredChemText></strong><span>このイオンを含む水溶液の色は？</span></>} answer={<><strong><ColoredChemText>{featuredIon.color}</ColoredChemText></strong><span>{featuredIon.name}</span><i className="daily-color-chip" style={{background:featuredIon.tone}} aria-hidden="true"/></>}/>
@@ -51,7 +51,7 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
       </div>
     </section>
 
-    <section className="section-block home-main-fields" id="fields">
+    <section className="section-block home-main-fields" data-tutorial="main-fields" id="fields">
       <div className="section-heading"><div><p className="eyebrow">MAIN FIELDS</p><h2>主要4分野から学ぶ</h2><p>初めてなら化学基礎、目的が決まっていれば分野を直接選べます。</p></div></div>
       <nav className="home-field-shortcuts" aria-label="分野への入口">
         <Link href="/courses/chemistry-basic">化学基礎</Link>
@@ -77,7 +77,7 @@ export function HomeClient({ units }: { units: ChemistryUnit[] }) {
         </article>)}
       </div>
     </section>
-    <section className="section-block home-cross-tools" id="units">
+    <section className="section-block home-cross-tools" data-tutorial="focused-tools" id="units">
       <div className="section-heading"><div><p className="eyebrow">FOCUSED TOOLS</p><h2>目的別・横断教材</h2><p>確認したいテーマへ直接移動できます。</p></div></div>
       <div className="home-cross-grid"><article className="home-cross-card home-diagram-hub-card">
         <Link className="card-primary-link" href="/illustrated" aria-label="図で理解する教材を探す"/><span aria-hidden="true">▱</span><div><h3>図で理解する</h3><p>反応の流れ・構造・グラフを、分野をまたいで図から確認できます。</p></div><b aria-hidden="true">→</b>

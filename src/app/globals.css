@@ -1139,21 +1139,39 @@ body.quiz-in-session .page-container { padding-top:20px; }
   .separation-print-area .separation-viewer { padding:0; border:0; background:white; }
 }
 
-/* Local, offline-capable coach marks. The shadow dims without changing target stacking. */
-.tutorial-layer{position:fixed;inset:0;z-index:10000;isolation:isolate;overscroll-behavior:contain}
-.tutorial-shade{position:absolute;inset:0;background:rgba(0,0,0,.67)}
-.tutorial-spotlight{position:fixed;border:3px solid #8de1cf;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.67);pointer-events:none}
-.tutorial-card{position:fixed;box-sizing:border-box;max-height:calc(100dvh - 112px);overflow:auto;background:#142b33;color:#f5fbfc;border:1px solid #8de1cf;border-radius:16px;padding:20px;box-shadow:0 12px 40px #0008;outline-offset:3px}
-.tutorial-card h2{font-size:1.15rem;margin:8px 0 12px;color:#fff}
-.tutorial-card p{line-height:1.7;margin:0 0 14px;overflow-wrap:anywhere}
-.tutorial-card .tutorial-position{font-size:.8rem;color:#a9e9db;margin:0}
-.tutorial-actions{display:flex;gap:8px;justify-content:space-between;margin-top:10px}
-.tutorial-actions button{min-height:44px;padding:9px 12px;border:1px solid #90aeb5;border-radius:8px;background:#203f49;color:#fff;font:inherit;cursor:pointer}
-.tutorial-actions button:disabled{opacity:.45;cursor:default}
-.tutorial-actions .tutorial-primary{background:#b0efde;color:#102d30;border-color:#b0efde;min-width:92px;font-weight:700}
-.tutorial-card :focus-visible{outline:3px solid #fce396;outline-offset:3px}
+/* Coach marks share Chemica's surfaces, accents and button classes. */
+.tutorial-layer{position:fixed;inset:0;z-index:10000;isolation:isolate;pointer-events:none}
+.tutorial-shade{position:absolute;inset:0;background:color-mix(in srgb,var(--text) 32%,transparent)}
+.tutorial-spotlight{position:fixed;border:1px solid var(--primary);border-radius:var(--radius-sm);box-shadow:0 0 0 9999px color-mix(in srgb,var(--text) 32%,transparent);pointer-events:none}
+.tutorial-card{position:fixed;display:flex;flex-direction:column;box-sizing:border-box;overflow:auto;pointer-events:auto;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:var(--radius-md);padding:20px;box-shadow:var(--shadow);outline:none}
+.tutorial-card h2{flex:none;font-size:1.1rem;line-height:1.5;margin:8px 0 12px;color:var(--text)}
+.tutorial-copy{min-height:0;overflow:auto;overscroll-behavior:contain}
+.tutorial-card p{line-height:1.7;margin:0 0 12px;overflow-wrap:anywhere}
+.tutorial-card .tutorial-position{flex:none;font-size:var(--type-caption);color:var(--muted);margin:0}
+.tutorial-card .tutorial-scroll-hint{flex:none;font-size:12px;color:var(--muted);margin:6px 0 0}
+.tutorial-actions{flex:none;display:flex;gap:8px;justify-content:space-between;margin-top:12px}
+.tutorial-actions button{min-height:44px;font:inherit;touch-action:manipulation}
+.tutorial-actions .button{padding:8px 18px;font-weight:800}
+.tutorial-actions .primary{min-width:92px;color:var(--text)}
+.tutorial-secondary-actions{border-top:1px solid var(--line);padding-top:4px;margin-top:12px}
+.tutorial-secondary-actions button{padding:6px 4px;border:0;background:transparent;border-radius:var(--radius-sm);font-size:var(--type-caption)}
+.tutorial-skip{color:var(--text)}
+.tutorial-dismiss{color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.tutorial-card :focus-visible{outline:3px solid var(--primary-dark);outline-offset:3px}
+@media(min-width:1100px){body.chemica-tutorial-open .home-page{width:calc(100% - 448px);max-width:var(--content-max-width);margin-left:24px;margin-right:424px;animation:none}}
+@media(max-width:680px){.tutorial-card{padding:16px}.tutorial-card h2{font-size:1rem;margin:6px 0 8px}.tutorial-card p{font-size:14px;line-height:1.6}.tutorial-actions{margin-top:8px}}
 @media print{.tutorial-layer{display:none!important}}
 @media(prefers-reduced-motion:reduce){.tutorial-layer *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* The same five navigation destinations also live below the desktop home. */
+@media(min-width:681px){
+ body:has(.home-page) .mobile-nav-shell{display:block;position:relative;width:min(var(--content-max-width),calc(100% - 48px));margin:0 auto 24px;z-index:60}
+ body:has(.home-page) .mobile-bottom-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;padding:12px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);box-shadow:var(--shadow-card)}
+ body:has(.home-page) .mobile-bottom-nav a,body:has(.home-page) .mobile-bottom-nav button{display:grid;place-items:center;align-content:center;gap:4px;min-height:64px;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--muted);font:inherit}
+ body:has(.home-page) .mobile-bottom-nav .is-current{background:var(--surface-soft);color:var(--primary-dark)}
+ body:has(.home-page) .mobile-bottom-nav small{font-size:var(--type-caption);font-weight:750}
+ body:has(.home-page) .mobile-more-menu{position:absolute;right:12px;bottom:calc(100% + 8px);display:grid;min-width:240px;padding:8px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);box-shadow:var(--shadow)}
+ body:has(.home-page) .mobile-more-menu a,body:has(.home-page) .mobile-more-menu>span{display:flex;align-items:center;min-height:44px;padding:8px 12px;font-size:var(--type-caption);color:var(--muted)}
+}
 .home-field-shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:16px}
 .home-field-shortcuts a{display:grid;place-items:center;min-height:48px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--chemica-navy);font-weight:750}
 .home-field-shortcuts a:focus-visible{outline:3px solid #608bdb;outline-offset:3px}

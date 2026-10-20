@@ -38,7 +38,7 @@ export function MobileNavigation() {
       <Link href="/about/changelog" onClick={() => setMoreOpen(false)}>更新履歴</Link>
       <span>{CHEMICA_VERSION_LABEL}</span>
     </div>}
-    <nav className="mobile-bottom-nav" aria-label="モバイルメインナビゲーション">
+    <nav className="mobile-bottom-nav" data-tutorial="bottom-navigation" aria-label={pathname === "/home" ? "学習ナビゲーション" : "モバイルメインナビゲーション"}>
       {items.map(item => {
         const current = item.match(pathname);
         return <Link href={item.href} scroll={item.href !== "/home#fields"} className={current ? "is-current" : ""} aria-current={current ? "page" : undefined} onClick={() => setMoreOpen(false)} key={item.label}>

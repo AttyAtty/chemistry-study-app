@@ -16,7 +16,7 @@ function visibleTarget(selector?: string) {
 export function Tutorial() {
   const pathname = usePathname();
   const [index, setIndex] = useState<number | null>(null);
-  const [geometry, setGeometry] = useState<{ ring?: CSSProperties; card: CSSProperties }>({ card: {} });
+  const [geometry, setGeometry] = useState<{ ring?: CSSProperties; card: CSSProperties; clipped: boolean }>({ card: {}, clipped: false });
   const dialog = useRef<HTMLDivElement>(null);
   const checked = useRef(false);
   const manual = useRef(false);
@@ -42,57 +42,87 @@ export function Tutorial() {
     }, 100);
     return () => { clearTimeout(timer); window.removeEventListener("chemica-open-guide", start); };
   }, [pathname]);
+  const open = index !== null;
   useLayoutEffect(() => {
-    if (index === null) return;
-    const step = homeTour[index];
-    const target = visibleTarget(step.target);
-    if (step.target && !target) {
-      const next = index + direction.current;
-      const timer = setTimeout(() => { if (next < 0 || next >= homeTour.length) close("skipped"); else setIndex(next); }, 0);
-      return () => clearTimeout(timer);
-    }
-    // Inert the background while retaining the original attributes on cleanup.
+    if (!open) return;
+    document.body.classList.add("chemica-tutorial-open");
+    // Keep the background inert, but allow scrolling to inspect a whole long block.
     const siblings = [...document.body.children].filter(el => el instanceof HTMLElement && !el.contains(dialog.current)) as HTMLElement[];
     const inertValues = siblings.map(el => el.inert);
     siblings.forEach(el => { el.inert = true; });
-    const oldOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.classList.remove("chemica-tutorial-open");
+      siblings.forEach((el, i) => { el.inert = inertValues[i]; });
+    };
+  }, [open]);
+  useLayoutEffect(() => {
+    if (index === null) return;
+    const step = homeTour[index];
+    const movePastMissing = () => {
+      const next = index + direction.current;
+      if (next < 0 || next >= homeTour.length) close("skipped");
+      else setIndex(next);
+    };
+    const target = visibleTarget(step.target);
+    if (step.target && !target) {
+      const timer = setTimeout(movePastMissing, 0);
+      return () => clearTimeout(timer);
+    }
     const update = () => {
       const width = window.innerWidth, height = window.innerHeight;
-      const cardWidth = Math.min(360, width - 24), cardHeight = dialog.current?.offsetHeight || 290;
-      const r = target?.getBoundingClientRect();
-      let left = (width - cardWidth) / 2, top = Math.max(12, (height - cardHeight) / 2);
-      if (r) {
-        const below = height - r.bottom - 16;
-        if (width >= 768 && r.right + cardWidth + 28 < width) { left = r.right + 16; top = r.top; }
-        else if (below >= cardHeight + 88) { left = r.left; top = r.bottom + 16; }
-        else if (r.top >= cardHeight + 24) { left = r.left; top = r.top - cardHeight - 16; }
-        else { top = height - cardHeight - (width < 768 ? 96 : 16); }
-      }
-      setGeometry({ ring: r ? { left: Math.max(4, r.left - 5), top: r.top - 5, width: Math.min(width - 8, r.width + 10), height: Math.min(height - 8, r.height + 10) } : undefined,
-        card: { left: Math.max(12, Math.min(left, width - cardWidth - 12)), top: Math.max(12, Math.min(top, height - cardHeight - (width < 768 ? 96 : 12))), width: cardWidth, maxHeight: r && width < 768 ? Math.max(160, height - r.height - 212) : height - 112 } });
+      const rail = width >= 1100;
+      const nav = visibleTarget('[data-tutorial="bottom-navigation"]');
+      const fixedNav = nav?.parentElement && getComputedStyle(nav.parentElement).position === "fixed";
+      const navRect = nav?.getBoundingClientRect();
+      const bottomInset = fixedNav && navRect ? height - navRect.top + 12 : 12;
+      const topInset = width <= 680 ? 12 : 88;
+      const cardWidth = Math.min(380, width - 24);
+      const maxHeight = Math.max(180, Math.min(height - topInset - bottomInset, rail ? 460 : Math.max(300, height * .5)));
+      const cardHeight = Math.min(dialog.current?.offsetHeight || 300, maxHeight);
+      const r = visibleTarget(step.target)?.getBoundingClientRect();
+      const navigation = step.target === '[data-tutorial="bottom-navigation"]';
+      let left = rail ? width - cardWidth - 24 : (width - cardWidth) / 2;
+      let top = rail ? topInset + 12 : height - bottomInset - cardHeight;
+      if (!step.target) { left = (width - cardWidth) / 2; top = (height - cardHeight) / 2; }
+      if (navigation && r) top = Math.min(top, r.top - cardHeight - 16);
+      top = Math.max(12, Math.min(top, height - cardHeight - bottomInset));
+      // Highlight the whole DOM block. Only its visible portion is outlined when
+      // it is taller than the viewport; scrolling exposes the rest of that block.
+      const ringTop = r ? Math.max(topInset, r.top - 4) : 0;
+      const ringBottom = r ? Math.min(height - 4, !rail && !navigation ? top - 12 : height, r.bottom + 4) : 0;
+      const ring = r && ringBottom > ringTop ? {
+        left: Math.max(4, r.left - 4), top: ringTop,
+        width: Math.min(width - 8, r.width + 8), height: ringBottom - ringTop,
+      } : undefined;
+      setGeometry({ ring, card: { left, top, width: cardWidth, maxHeight },
+        clipped: Boolean(r && !navigation && (r.top < topInset || r.bottom > ringBottom)) });
     };
-    if (target && !target.closest(".site-header, .mobile-nav-shell")) {
+    if (index === 0) window.scrollTo({ top: 0, behavior: "instant" });
+    else if (target && getComputedStyle(target.parentElement || target).position !== "fixed") {
       const targetTop = target.getBoundingClientRect().top + window.scrollY;
-      window.scrollTo({ top: Math.max(0, targetTop - 100), behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+      const desired = Math.max(0, targetTop - (window.innerWidth >= 681 ? 96 : 24));
+      // Forward steps never pull the viewport back up. Back is explicitly reversible.
+      window.scrollTo({ top: direction.current > 0 ? Math.max(window.scrollY, desired) : desired,
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
     }
     update();
     const observer = new ResizeObserver(update);
     if (dialog.current) observer.observe(dialog.current);
+    if (target) observer.observe(target);
     window.addEventListener("resize", update);
     window.addEventListener("scroll", update, true);
     const focus = requestAnimationFrame(() => dialog.current?.focus({ preventScroll: true }));
-    return () => { siblings.forEach((el, i) => { el.inert = inertValues[i]; }); document.body.style.overflow = oldOverflow; observer.disconnect(); window.removeEventListener("resize", update); window.removeEventListener("scroll", update, true); cancelAnimationFrame(focus); };
+    return () => { observer.disconnect(); window.removeEventListener("resize", update); window.removeEventListener("scroll", update, true); cancelAnimationFrame(focus); };
   }, [index, close]);
   if (index === null) return null;
   const step = homeTour[index];
-  return <div className="tutorial-layer">
+  return <div className="tutorial-layer" data-tour-target={step.target || "welcome"}>
     {geometry.ring ? <div className="tutorial-spotlight" style={geometry.ring} aria-hidden="true" /> : <div className="tutorial-shade" aria-hidden="true" />}
     <div ref={dialog} className="tutorial-card" role="dialog" aria-modal="true" aria-labelledby="tutorial-title" aria-describedby="tutorial-description" aria-label="使い方ガイド" tabIndex={-1} style={geometry.card}>
       <p className="tutorial-position" aria-live="polite">使い方ガイド · {index + 1} / {homeTour.length}</p>
-      <h2 id="tutorial-title">{step.title}</h2><p id="tutorial-description">{step.description}</p>
-      <div className="tutorial-actions"><button disabled={index === 0} onClick={() => { direction.current = -1; setIndex(index - 1); }}>戻る</button><button className="tutorial-primary" onClick={() => { if (index === homeTour.length - 1) close("completed"); else { direction.current = 1; setIndex(index + 1); } }}>{index === homeTour.length - 1 ? "完了" : "次へ"}</button></div>
-      <div className="tutorial-actions"><button onClick={skip}>スキップ</button><button onClick={() => close("dismissed")}>今後は表示しない</button></div>
+      <h2 id="tutorial-title">{step.title}</h2><div className="tutorial-copy"><p id="tutorial-description">{step.description}</p></div>{geometry.clipped && <p className="tutorial-scroll-hint">スクロールでブロック全体を確認</p>}
+      <div className="tutorial-actions"><button className="button secondary" disabled={index === 0} onClick={() => { direction.current = -1; setIndex(index - 1); }}>戻る</button><button className="button primary" onClick={() => { if (index === homeTour.length - 1) close("completed"); else { direction.current = 1; setIndex(index + 1); } }}>{index === homeTour.length - 1 ? "完了" : "次へ"}</button></div>
+      <div className="tutorial-actions tutorial-secondary-actions"><button className="tutorial-skip" onClick={skip}>スキップ</button><button className="tutorial-dismiss" onClick={() => close("dismissed")}>今後は表示しない</button></div>
     </div>
   </div>;
 }
